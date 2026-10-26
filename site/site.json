@@ -1,0 +1,144 @@
+{
+  "name": "Prime Solutions",
+  "email": "primesolutionsel@gmail.com",
+  "seo_title": "Prime Solutions | One-page websites for small South African businesses",
+  "artifact_title": "Prime Solutions",
+  "description": "Prime Solutions builds one-page websites for small businesses in South Africa. One once-off fee in rand. The code, the domain and the hosting are yours.",
+  "year": "2026",
+  "theme": {
+    "name": "Forest",
+    "bg": "#FFFFFF",
+    "ink": "#0A0F0C",
+    "brand": "#0B5D3B",
+    "accent": "#1FAE6C"
+  },
+  "prices": {
+    "standard": "R1,000 – R1,500",
+    "pro": "About R3,000",
+    "premium": "R10,000 – R14,000"
+  },
+  "samples": [
+    {
+      "trade": "Trades",
+      "theme": "Harbour",
+      "layout": "a",
+      "brand": "Your Plumbing Co.",
+      "headline": "Plumbing you can count on.",
+      "sub": "Repairs, installs and maintenance."
+    },
+    {
+      "trade": "Hair and beauty",
+      "theme": "Plum",
+      "layout": "c",
+      "brand": "Your Salon",
+      "headline": "Hair, done your way.",
+      "sub": "Cuts, colour and styling."
+    },
+    {
+      "trade": "Cafés and food",
+      "theme": "Copper",
+      "layout": "b",
+      "brand": "Your Café",
+      "headline": "Fresh coffee. Warm bread.",
+      "sub": "Open every day."
+    },
+    {
+      "trade": "Workshops",
+      "theme": "Graphite Mint",
+      "layout": "a",
+      "brand": "Your Garage",
+      "headline": "Engines that run right.",
+      "sub": "Servicing and repairs."
+    },
+    {
+      "trade": "Cleaning",
+      "theme": "Teal Coast",
+      "layout": "b",
+      "brand": "Your Cleaners",
+      "headline": "Spotless, every visit.",
+      "sub": "Homes and offices."
+    },
+    {
+      "trade": "Professional services",
+      "theme": "Midnight Gold",
+      "layout": "c",
+      "brand": "Your Firm",
+      "headline": "Clear advice for growing firms.",
+      "sub": "Accounting and consulting."
+    }
+  ],
+  "themes": {
+    "Harbour": [
+      "#F3F6FA",
+      "#0F1B2D",
+      "#1F5FBF",
+      "#B3640A"
+    ],
+    "Fern": [
+      "#F2F6F1",
+      "#13231A",
+      "#2B7A4B",
+      "#B96A2A"
+    ],
+    "Copper": [
+      "#F5F3F0",
+      "#1D2125",
+      "#A84A25",
+      "#2F5D7C"
+    ],
+    "Teal Coast": [
+      "#EEF5F5",
+      "#0D2427",
+      "#0B7480",
+      "#D95F34"
+    ],
+    "Plum": [
+      "#F7F3F6",
+      "#24152A",
+      "#8A2F7A",
+      "#98700F"
+    ],
+    "Olive": [
+      "#F4F6EE",
+      "#1D2410",
+      "#5C7A12",
+      "#C2552B"
+    ],
+    "Steel": [
+      "#ECEFF1",
+      "#151B20",
+      "#0F4C81",
+      "#3E8CC4"
+    ],
+    "Ruby": [
+      "#F7F4F4",
+      "#231416",
+      "#B3262E",
+      "#2C5A7A"
+    ],
+    "Midnight Gold": [
+      "#0E1621",
+      "#EAF0F6",
+      "#D9A93E",
+      "#6FA8DC"
+    ],
+    "Graphite Mint": [
+      "#101514",
+      "#E6EFEC",
+      "#3FBF9A",
+      "#E5B567"
+    ],
+    "Deep Wine": [
+      "#1A0F14",
+      "#F5ECEF",
+      "#E2788F",
+      "#E8C27A"
+    ],
+    "Night Blue": [
+      "#0A1624",
+      "#E8EEF5",
+      "#4CA3E8",
+      "#F0B45A"
+    ]
+  }
+}
