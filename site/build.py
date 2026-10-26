@@ -94,6 +94,82 @@ def sample(s):
             f'        </figure>')
 
 
+# ---------- privacy policy: legal/privacy-policy.md -> html ----------
+def _ph(text):
+    """wrap [placeholders] (nested ones included) in <mark>"""
+    out, depth, start = [], 0, 0
+    for i, ch in enumerate(text):
+        if ch == "[":
+            if depth == 0:
+                out.append(text[start:i]); start = i
+            depth += 1
+        elif ch == "]" and depth:
+            depth -= 1
+            if depth == 0:
+                out.append('<mark class="ph">' + text[start:i + 1] + "</mark>"); start = i + 1
+    out.append(text[start:])
+    return "".join(out)
+
+
+def _inline(t):
+    t = t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    t = _ph(t)
+    t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])", r"<em>\1</em>", t)
+    t = re.sub(r"(https?://[^\s<)]+)", r'<a href="\1">\1</a>', t)
+    t = re.sub(r"(?<![\w/>\"=:.-])([\w.+-]+@[\w-]+(?:\.[\w-]+)+)", r'<a href="mailto:\1">\1</a>', t)
+    return t
+
+
+def policy_html(md):
+    lines, out, para, items, rows = md.splitlines(), [], [], [], []
+
+    def flush():
+        nonlocal para, items, rows
+        if para:
+            out.append("<p>" + "<br>".join(_inline(x) for x in para) + "</p>")
+        if items:
+            out.append("<ul>" + "".join(f"<li>{_inline(x)}</li>" for x in items) + "</ul>")
+        if rows:
+            cells = lambda r: [c.strip() for c in r.strip().strip("|").split("|")]
+            head, body = cells(rows[0]), [cells(r) for r in rows[2:]]
+            out.append('<div class="table-wrap"><table' + (' class="wide"' if len(head) > 2 else '') + '><thead><tr>' + "".join(f"<th>{_inline(c)}</th>" for c in head) +
+                       "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td>{_inline(c)}</td>" for c in r) + "</tr>" for r in body) +
+                       "</tbody></table></div>")
+        para, items, rows = [], [], []
+
+    for ln in lines:
+        s = ln.rstrip()
+        if not s.strip():
+            flush(); continue
+        if s.startswith("# ") or s.startswith("## ") or s.strip() == "---" or s.startswith("Draft for review only"):
+            flush(); continue
+        if s.startswith("### "):
+            flush()
+            title = s[4:].strip()
+            num = re.match(r"(\d+)\.", title)
+            out.append(f'<h2 id="privacy-{num.group(1) if num else len(out)}">{_inline(title)}</h2>'); continue
+        if s.startswith("|"):
+            if para or items: flush()
+            rows.append(s); continue
+        if s.startswith("- "):
+            if para or rows: flush()
+            items.append(s[2:]); continue
+        if items or rows: flush()
+        para.append(s)
+    flush()
+    return "\n".join(out)
+
+
+def legal_block(level):
+    body = policy_html((ROOT / "legal" / "privacy-policy.md").read_text(encoding="utf-8"))
+    title = f'<h{level} class="legal__title" id="privacy-title">Privacy policy</h{level}>'
+    return (f'<div class="wrap legal__wrap">\n<p class="eyebrow">Privacy</p>\n{title}\n'
+            '<p class="notice"><strong>Draft.</strong> The highlighted [brackets] still need filling in, and a South African attorney should review this before launch.</p>\n'
+            '<p class="notice notice--plain">This website has no forms, no cookies and no analytics.</p>\n'
+            f'<div class="legal__body">\n{body}\n</div>\n</div>')
+
+
 # ---------- tokens ----------
 t = site["theme"]
 fav_svg = (f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='{t['brand']}'/>"
@@ -113,11 +189,12 @@ tokens = {
     "samples": "\n".join(sample(s) for s in site["samples"]),
     "price_standard": site["prices"]["standard"], "price_pro": site["prices"]["pro"],
     "price_premium": site["prices"]["premium"],
+    "privacy_href": "privacy.html", "legal": legal_block(1),
 }
 
 
-def render(page_kb):
-    html = (SRC / "index.html").read_text(encoding="utf-8")
+def render(page_kb, template="index.html"):
+    html = (SRC / template).read_text(encoding="utf-8")
     all_tokens = dict(tokens, page_kb=str(page_kb))
     for k, v in all_tokens.items():
         html = html.replace("{{" + k + "}}", v)
@@ -130,7 +207,7 @@ def render(page_kb):
 # ---------- dist ----------
 if DIST.exists():
     shutil.rmtree(DIST)
-for sub in ("css", "js", "fonts"):
+for sub in ("css", "js", "fonts", "img"):
     shutil.copytree(SRC / sub, DIST / sub)
 if (SRC / "og.png").exists():
     shutil.copy(SRC / "og.png", DIST / "og.png")
@@ -138,7 +215,8 @@ if (SRC / "og.png").exists():
 page_kb = 0
 for _ in range(2):  # the number sits inside the page, so settle it in two passes
     (DIST / "index.html").write_text(render(page_kb), encoding="utf-8")
-    total = sum(p.stat().st_size for p in DIST.rglob("*") if p.is_file() and p.suffix in (".html", ".css", ".js", ".woff") and p.name != "artifact.html")
+    (DIST / "privacy.html").write_text(render(page_kb, "privacy.html"), encoding="utf-8")
+    total = sum(p.stat().st_size for p in DIST.rglob("*") if p.is_file() and p.suffix in (".html", ".css", ".js", ".woff", ".webp") and p.name != "artifact.html")
     page_kb = int(math.ceil(total / 1024 / 10.0) * 10)
 
 # ---------- artifact (single file) ----------
@@ -147,12 +225,18 @@ def font_uri(m):
     data = (SRC / "css" / m.group(1)).resolve().read_bytes()
     return "url(data:font/woff;base64," + base64.b64encode(data).decode() + ") format(\"woff\")"
 css = re.sub(r'url\(([^)]*?\.woff)\) format\("woff"\)', font_uri, css)
+css = re.sub(r'url\(\.\./img/([^)]*?\.webp)\)', lambda m: "url(data:image/webp;base64," + base64.b64encode((SRC / "img" / m.group(1)).read_bytes()).decode() + ")", css)
 js = (SRC / "js" / "main.js").read_text(encoding="utf-8")
 
 full = (DIST / "index.html").read_text(encoding="utf-8")
 head = re.search(r"<head>(.*?)</head>", full, re.S).group(1)
 body = re.search(r"<body>(.*)</body>", full, re.S).group(1)
 body = re.sub(r'<script src="js/main.js" defer></script>', "", body)
+# the preview is one file, so the policy opens as a section of the page instead of privacy.html
+body = body.replace('href="privacy.html"', 'href="#privacy"')
+inline = ('<section class="legal legal--inline" id="privacy" aria-labelledby="privacy-title">\n' + legal_block(2) +
+          '\n<div class="wrap legal__wrap"><a class="link" href="#top">Back to the site</a></div>\n</section>\n')
+body = body.replace('<footer class="site-footer">', inline + '<footer class="site-footer">', 1)
 keep_meta = "\n".join(re.findall(r'<meta (?:name="description"|property="og:[^"]+"|name="twitter:card")[^>]*>', head))
 ld = re.search(r'<script type="application/ld\+json">.*?</script>', head, re.S).group(0)
 art = (f'<title>{site["artifact_title"]}</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n{keep_meta}\n'

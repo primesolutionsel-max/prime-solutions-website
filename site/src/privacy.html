@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy policy | {{name}}</title>
+<meta name="description" content="How {{name}} handles personal information.">
+<meta name="theme-color" content="{{bg}}">
+<link rel="icon" href="{{favicon}}">
+<link rel="preload" href="fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header is-stuck">
+  <div class="wrap header__bar">
+    <a class="brand" href="index.html#top" aria-label="{{name}}, back to the home page"><span class="brand__a">Prime</span><span class="brand__b">Solutions</span></a>
+    <a class="link" href="index.html#top">Back to the site</a>
+    <a class="btn btn--sm" href="mailto:{{email}}">Email us</a>
+  </div>
+</header>
+
+<main class="legal" id="main" aria-labelledby="privacy-title">
+{{legal}}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer__bar">
+    <p class="footer__name"><strong>{{name}}</strong></p>
+    <p class="footer__meta">© {{year}} {{name}} · <a href="index.html#top">Back to the site</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -129,8 +129,6 @@
       raf = 0;
       hframe.style.setProperty('--ry', (-5 + nx * 5).toFixed(2) + 'deg');
       hframe.style.setProperty('--rx', (2.5 - ny * 4).toFixed(2) + 'deg');
-      hframe.style.setProperty('--gx', (nx * 16).toFixed(1) + 'px');
-      hframe.style.setProperty('--gy', (ny * 12).toFixed(1) + 'px');
     };
     hero.addEventListener('pointermove', (e) => {
       const r = hero.getBoundingClientRect();
