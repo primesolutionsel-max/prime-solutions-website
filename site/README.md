@@ -46,7 +46,7 @@ Open http://localhost:8000 (Premium), http://localhost:8000/pro.html or http://l
 
 `build.py` needs Python 3 and Pillow (for `prep_images.py`). The site still builds if `assets_in/` is missing: it uses the images already in `src/img/`.
 
-`dist/artifact.html` and `dist/prime-solutions-demo.html` are single-file copies with the fonts and pictures embedded, used for quick previews. They are not needed for hosting and are not committed.
+`dist/artifact.html` (Premium), `dist/artifact-standard.html`, `dist/artifact-pro.html` and `dist/prime-solutions-demo.html` are single-file copies with the fonts and pictures embedded, used for quick previews. They are not needed for hosting and are not committed. To link the three previews together, put their addresses in a `preview_links.json` (keys `premium`, `standard`, `pro`) before building.
 
 ## Changing things
 

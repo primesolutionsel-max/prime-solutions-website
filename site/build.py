@@ -286,4 +286,33 @@ demo = ('<!doctype html>\n<html lang="en-ZA">\n<head>\n<meta charset="utf-8">\n'
         f'<script>document.documentElement.classList.add("js")</script>\n<style>\n{css}\n</style>\n{ld}\n</head>\n<body>\n{body}\n<script>\n{js}\n</script>\n</body>\n</html>\n')
 (DIST / "prime-solutions-demo.html").write_text(demo, encoding="utf-8")
 
+# Standard and Pro as one file each, for previewing on their own. The links to the other two
+# levels point at their preview pages, listed in preview_links.json (made after they are published).
+_pl = ROOT / "preview_links.json"
+LINKS = json.loads(_pl.read_text(encoding="utf-8")) if _pl.exists() else {}
+
+
+def _out(url):
+    return f'href="{url}" target="_blank" rel="noopener"' if url else 'href="#main"'
+
+
+for key, name in (("standard", "Standard"), ("pro", "Pro")):
+    page = (DIST / f"{key}.html").read_text(encoding="utf-8")
+    tb = re.search(r"<body[^>]*>(.*)</body>", page, re.S).group(1)
+    tb = re.sub(r'<script src="js/tier.js" defer></script>\s*', "", tb)
+    other = "pro" if key == "standard" else "standard"
+    prem = LINKS.get("premium", "")
+    tb = tb.replace('href="index.html"', _out(prem))
+    tb = tb.replace(f'href="{other}.html"', _out(LINKS.get(other, "")))
+    tb = tb.replace('href="privacy.html"', _out(prem + "#privacy" if prem else ""))
+    leftover = re.findall(r'href="[^"#][^"]*\.html[^"]*"', tb)
+    assert not leftover, leftover
+    tjs = (SRC / "js" / "tier.js").read_text(encoding="utf-8")
+    title = f'{site["artifact_title"]} {name}'
+    tart = (f'<title>{title}</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
+            f'<meta name="description" content="{site["description"]}">\n'
+            f'<script>document.documentElement.classList.add("js")</script>\n<style>\n{css}\n</style>\n{ld}\n'
+            f'<div class="tier-page tier--{key}">\n{tb}\n</div>\n<script>\n{tjs}\n</script>\n')
+    (DIST / f"artifact-{key}.html").write_text(tart, encoding="utf-8")
+
 print(f"dist total ~{page_kb} KB | artifact {len(art.encode())/1024:.0f} KB")
