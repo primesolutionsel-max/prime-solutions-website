@@ -1,7 +1,7 @@
 /* Prime Solutions: the entrance.
    Scrolling zooms towards the door of an arch. Close to the door the page takes over and plays the rest
    by itself (through the light, into the valley), then the headline opens. Scrolling on carries the
-   valley from day to night, and the plans follow. Scroll back up and the door closes the same way.
+   valley from midday through sunset to night, and the plans follow. Scroll back up and the door closes the same way.
    Plain JS, no libraries. Only transform and opacity are animated, so the page stays smooth on phones. */
 (() => {
   'use strict';
@@ -27,8 +27,10 @@
   const bloom = $('[data-bloom]');
   const night = $('[data-night]');
   const dusk = $('[data-dusk]');
+  const twilight = $('[data-twilight]');
   const shade = $('[data-shade]');
   const sun = $('[data-sun]');
+  const sunset = $('[data-sunset]');
   const moon = $('[data-moon]');
   const starsEl = $('[data-stars]');
   const glows = $$('[data-glow]');
@@ -64,15 +66,18 @@
   })();
 
   /* ---------- measuring ---------- */
-  let vw = innerWidth, vh = innerHeight, sceneW = 1, panMax = 0, stageTop = 0, A = 1, W = 1;
+  let vw = innerWidth, vh = innerHeight, sceneW = 1, panMax = 0, stageTop = 0, A = 1, W = 1, Wm = 1;
   function measure() {
     vw = innerWidth; vh = pin.offsetHeight || innerHeight;
     sceneW = scene.offsetWidth;
     const sceneH = scene.offsetHeight;
     panMax = Math.max(0, (sceneW - vw) / 2 - 14);
+    const hold = vh;                                       // extra scroll for the sky cycle (the stage is 100vh taller for it: see .stage in styles.css)
     const run = Math.max(1, stage.offsetHeight - vh);
-    A = run * (70 / 150);                                  // scroll that zooms to the door
-    W = run - A;                                           // scroll that carries the valley to night
+    const runOld = Math.max(1, run - hold);
+    A = runOld * (70 / 150);                               // scroll that zooms to the door
+    Wm = runOld - A;                                       // scroll over which the valley itself drifts, as it always did
+    W = Wm + hold;                                         // scroll that carries the sky from midday through sunset to night
     stageTop = stage.getBoundingClientRect().top + scrollY;
     // where the door sits on screen: the layers scale around it
     pin.style.setProperty('--dx', (vw / 2 + (0.5006 - 0.5) * sceneW).toFixed(1) + 'px');
@@ -177,21 +182,30 @@
 
     // the valley: comes out of the light, settles, then drifts while you scroll
     const out = 1 - Math.pow(1 - sm(0.5, 1, door), 3);
-    const sB = 1.26 - 0.26 * out + 0.07 * ws;
-    const fx = 0.5 - 0.16 * sm(0.04, 0.4, ws) + 0.42 * sm(0.5, 0.95, ws);   // on a phone the camera slides across the valley
+    const wm = clamp(ws * W / Wm);                            // the valley's drift keeps its own pace; the sky cycle below uses the whole run
+    const sB = 1.26 - 0.26 * out + 0.07 * wm;
+    const fx = 0.5 - 0.16 * sm(0.04, 0.4, wm) + 0.42 * sm(0.5, 0.95, wm);   // on a phone the camera slides across the valley
     const pan = clamp((0.5 - fx) * sceneW, -panMax, panMax);
     const bp = sm(0.5, 0.7, door);
     tf(beyond, `translate3d(${(-mx * 9 * bp + pan).toFixed(1)}px,${(-my * 5 * bp).toFixed(1)}px,0) scale(${sB.toFixed(3)})`);
     op(beyond, sm(0.5, 0.66, door), as > 0.25 || door > 0 ? 0.003 : 0);
 
-    // day to night
-    const n = sm(0.08, 0.92, ws) * sm(0.6, 0.8, door);
-    op(night, n);
-    op(dusk, Math.sin(Math.PI * clamp((n - 0.05) / 0.6)) * 0.9);
-    op(sun, clamp(1 - n * 1.25));
-    op(moon, sm(0.45, 0.9, n));
-    op(starsEl, sm(0.3, 0.85, n));
-    const g = 0.15 + 0.85 * sm(0.2, 1, n);
+    // the sky, in distinct stages: midday (bright, the sun high), sunset (warm light, the sun low), twilight, night (moon, stars, glows)
+    const dd = sm(0.6, 0.8, door);                           // only once you are inside the valley
+    const md = 1 - sm(0.10, 0.38, ws);
+    const ss = sm(0.20, 0.42, ws) * (1 - sm(0.56, 0.74, ws)) * dd;
+    const tw = sm(0.50, 0.66, ws) * (1 - sm(0.80, 0.96, ws)) * dd;
+    const nt = sm(0.64, 0.92, ws) * dd;
+    op(sun, md);
+    tf(sun, `translate3d(0,${((1 - md) * 9).toFixed(2)}%,0)`);   // the high sun sinks a little as its light fades
+    op(sunset, ss);
+    tf(sunset, `translate3d(0,${(-5 + 9 * sm(0.2, 0.62, ws)).toFixed(2)}%,0)`);
+    op(dusk, ss * 0.92);
+    op(twilight, tw);
+    op(night, nt);
+    op(moon, sm(0.3, 0.9, nt));
+    op(starsEl, sm(0.2, 0.85, nt));
+    const g = 0.15 + 0.85 * sm(0.15, 1, nt);
     glows.forEach((el) => op(el, g));
 
     // words
@@ -200,10 +214,10 @@
     tf(side, `translateX(${(-18 * sm(0.05, 0.35, as)).toFixed(1)}px)`);
     op(cue, (1 - sm(0, 0.12, as)) * closed);
     op(skip, 1 - sm(0, 0.2, door));
-    op(copy, sm(0.55, 0.65, door) * (1 - sm(0.03, 0.24, ws)));   // the words leave after a short scroll, so the next sheet is never far
+    op(copy, sm(0.55, 0.65, door) * (1 - sm(0.03, 0.24, wm)));   // the words leave after a short scroll, so the next sheet is never far
     op(shade, Math.max(1 - sm(0.1, 0.5, as), sm(0.55, 0.7, door)));
 
-    motes.vis = Math.max(0.22 * (1 - sm(0, 0.3, as)) * closed, (0.3 + 0.7 * n) * sm(0.6, 0.78, door));
+    motes.vis = Math.max(0.22 * (1 - sm(0, 0.3, as)) * closed, (0.3 + 0.7 * nt) * sm(0.6, 0.78, door));
     motes.kick();
   }
 
@@ -248,7 +262,7 @@
       requestAnimationFrame(loop);
     }
     size(); addEventListener('resize', size);
-    new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible) o.kick(); }).observe(stage);
+    new IntersectionObserver((e) => { visible = e[0].isIntersecting; stage.classList.toggle('is-away', !visible); if (visible) o.kick(); }).observe(stage);
     document.addEventListener('visibilitychange', () => { visible = !document.hidden; if (visible) o.kick(); });
     return o;
   })();

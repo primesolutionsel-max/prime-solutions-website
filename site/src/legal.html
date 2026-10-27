@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{legal_title}}{{copy.legal_ui.title_sep}}{{name}}</title>
+<meta name="description" content="{{legal_desc}}">
+<meta name="theme-color" content="{{bg}}">
+{{head_social}}
+<link rel="icon" href="{{favicon}}">
+<link rel="preload" href="{{base}}fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="{{base}}css/styles.css">
+</head>
+<body data-mode="{{mode}}">
+<a class="skip" href="#main">{{copy.skip_link}}</a>
+
+<header class="site-header" data-header data-tone="light">
+  <div class="wrap header__bar">
+    <a class="brand" href="{{base}}" aria-label="{{back_aria}}"><span class="brand__a">{{copy.brand.0}}</span><span class="brand__b">{{copy.brand.1}}</span></a>
+    <nav class="nav header__back" aria-label="{{copy.legal_ui.nav_aria}}"><ul><li><a href="{{base}}">{{back_label}}</a></li></ul></nav>
+    <a class="header__mail" href="mailto:{{email}}">{{copy.mail}}</a>
+  </div>
+</header>
+
+<main class="legal" id="main" aria-labelledby="{{legal_slug}}-title">
+{{legal}}
+</main>
+
+{{footer}}
+</body>
+</html>

@@ -1,9 +1,12 @@
-/* Prime Solutions: the Standard and Pro pages on their own (standard.html, pro.html).
+/* Prime Solutions: the Standard and Pro pages on their own (standard/index.html, pro/index.html).
    Everything is readable without this file; it only adds the fade-ins and the copy button. */
 (() => {
   const doc = document;
   const $$ = (s, c = doc) => Array.from(c.querySelectorAll(s));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  /* the words come from site.json, through the #ui-copy block that build.py writes into the page */
+  const UI = (() => { try { return JSON.parse(doc.getElementById('ui-copy').textContent); } catch (err) { return {}; } })();
+  const setText = (el, key) => { if (el && UI[key]) el.textContent = UI[key]; };
 
   const rv = $$('.d-rv');
   if (reduce.matches || !('IntersectionObserver' in window)) rv.forEach((n) => n.classList.add('in'));
@@ -20,7 +23,7 @@
       const el = btn.parentNode.querySelector('.d-addr');
       if (el) { const r = doc.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
     }
-    btn.textContent = ok ? 'Copied' : 'Selected';
-    setTimeout(() => { btn.textContent = 'Copy address'; }, 2200);
+    setText(btn, ok ? 'copied' : 'selected');
+    setTimeout(() => { setText(btn, 'copy'); }, 2200);
   }));
 })();

@@ -9,20 +9,21 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{tier_title}}">
 <meta property="og:description" content="{{description}}">
-<meta property="og:image" content="og.png">
+{{head_social}}
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{{favicon}}">
-<link rel="preload" href="fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
-<link rel="preload" href="fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
-<link rel="stylesheet" href="css/styles.css">
+<link rel="preload" href="{{base}}fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="{{base}}css/styles.css">
 <script>document.documentElement.classList.add("js")</script>
 <script type="application/ld+json">{{jsonld}}</script>
 </head>
-<body class="tier-page {{tier_class}}">
-<a class="skip" href="#main">Skip to content</a>
+<body class="tier-page {{tier_class}}" data-mode="{{mode}}">
+<a class="skip" href="#main">{{copy.skip_link}}</a>
 <main id="main" class="tier-main" style="{{tier_vars}}">
 {{tier_body}}
 </main>
-<script src="js/tier.js" defer></script>
+{{ui_json}}
+<script src="{{base}}js/tier.js" defer></script>
 </body>
 </html>

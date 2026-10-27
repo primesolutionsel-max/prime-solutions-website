@@ -190,7 +190,7 @@ a { color: inherit; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 .stage { position: relative; z-index: 0; height: 100vh; height: 100svh; background: var(--ink); color: var(--white); }
-.js .stage { height: calc(100vh + 150vh); height: calc(100svh + 150svh); }
+.js .stage { height: calc(100vh + 150vh + 100vh); height: calc(100svh + 150svh + 100svh); }   /* the last 100 is the sky cycle's own scroll (intro.js: hold) */
 .pin { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--ink); }
 .js .pin { position: sticky; top: 0; }
 
@@ -198,11 +198,36 @@ a { color: inherit; }
 .layer { position: absolute; inset: 0; transform-origin: 50.06% 52.5%; will-change: transform, opacity; }
 .layer img { position: absolute; inset: 0; display: block; width: 100%; max-width: none; height: 100%; user-select: none; -webkit-user-drag: none; pointer-events: none; }
 .layer--beyond { transform-origin: 50% 53%; }
+
+/* the floating stones: cut out of the valley picture, each one drifts slowly up and down on its own timing (set per stone in the page)
+   Only transform is animated. They rest when the entrance is off screen or the visitor prefers reduced motion. */
+.rock { position: absolute; pointer-events: none; will-change: transform; animation: rock-float var(--dur, 10s) ease-in-out var(--delay, 0s) infinite alternate; }
+.layer .rock img { position: static; display: block; width: 100%; height: auto; }
+@keyframes rock-float {
+  from { transform: translate3d(0, calc(var(--amp, 6%) * .5), 0); }
+  to   { transform: translate3d(0, calc(var(--amp, 6%) * -.5), 0); }
+}
+.stage.is-away .rock { animation-play-state: paused; }
 .js .layer--beyond { opacity: 0; visibility: hidden; }
 .layer--far, .layer--arch { transform-origin: 50.06% 52.5%; }
 
 /* sky and night extras live inside the valley layer, so they move with it */
-.sun { position: absolute; left: 0; top: 0; width: 60%; height: 62%; background: radial-gradient(ellipse 57% 65% at 5% 27%, rgba(255, 243, 214, .6), transparent 70%); pointer-events: none; will-change: opacity; }
+.sun {   /* midday: a bright, high sun */
+  position: absolute; left: 0; top: 0; width: 100%; height: 74%; pointer-events: none; will-change: opacity, transform;
+  background:
+    radial-gradient(ellipse 13% 22% at 57% 9%, rgba(255, 255, 252, 1), rgba(255, 252, 232, .75) 40%, transparent 80%),
+    radial-gradient(ellipse 34% 52% at 57% 6%, rgba(255, 250, 226, .78), rgba(255, 244, 210, .3) 55%, transparent 86%),
+    radial-gradient(ellipse 80% 70% at 57% -6%, rgba(255, 248, 224, .55), transparent 80%),
+    linear-gradient(180deg, rgba(255, 255, 246, .26) 0%, rgba(255, 255, 246, .12) 46%, transparent 72%);
+}
+.sunset {   /* sunset: a low, warm sun over the far ridge, and warm light along the sky */
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; will-change: opacity, transform;
+  background:
+    radial-gradient(ellipse 8% 7% at 66% 45%, rgba(255, 246, 214, 1), rgba(255, 206, 128, .92) 45%, transparent 100%),
+    radial-gradient(ellipse 30% 11% at 66% 46%, rgba(255, 190, 110, .72), rgba(255, 140, 70, .26) 60%, transparent 100%),
+    radial-gradient(ellipse 56% 34% at 66% 47%, rgba(255, 140, 64, .5), rgba(255, 100, 56, .16) 62%, transparent 100%),
+    linear-gradient(180deg, rgba(255, 196, 130, 0) 8%, rgba(255, 160, 96, .3) 40%, rgba(240, 110, 80, .2) 62%, rgba(120, 50, 80, .1) 100%);
+}
 .moon {
   position: absolute; left: 82%; top: 11%; width: 3.4%; aspect-ratio: 1; border-radius: 50%; opacity: 0; pointer-events: none; will-change: opacity;
   background: radial-gradient(circle at 38% 36%, #fff 0, #E8F6EE 55%, #BFE3CF 100%);
@@ -228,9 +253,11 @@ a { color: inherit; }
 }
 
 /* grading */
-.night, .dusk, .shade { position: absolute; inset: 0; pointer-events: none; }
+.night, .dusk, .twilight, .shade { position: absolute; inset: 0; pointer-events: none; }
+/* the three grades sit inside the valley layer, below the moon and stars, so those stay bright against them */
 .night { opacity: 0; visibility: hidden; background: linear-gradient(180deg, rgba(3, 9, 26, .84) 0%, rgba(3, 18, 14, .74) 55%, rgba(2, 10, 8, .62) 100%); will-change: opacity; }
-.dusk { opacity: 0; visibility: hidden; background: radial-gradient(ellipse 90% 40% at 50% 58%, rgba(255, 150, 70, .4), rgba(255, 100, 60, .14) 50%, transparent 75%); will-change: opacity; }
+.dusk { opacity: 0; visibility: hidden; background: radial-gradient(ellipse 80% 40% at 62% 56%, rgba(255, 140, 64, .4), rgba(255, 96, 56, .15) 52%, transparent 80%), linear-gradient(180deg, rgba(255, 150, 80, .12), rgba(228, 92, 70, .12) 55%, rgba(80, 36, 78, .18)); will-change: opacity; }
+.twilight { opacity: 0; visibility: hidden; background: radial-gradient(ellipse 70% 24% at 62% 50%, rgba(255, 120, 124, .34), transparent 72%), linear-gradient(180deg, rgba(84, 68, 152, .44) 0%, rgba(172, 84, 132, .3) 48%, rgba(52, 36, 92, .4) 100%); will-change: opacity; }
 .shade--top { height: 200px; bottom: auto; background: radial-gradient(ellipse 46% 100% at 0% 0%, rgba(5, 10, 7, .62), transparent 75%), linear-gradient(180deg, rgba(5, 10, 7, .55), transparent); }
 .shade--bottom { top: auto; height: 62%; background: linear-gradient(0deg, rgba(5, 10, 7, .82), rgba(5, 10, 7, .4) 45%, transparent); will-change: opacity; }
 .motes { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -276,7 +303,7 @@ html.is-locked { overflow: hidden; }
 html { scrollbar-gutter: stable; }
 
 @media (max-width: 700px) {
-  .js .stage { height: calc(100vh + 140vh); height: calc(100svh + 140svh); }
+  .js .stage { height: calc(100vh + 140vh + 100vh); height: calc(100svh + 140svh + 100svh); }
   .copy h1 { font-size: clamp(2.1rem, 10.8vw, 2.9rem); }
   .cue { display: none; }
   .skipintro { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
@@ -292,7 +319,7 @@ html { scrollbar-gutter: stable; }
 .rm.js .copy, .rm.js .copy .rv { opacity: 1; visibility: visible; transform: none; }
 .rm.js .copy .ln > span { transform: none; }
 :root:not(.js) .side, :root:not(.js) .cue, :root:not(.js) .skipintro, :root:not(.js) .layer--far, :root:not(.js) .layer--arch, :root:not(.js) .bloom, :root:not(.js) .motes { display: none; }
-.rm .stars .sg { animation: none; }
+.rm .stars .sg, .rm .rock { animation: none; }
 
 /* ---------- sheets (sections stacked like layered cards) ---------- */
 .flow { position: relative; z-index: 2; margin-top: calc(var(--r) * -1); }
@@ -406,6 +433,10 @@ h3 { font-weight: 700; font-stretch: 100%; font-size: clamp(1.35rem, 1.15rem + .
 .step__price span { color: var(--slate); font-size: .9375rem; }
 .step__here { font-size: .9375rem; color: var(--forest); font-weight: 600; }
 .ladder + .fine { margin-top: 1rem; }
+.step__cta { font-size: .9375rem; }
+.step__cta a { color: var(--forest); font-weight: 700; text-underline-offset: 4px; }
+.pricenote { display: grid; gap: .5rem; max-width: 46rem; margin-top: 1.25rem; }
+.pricenote p:first-child { color: var(--ink); font-size: 1.0625rem; }
 
 @media (max-width: 899px) {
   .ladder { grid-template-columns: 1fr; gap: 1rem; }
@@ -627,6 +658,7 @@ h3 { font-weight: 700; font-stretch: 100%; font-size: clamp(1.35rem, 1.15rem + .
 
 /* ---------- process timeline ---------- */
 .process__layout { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+.process__notes { grid-column: 1 / -1; display: grid; gap: .6rem; max-width: 46rem; color: var(--slate); }
 .process__head { position: sticky; top: calc(var(--head-h) + 28px); margin-bottom: 0; }
 @property --edge { syntax: "<color>"; inherits: false; initial-value: #B4C0B9; }
 .timeline { --p: 0; position: relative; display: flex; flex-direction: column; gap: clamp(2rem, 4vw, 3.25rem); }
@@ -702,7 +734,13 @@ details p { padding: 0 2.5rem 1.4rem 0; color: var(--slate); max-width: 40em; an
 
 /* ---------- footer ---------- */
 .site-footer { position: relative; z-index: 2; background: var(--white); border-top: 1px solid var(--line); padding-block: 2rem calc(2rem + env(safe-area-inset-bottom, 0px)); }
-.footer__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 2rem; font-size: .9375rem; color: var(--slate); }
+.footer__bar { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .25rem 2rem; font-size: .9375rem; color: var(--slate); }
+.footer__cta { justify-self: end; text-align: right; color: var(--ink); }
+.footer__cta a { color: var(--forest); font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.footer__meta, .footer__note { grid-column: 1 / -1; }
+.footer__meta { margin-top: .5rem; padding-top: .75rem; border-top: 1px solid var(--line); }
+.footer__note { font-size: .875rem; }
+@media (max-width: 700px) { .footer__bar { grid-template-columns: 1fr; } .footer__cta { justify-self: start; text-align: left; } }
 .footer__name strong { color: var(--ink); font-family: var(--f-display); font-weight: 800; margin-right: .5rem; }
 .footer__bar a { display: inline-flex; align-items: center; min-height: 44px; }
 
@@ -715,7 +753,12 @@ details p { padding: 0 2.5rem 1.4rem 0; color: var(--slate); max-width: 40em; an
 .legal__body { display: flex; flex-direction: column; gap: .9rem; margin-top: .5rem; }
 .legal__body h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.01em; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
 .legal__body p, .legal__body li { line-height: 1.65; }
-.legal__body ul { display: flex; flex-direction: column; gap: .4rem; padding-left: 1.2rem; list-style: disc; }
+.legal__meta { color: var(--slate); font-size: .9375rem; }
+.legal__body ul, .legal__body ol { display: flex; flex-direction: column; gap: .4rem; padding-left: 1.2rem; list-style: disc; }
+.legal__body ol { list-style: decimal; }
+.legal__body h3 { font-size: 1.0625rem; font-weight: 700; margin-top: .75rem; }
+.legal__body blockquote { padding: .8rem 1.1rem; border-left: 3px solid var(--emerald); background: var(--mist); border-radius: 0 12px 12px 0; }
+.legal__body hr { border: 0; border-top: 1px solid var(--line); width: 100%; margin: .75rem 0; }
 .legal__body li::marker { color: var(--forest); }
 .legal__body a { color: var(--forest); text-underline-offset: 3px; overflow-wrap: anywhere; }
 .notice { background: var(--mint); border-radius: 14px; padding: .9rem 1.1rem; font-size: .9375rem; }
@@ -756,7 +799,7 @@ html.demo-open { overflow: hidden; }
 .demo__end-a { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.5rem; margin-top: 1rem; }
 .demo__end .btn { background: var(--emerald); color: var(--ink); }
 .demo__end .btn:hover { background: var(--white); }
-.demo__next { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--white); font-weight: 600; text-decoration: underline; text-decoration-color: var(--emerald); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+.demo__own, .demo__next { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--white); font-weight: 600; text-decoration: underline; text-decoration-color: var(--emerald); text-decoration-thickness: 2px; text-underline-offset: 6px; }
 
 /* the sample pages share these (the Standard and Pro versions of this site; their own styling is in tiers.css) */
 .d { font: 400 1rem/1.6 var(--f-body); color: var(--d-ink); }
@@ -814,4 +857,5 @@ html.demo-open { overflow: hidden; }
   .js .reveal { opacity: 1; transform: none; }
   .ladder[data-tier="premium"] .m-seal__ring { animation: none; }
   .stars .sg { animation: none; }
+  .rock { animation: none !important; }
 }

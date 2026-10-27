@@ -10,6 +10,11 @@
   const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
+  /* every word this script puts on the page comes from site.json, through the #ui-copy block that build.py writes into the page */
+  const UI = (() => { try { return JSON.parse($('#ui-copy').textContent); } catch (err) { return {}; } })();
+  const say = (key, vars) => (UI[key] == null ? '' : String(UI[key]).replace(/\{(\w+)\}/g, (m, k) => (vars && vars[k] != null ? vars[k] : m)));
+  const setText = (el, key, vars) => { const t = say(key, vars); if (el && t) el.textContent = t; };
+
   const header = $('[data-header]');
   const levels = $('#levels');
   const ladder = $('[data-ladder]');
@@ -28,7 +33,7 @@
     nav.classList.toggle('is-open', open);
     header.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
-    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menuBtn.setAttribute('aria-label', say(open ? 'menu_close' : 'menu_open') || menuBtn.getAttribute('aria-label'));
     doc.body.style.overflow = open ? 'hidden' : '';
     if (open) { const first = $('a', nav); if (first) first.focus(); }
   };
@@ -57,14 +62,14 @@
   const demoBtn = $('[data-demo-open]');
   const demoLabel = $('[data-demo-label]');
   const demoNote = $('.stage__note');
-  const TIER_NAME = { standard: 'Standard', pro: 'Pro', premium: 'Premium' };
+  const TIER_NAME = UI.tiers || {};
   const setTier = (tier) => {
     if (!ladder || ladder.dataset.tier === tier) return;
     ladder.dataset.tier = tier;
     const prem = tier === 'premium';
     if (demoBtn) demoBtn.setAttribute('href', prem ? '#top' : '#demo-' + tier);
-    if (demoLabel) demoLabel.textContent = prem ? 'Back to the entrance' : 'Open the ' + TIER_NAME[tier] + ' demo';
-    if (demoNote) demoNote.textContent = prem ? 'You are on a Premium page now.' : 'Sample page. Opens full screen.';
+    setText(demoLabel, prem ? 'open_premium' : 'open_demo', { tier: TIER_NAME[tier] });
+    setText(demoNote, prem ? 'note_premium' : 'note_sample');
     if (levels) levels.dataset.tier = tier;
     pills.forEach((p) => p.setAttribute('aria-pressed', String(p.dataset.tier === tier)));
     steps.forEach((s) => s.classList.toggle('is-active', s.dataset.step === tier));
@@ -208,11 +213,11 @@
 
     const setPaused = (p) => {
       paused = p;
-      if (toggleBtn) toggleBtn.textContent = p ? 'Play' : 'Pause';
+      setText(toggleBtn, p ? 'play' : 'pause');
       kick();
     };
     if (toggleBtn) {
-      toggleBtn.textContent = paused ? 'Play' : 'Pause';
+      setText(toggleBtn, paused ? 'play' : 'pause');
       toggleBtn.addEventListener('click', () => setPaused(!paused));
     }
 
@@ -321,9 +326,9 @@
         sel.removeAllRanges();
         sel.addRange(range);
       }
-      status.textContent = ok ? 'Address copied.' : 'Address selected. Copy it from your keyboard or menu.';
-      copyBtn.textContent = ok ? 'Copied' : 'Selected';
-      setTimeout(() => { copyBtn.textContent = 'Copy address'; }, 2200);
+      setText(status, ok ? 'addr_copied' : 'addr_selected');
+      setText(copyBtn, ok ? 'copied' : 'selected');
+      setTimeout(() => { setText(copyBtn, 'copy'); }, 2200);
     });
   }
 
@@ -395,8 +400,8 @@
         const el = btn.parentNode.querySelector('.d-addr');
         if (el) { const r = doc.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
       }
-      btn.textContent = ok ? 'Copied' : 'Selected';
-      setTimeout(() => { btn.textContent = 'Copy address'; }, 2200);
+      setText(btn, ok ? 'copied' : 'selected');
+      setTimeout(() => { setText(btn, 'copy'); }, 2200);
     };
 
     doc.addEventListener('click', (e) => {

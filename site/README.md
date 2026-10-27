@@ -1,37 +1,43 @@
 # Prime Solutions website
 
-The Prime Solutions one-page site, built at all three levels from one set of files. Plain HTML, CSS and a small amount of JavaScript. No framework, no build tooling beyond one Python script, nothing loaded from outside the repo.
+**This repository (`prime-solutions-website`) is the master.** The Premium, Pro and Standard pages, the legal pages and all wording live here and only here. A copy of any of them kept somewhere else is out of date the moment this one changes: change it here, run `python3 build.py`, and upload `dist/`.
 
-| Level | Where it is | What it is |
+**Mode: Advertise Only.** The site tells people what Prime Solutions offers and how to get in touch by email. Nothing is bought, booked, paid for or signed up for on the site. It has no forms, no payments, no sign-ups, no analytics, no cookies and no tracking, and it makes no request to any outside server. The mode is one setting, `"mode": "advertise-only"` in `site.json`. It is shown in the footer of every page.
+
+Plain HTML, CSS and a small amount of JavaScript. No framework, no build tooling beyond one Python script, nothing loaded from outside the repository.
+
+## The three levels, on one address
+
+| Level | Address | What it is |
 |---|---|---|
-| Premium | `index.html` | The front door: a pinned entrance (a stone arch that you walk through, morning to night), then the sheets. |
-| Pro | `pro.html` | The same site with the portal picture as the opening, only the swirl turning, layered blocks, scroll reveals and a header that follows you down. Two typefaces. |
-| Standard | `standard.html` | The same site, calm and flat. One typeface, one misty-hills picture, a gentle fade on opening. |
+| Premium | `/` (the main address) | The front door: a pinned entrance (a stone arch you walk through, from midday through sunset to night, with the stones floating gently), then the sheets. |
+| Pro | `/pro/` | The same site with the portal picture as the opening and only the swirl turning, layered blocks, scroll reveals, a header that follows you down. Two typefaces. Less rich than Premium. No zoom-in opening. |
+| Standard | `/standard/` | The same site, calm and finished. One typeface, soft layered backgrounds and shadows, richer sample cards, a slow fade as each part arrives. No portal and nothing on hover. |
 
-Same sections, same words, same prices at every level. Only the treatment changes, so a client can move up a level without starting over.
+Premium shows Standard and Pro in its "Three levels" section, and every level links to the others. Same sections, same words, same prices at every level. Only the treatment changes (Premium is richer than Pro, and Pro is richer than Standard).
 
-On `index.html` the Standard and Pro versions also open full screen from the "Three levels" section (`#demo-standard`, `#demo-pro`). The page is built from the same markup in `demos.py`, so the two always match.
+The legal pages are at `/privacy/`, `/terms/` and `/refunds/`, and every page links to all three from its footer.
 
-## Folder layout
+## Where things live
 
 ```
-site.json            business details, prices, the Forest theme and the six sample layouts
-build.py             fills the templates from site.json and writes dist/
-demos.py             the Standard and Pro versions (markup), used by build.py for the viewer and for standard.html / pro.html
-prep_images.py       turns the pictures in assets_in/ into the small web images in src/img/
-assets_in/           the original pictures: trades-sheet.png (six trade photos) and levels-bg.png (misty hills)
-src/index.html       the Premium page (uses {{tokens}} from site.json)
-src/tier.html        the template for standard.html and pro.html
-src/privacy.html     the privacy page template (the text comes from legal/privacy-policy.md)
-src/css/styles.css   the Premium page, the demo viewer and the shared rules; the colour theme is at the top
-src/css/tiers.css    the Standard (ps-) and Pro (pp-) pages
-src/js/intro.js      the entrance
-src/js/main.js       scroll, menu, level preview, sample strip, copy address and the demo viewer
-src/js/tier.js       the fade-ins and the copy button on standard.html and pro.html
-src/img/             portal-far, portal-arch and beyond (the entrance), pro-hero and pro-valley (Pro), levels-bg, six trade photos
-src/fonts/           Archivo (headings) and Schibsted Grotesk (body), SIL Open Font License
-legal/               privacy-policy.md, the policy text. Fill in the [bracketed] details here
-archive/             the earlier plumber sample pages (code and styles), kept in case they are wanted again
+site.json            ALL the wording (copy), prices, contact email, mode, status, the domain, the Forest theme, the six sample layouts
+legal/privacy.md     the privacy policy      one source file per legal page, each with its own version and last-updated line
+legal/terms.md       the terms
+legal/refunds.md     the refund and cancellation page
+CREDITS.md           the source and licence of every picture and font
+OPEN-MARKERS.md      the one list of everything still to be supplied (written by the build; do not edit)
+build.py             fills the templates from site.json and legal/, writes dist/, checks the markers
+demos.py             the markup of the Standard and Pro pages (no wording in it: it reads site.json)
+prep_images.py       turns the originals in assets_in/ into the small web images in src/img/
+tools/cut_rocks.py   cuts the floating stones out of the valley picture (run only if that picture changes)
+assets_in/           the original pictures
+src/index.html       the Premium page template ({{tokens}} filled from site.json)
+src/tier.html        the template for the Standard and Pro pages
+src/legal.html       the template for the legal pages
+src/css, src/js      styles and scripts (styles.css, tiers.css, intro.js, main.js, tier.js)
+src/img, src/fonts   web pictures and the two local fonts (Archivo, Schibsted Grotesk; SIL Open Font License)
+archive/             old files kept only so nothing is lost; do not use or publish them
 dist/                the finished site. Upload this folder to any static host
 ```
 
@@ -42,29 +48,48 @@ python3 build.py
 python3 -m http.server 8000 --directory dist
 ```
 
-Open http://localhost:8000 (Premium), http://localhost:8000/pro.html or http://localhost:8000/standard.html. Use a local server rather than opening the files directly, because browsers block fonts loaded from file://.
+Open http://localhost:8000 (Premium), http://localhost:8000/pro/ and http://localhost:8000/standard/. Use a local server rather than opening the files, because browsers block fonts loaded from file://.
 
-`build.py` needs Python 3 and Pillow (for `prep_images.py`). The site still builds if `assets_in/` is missing: it uses the images already in `src/img/`.
+`build.py` needs Python 3 and Pillow (also used to draw `og.png`). The site still builds if `assets_in/` is missing: it uses the pictures already in `src/img/`.
 
-`dist/artifact.html` (Premium), `dist/artifact-standard.html`, `dist/artifact-pro.html` and `dist/prime-solutions-demo.html` are single-file copies with the fonts and pictures embedded, used for quick previews. They are not needed for hosting and are not committed. To link the three previews together, put their addresses in a `preview_links.json` (keys `premium`, `standard`, `pro`) before building.
+`dist/artifact*.html` and `dist/prime-solutions-demo.html` are single-file copies with the fonts and pictures embedded, for quick previews. They are not needed for hosting. To link the three previews together, put their addresses in a `preview_links.json` (keys `premium`, `standard`, `pro`) before building.
 
 ## Changing things
 
-- Business name, email, prices, description and sample layouts: `site.json`.
-- Wording and structure of the Premium page: `src/index.html`. Wording of the Standard and Pro pages: the lists at the top of `demos.py`.
-- Colours: the variables at the top of `src/css/styles.css` (theme: Forest). White, black and three greens: Forest, Emerald and Mint. Body text passes 7:1 contrast and the other text pairs pass 4.5:1. The Pro opening and contact text were measured against the pictures.
-- Pictures: put new originals in `assets_in/` and run `python3 build.py`. The swirl in the Pro opening is the round copy of the doorway in `pro-hero.webp`; its size and position are the `DOOR` numbers in `build.py`.
-- Privacy policy: edit `legal/privacy-policy.md`. Anything in [square brackets] shows highlighted on the page until it is replaced. It is a draft, not legal advice, and needs a South African attorney's review before launch.
-- After any change, run `python3 build.py` again.
+- **Any wording, price or the contact email:** `site.json` (`copy` for the words, `prices`, `email`). Do not type wording into the templates or `demos.py`; the build reads it from `site.json`.
+- **Estimates only:** prices are shown as estimates ("estimated", "from"), never fixed or final. There is no VAT because Prime Solutions is not VAT registered. The one fee excludes extras; hosting and the domain are the client's own cost; there is no monthly fee. Buying is by email only ("Email first, we talk, then we build"). The turnaround is agreed in the quote.
+- **The address of the live site:** the `domain` field in `site.json` (for example `https://example.com`, no slash at the end). Until it is filled in, the canonical link is left out and the share picture (`og:image`) uses a relative address. Once it is set, every page gets an absolute `og:image` and a canonical link.
+- **Colours:** the Forest theme (forest green `#0B5D3B`, white, mint `#D6F1E2`, emerald `#1FAE6C`) is the `theme` block in `site.json` and the variables at the top of `src/css/styles.css`.
+- **Pictures:** put new originals in `assets_in/`, run `python3 build.py`, and update `CREDITS.md`.
+- **After any change,** run `python3 build.py` again and upload `dist/`.
 
-## Before the domain is known
+## The legal pages
 
-The pages point the preview image at `og.png` with a relative path. When the live address is decided, change it to the full address (for example `https://example.co.za/og.png`) and add a canonical link.
+Each page has its own source file in `legal/`: `privacy.md`, `terms.md`, `refunds.md`. A file starts with a few lines between two `---` lines (`title`, `version`, `last_updated`, `status`, `banner`) and then the text. The page shows its version and "last updated" line from those, so a change is a one-file edit.
+
+- **To publish a different version of a page,** replace the text below the `---` lines with the new text, update `version` and `last_updated`, and run `python3 build.py`. Do not edit anything in `dist/`.
+- **The words common to all three pages** (the name, the email, where the site is hosted) are one block in `site.json` (`legal`). A source file can use them as `{{legal.email}}`, `{{legal.name}}` and `{{legal.host}}`. No legal wording is written into the templates or the scripts.
+- **The Draft notice.** Until a page is final it carries a "Draft. This page is not final." notice. `banner: site` shows the site's notice; `banner: own` is for a file that already has its own Draft banner. The site never says a page is final or legally approved.
+- **Text kept internal.** If a source file has an internal "do not publish" box, fence it with `<!-- INTERNAL-START -->` and `<!-- INTERNAL-END -->` (or leave it as a heading or quote that says "do not publish" or "internal") and the build leaves it out of the published page. The build refuses to finish if "do not publish" text is still in a published page.
+- **Right now** each file holds one marked placeholder naming the file it is waiting for. The real wording has not been supplied, and nothing here has been written in its place.
+- `archive/legal/` holds older policy drafts that do not fit Advertise Only. They are not used and must not be published.
+
+## Markers: what is still to be supplied
+
+A marker is any text in square brackets that starts with `[TO BE SUPPLIED`, `[JASON TO SUPPLY`, `[ATTORNEY` or `[VERIFY` (the list is `legal.markers` in `site.json`). It is shown on the page, highlighted, until it is replaced.
+
+- Every run of `python3 build.py` writes **`OPEN-MARKERS.md`**: the one list of every open marker, with the file and field it is in.
+- Set `"status": "live"` in `site.json` only when the list is empty. A site marked `live` will not build while any marker is open in `site.json`, `CREDITS.md` or a legal page. A legal page can also be marked `status: live` by itself, and will not build with a marker in it. Draft pages and the draft site only warn.
+
+## The floating stones and the sky (Premium only)
+
+- The seven stones are cut-outs (`src/img/rock-1..7.webp`), placed by the percentages in `src/rocks.json` and drifted slowly up and down with CSS transforms, each with its own random delay and speed. They stop for `prefers-reduced-motion` and while the entrance is not on screen.
+- The valley picture without the stones is `src/img/beyond-1680.webp`. If the original valley picture changes, run `python3 tools/cut_rocks.py` and then `python3 prep_images.py`.
+- The entrance runs from midday through sunset to night while you scroll, so the entrance is one screen taller than before.
+- Pro and Standard use the valley picture as it is, without the floating stones.
 
 ## Notes
 
-- Fonts are self-hosted copies of the Google Fonts families Archivo and Schibsted Grotesk, subset to Latin. Licences are in `src/fonts/`.
-- Motion follows `prefers-reduced-motion`: the entrance is shown open, the swirl does not turn, the fade-ins are off and nothing drifts. The pages store and send no data.
-- The pictures are AI-made mood images. The six trade photos stand for trades; they are samples, not client work.
+- Motion follows `prefers-reduced-motion`: the entrance is shown open, the stones and swirl hold still, the fade-ins are off. The pages store and send no data.
 - The Email us buttons are plain `mailto:` links, and the address is also shown as text with a Copy button, so the contact still works where a mail link does nothing.
-- Page weight (first load, desktop): Premium about 770 KB, Pro about 490 KB, Standard about 390 KB.
+- Pictures and fonts: see `CREDITS.md`. Its sources are not all filled in yet.
