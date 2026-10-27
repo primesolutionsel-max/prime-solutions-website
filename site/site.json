@@ -24,7 +24,8 @@
       "layout": "a",
       "brand": "Your Plumbing Co.",
       "headline": "Plumbing you can count on.",
-      "sub": "Repairs, installs and maintenance."
+      "sub": "Repairs, installs and maintenance.",
+      "photo": "plumbing"
     },
     {
       "trade": "Hair and beauty",
@@ -32,7 +33,8 @@
       "layout": "c",
       "brand": "Your Salon",
       "headline": "Hair, done your way.",
-      "sub": "Cuts, colour and styling."
+      "sub": "Cuts, colour and styling.",
+      "photo": "salon"
     },
     {
       "trade": "Cafés and food",
@@ -40,7 +42,8 @@
       "layout": "b",
       "brand": "Your Café",
       "headline": "Fresh coffee. Warm bread.",
-      "sub": "Open every day."
+      "sub": "Open every day.",
+      "photo": "cafe"
     },
     {
       "trade": "Workshops",
@@ -48,7 +51,8 @@
       "layout": "a",
       "brand": "Your Garage",
       "headline": "Engines that run right.",
-      "sub": "Servicing and repairs."
+      "sub": "Servicing and repairs.",
+      "photo": "garage"
     },
     {
       "trade": "Cleaning",
@@ -56,7 +60,8 @@
       "layout": "b",
       "brand": "Your Cleaners",
       "headline": "Spotless, every visit.",
-      "sub": "Homes and offices."
+      "sub": "Homes and offices.",
+      "photo": "cleaning"
     },
     {
       "trade": "Professional services",
@@ -64,7 +69,8 @@
       "layout": "c",
       "brand": "Your Firm",
       "headline": "Clear advice for growing firms.",
-      "sub": "Accounting and consulting."
+      "sub": "Accounting and consulting.",
+      "photo": "firm"
     }
   ],
   "themes": {

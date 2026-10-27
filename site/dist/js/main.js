@@ -9,12 +9,8 @@
   const $$ = (s, c = doc) => Array.from(c.querySelectorAll(s));
   const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
 
   const header = $('[data-header]');
-  const hero = $('[data-hero]');
-  const heroInner = $('[data-hero-inner]');
-  const glows = $$('.hero__glow');
   const levels = $('#levels');
   const ladder = $('[data-ladder]');
   const stage = $('.ladder__stage');
@@ -23,29 +19,52 @@
   const timeline = $('[data-timeline]');
   const sections = $$('[data-section]');
   const navLinks = $$('.nav a[data-nav]');
+  const toneEls = $$('[data-tone]').filter((el) => el.dataset.tone);
 
-  /* ---------- mobile menu ---------- */
-  const menuBtn = $('.menu-btn');
+  /* ---------- mobile menu (burger) ---------- */
+  const menuBtn = $('.burger');
   const nav = $('#nav-panel');
   const setMenu = (open) => {
     nav.classList.toggle('is-open', open);
+    header.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
-    $('.menu-btn__label').textContent = open ? 'Close' : 'Menu';
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    doc.body.style.overflow = open ? 'hidden' : '';
+    if (open) { const first = $('a', nav); if (first) first.focus(); }
   };
-  menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
-  nav.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
-  doc.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  if (menuBtn && nav) {
+    menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+    nav.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+    doc.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  }
 
-  /* ---------- hero pinning: only when the hero fits the screen ---------- */
-  const measurePin = () => {
-    const fits = innerWidth >= 900 && hero.offsetHeight <= innerHeight && !reduce.matches;
-    hero.toggleAttribute('data-pin', fits);
+  /* ---------- the invisible header: its text turns white or ink to suit what is behind it ---------- */
+  let tone = '';
+  const BAND = { stage: '#0A0F0C', ink: '#0A0F0C', light: '#FFFFFF' };
+  const updateTone = () => {
+    let t = 'stage';
+    for (const el of toneEls) {
+      const r = el.getBoundingClientRect();
+      if (r.top <= 38 && r.bottom > 38) t = el.dataset.tone;
+    }
+    if (t === tone) return;
+    tone = t;
+    header.dataset.tone = t;
+    root.style.setProperty('--band', BAND[t] || BAND.light);
   };
 
   /* ---------- level preview: the same sample page moves up a level, and the section changes colour with it ---------- */
+  const demoBtn = $('[data-demo-open]');
+  const demoLabel = $('[data-demo-label]');
+  const demoNote = $('.stage__note');
+  const TIER_NAME = { standard: 'Standard', pro: 'Pro', premium: 'Premium' };
   const setTier = (tier) => {
     if (!ladder || ladder.dataset.tier === tier) return;
     ladder.dataset.tier = tier;
+    const prem = tier === 'premium';
+    if (demoBtn) demoBtn.setAttribute('href', prem ? '#top' : '#demo-' + tier);
+    if (demoLabel) demoLabel.textContent = prem ? 'Back to the entrance' : 'Open the ' + TIER_NAME[tier] + ' demo';
+    if (demoNote) demoNote.textContent = prem ? 'You are on a Premium page now.' : 'Sample page. Opens full screen.';
     if (levels) levels.dataset.tier = tier;
     pills.forEach((p) => p.setAttribute('aria-pressed', String(p.dataset.tier === tier)));
     steps.forEach((s) => s.classList.toggle('is-active', s.dataset.step === tier));
@@ -79,18 +98,7 @@
   const update = () => {
     ticking = false;
     const y = scrollY;
-    const max = root.scrollHeight - innerHeight;
-    header.style.setProperty('--p', max > 0 ? (y / max).toFixed(4) : '0');
-    header.classList.toggle('is-stuck', y > 8);
-
-    if (!reduce.matches && hero) {
-      const p = clamp(y / Math.max(1, hero.offsetHeight), 0, 1);
-      if (y <= hero.offsetHeight) {
-        heroInner.style.transform = `translate3d(0, ${(p * -26).toFixed(1)}px, 0) scale(${(1 - p * 0.05).toFixed(4)})`;
-        heroInner.style.opacity = (1 - p * 0.85).toFixed(3);
-        glows.forEach((g) => { g.style.transform = `translate3d(0, ${(y * Number(g.dataset.depth)).toFixed(1)}px, 0)`; });
-      }
-    }
+    updateTone();
 
     updateLadder();
 
@@ -106,9 +114,9 @@
   const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
   addEventListener('scroll', onScroll, { passive: true });
   let resizeTimer;
-  const onResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { measurePin(); rail && rail.rebuild(); onScroll(); }, 120); };
+  const onResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { rail && rail.rebuild(); onScroll(); }, 120); };
   addEventListener('resize', onResize);
-  reduce.addEventListener('change', () => { measurePin(); onScroll(); });
+  reduce.addEventListener('change', onScroll);
 
   /* ---------- reveal on scroll ---------- */
   const reveals = $$('.reveal');
@@ -119,24 +127,6 @@
       entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
     reveals.forEach((el) => io.observe(el));
-  }
-
-  /* ---------- hero: the sample page tilts toward the mouse ---------- */
-  const hframe = $('[data-hframe]');
-  if (hero && hframe && finePointer.matches && !reduce.matches) {
-    let raf = 0, nx = 0, ny = 0;
-    const apply = () => {
-      raf = 0;
-      hframe.style.setProperty('--ry', (-5 + nx * 5).toFixed(2) + 'deg');
-      hframe.style.setProperty('--rx', (2.5 - ny * 4).toFixed(2) + 'deg');
-    };
-    hero.addEventListener('pointermove', (e) => {
-      const r = hero.getBoundingClientRect();
-      nx = clamp(((e.clientX - r.left) / r.width) * 2 - 1, -1, 1);
-      ny = clamp(((e.clientY - r.top) / r.height) * 2 - 1, -1, 1);
-      if (!raf) raf = requestAnimationFrame(apply);
-    });
-    hero.addEventListener('pointerleave', () => { nx = 0; ny = 0; apply(); });
   }
 
   /* ---------- the endless sample strip ----------
@@ -337,7 +327,113 @@
     });
   }
 
-  measurePin();
+  /* ---------- the Standard and Pro pages: #demo-standard, #demo-pro ----------
+     They open full screen over the site (the Premium level is this page itself). The address (hash) says which one is
+     open, so the back button closes them, a shared link opens them, and without this script the same links still work (:target). */
+  (() => {
+    const list = $$('.demo');
+    if (!list.length) return;
+    let openEl = null, opener = null, depth = 0, scroller = null, io = null;
+
+    const idNow = () => { const m = /^#demo-(standard|pro)$/.exec(location.hash); return m ? 'demo-' + m[1] : ''; };
+
+    const teardown = () => {
+      if (!openEl) return;
+      if (io) io.disconnect();
+      io = null; scroller = null;
+      openEl.classList.remove('is-open');
+      openEl = null;
+    };
+
+    const open = (el) => {
+      const fresh = !openEl;
+      if (fresh) opener = doc.activeElement && doc.activeElement !== doc.body ? doc.activeElement : null;
+      teardown();
+      openEl = el;
+      el.classList.add('is-open');
+      root.classList.add('demo-open');
+      scroller = $('[data-demo-scroll]', el);
+      scroller.scrollTop = 0;
+      scroller.focus({ preventScroll: true });
+
+      const rv = $$('.d-rv', el);
+      rv.forEach((n) => n.classList.remove('in'));
+      if (reduce.matches || !('IntersectionObserver' in window)) rv.forEach((n) => n.classList.add('in'));
+      else {
+        io = new IntersectionObserver((entries) => {
+          entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+        }, { root: scroller, threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+        rv.forEach((n) => io.observe(n));
+      }
+    };
+
+    const close = () => {
+      if (depth > 0) history.back(); else location.replace('#levels');
+    };
+
+    const sync = (fromEvent) => {
+      const id = idNow();
+      const el = id ? doc.getElementById(id) : null;
+      if (el === openEl) return;
+      if (el) {
+        depth = fromEvent && !openEl ? 1 : (openEl ? depth : 0);
+        open(el);
+      } else {
+        depth = 0;
+        const back = opener;
+        teardown();
+        root.classList.remove('demo-open');
+        if (back && back.focus) { try { back.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+        opener = null;
+      }
+    };
+    addEventListener('hashchange', () => sync(true));
+
+    const copyAddress = async (btn) => {
+      let ok = false;
+      try { await navigator.clipboard.writeText(btn.dataset.copyDemo); ok = true; } catch (err) {
+        const el = btn.parentNode.querySelector('.d-addr');
+        if (el) { const r = doc.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+      }
+      btn.textContent = ok ? 'Copied' : 'Selected';
+      setTimeout(() => { btn.textContent = 'Copy address'; }, 2200);
+    };
+
+    doc.addEventListener('click', (e) => {
+      const t = e.target;
+      if (!t.closest || !openEl) return;
+      const plain = e.metaKey || e.ctrlKey || e.shiftKey;
+      const closeLink = t.closest('[data-demo-close]');
+      if (closeLink) { e.preventDefault(); close(); return; }
+      const copy = t.closest('[data-copy-demo]');
+      if (copy) { copyAddress(copy); return; }
+      const jump = t.closest('[data-goto]');
+      if (jump && !plain) {
+        e.preventDefault();
+        const to = doc.getElementById(jump.dataset.goto);
+        if (to) to.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
+        return;
+      }
+      const prem = t.closest('[data-premium]');
+      if (prem && !plain) { e.preventDefault(); location.replace('#top'); return; }
+      const a = t.closest('.demo a[href^="#demo-"]');
+      if (a && !plain) { e.preventDefault(); location.replace(a.getAttribute('href')); }
+    });
+
+    doc.addEventListener('keydown', (e) => {
+      if (!openEl) return;
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key !== 'Tab') return;
+      const f = $$('a[href], button:not([disabled]), summary, [tabindex]:not([tabindex="-1"])', openEl).filter((n) => n.getClientRects().length);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && (doc.activeElement === first || doc.activeElement === scroller)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && doc.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    sync(false);
+  })();
+
   update();
-  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(() => { measurePin(); update(); if (rail) rail.rebuild(); });
+  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(() => { update(); if (rail) rail.rebuild(); });
 })();

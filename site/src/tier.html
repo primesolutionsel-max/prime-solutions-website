@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{tier_title}}</title>
+<meta name="description" content="{{description}}">
+<meta name="theme-color" content="{{bg}}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{tier_title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:image" content="og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="{{favicon}}">
+<link rel="preload" href="fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="css/styles.css">
+<script>document.documentElement.classList.add("js")</script>
+<script type="application/ld+json">{{jsonld}}</script>
+</head>
+<body class="tier-page {{tier_class}}">
+<a class="skip" href="#main">Skip to content</a>
+<main id="main" class="tier-main" style="{{tier_vars}}">
+{{tier_body}}
+</main>
+<script src="js/tier.js" defer></script>
+</body>
+</html>

@@ -14,13 +14,16 @@
 <link rel="icon" href="{{favicon}}">
 <link rel="preload" href="fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="img/portal-arch-1680.webp" as="image" type="image/webp" fetchpriority="high">
+<link rel="preload" href="img/portal-far-1680.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="stylesheet" href="css/styles.css">
+<script>document.documentElement.classList.add("js")</script>
 <script type="application/ld+json">{{jsonld}}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="site-header" data-header>
+<header class="site-header" data-header data-tone="stage">
   <div class="wrap header__bar">
     <a class="brand" href="#top" aria-label="{{name}}, back to the top"><span class="brand__a">Prime</span><span class="brand__b">Solutions</span></a>
     <nav class="nav" id="nav-panel" aria-label="Main">
@@ -30,53 +33,64 @@
         <li><a href="#included" data-nav="included">What you get</a></li>
         <li><a href="#process" data-nav="process">How it works</a></li>
         <li><a href="#questions" data-nav="questions">Questions</a></li>
+        <li class="nav__mail-li"><a class="btn btn--lg" href="mailto:{{email}}">Email us</a></li>
       </ul>
     </nav>
-    <a class="btn btn--sm" href="mailto:{{email}}" data-nav="contact">Email us</a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-panel"><span class="menu-btn__label">Menu</span><span class="menu-btn__bars" aria-hidden="true"></span></button>
+    <a class="header__mail" href="mailto:{{email}}">Email us</a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu"><span></span><span></span></button>
   </div>
-  <div class="header__progress" aria-hidden="true"></div>
 </header>
 
-<section class="hero" id="top" aria-labelledby="hero-title" data-hero>
-  <div class="hero__glow hero__glow--a" data-depth="0.18" aria-hidden="true"></div>
-  <div class="hero__glow hero__glow--b" data-depth="0.34" aria-hidden="true"></div>
-  <div class="hero__grid" aria-hidden="true"></div>
-  <div class="wrap hero__inner" data-hero-inner>
-    <div class="hero__copy">
-      <p class="eyebrow">One-page websites for small South African businesses</p>
-      <h1 class="hero__title" id="hero-title">
-        <span class="line" style="--i:0"><span>Built once.</span></span>
-        <span class="line" style="--i:1"><span>Built well.</span></span>
-        <span class="line line--brand" style="--i:2"><span>Yours to keep.</span></span>
+<section class="stage" id="top" data-stage data-tone="stage" aria-label="{{name}}">
+  <div class="pin" data-pin>
+
+    <div class="scene" data-scene>
+      <!-- the outside world, with the arch painted out of it -->
+      <div class="layer layer--far" data-far><img src="img/portal-far-1680.webp" width="1680" height="944" alt="" decoding="async" fetchpriority="high"></div>
+      <!-- the arch, cut out, so it moves faster than the mountains behind it -->
+      <div class="layer layer--arch" data-arch><img src="img/portal-arch-1680.webp" width="1680" height="944" alt="An ancient stone arch covered in moss, with a glowing green portal in its doorway." decoding="async" fetchpriority="high"></div>
+      <!-- the world beyond the door -->
+      <div class="layer layer--beyond" data-beyond>
+        <img src="img/beyond-1680.webp" width="1680" height="944" alt="A green valley under cloudy mountains, with mossy stones scattered across the meadow and a few floating in the air." decoding="async">
+        <div class="sun" data-sun></div>
+        <div class="moon" data-moon></div>
+        <div class="stars" data-stars></div>
+        <div class="glow" data-glow style="--x:76.2%;--y:31.8%;--s:17%"></div>
+        <div class="glow" data-glow style="--x:29.5%;--y:44.0%;--s:11%"></div>
+        <div class="glow" data-glow style="--x:38.5%;--y:49.5%;--s:7%"></div>
+      </div>
+    </div>
+
+    <div class="bloom" data-bloom aria-hidden="true"></div>
+    <div class="night" data-night></div>
+    <div class="dusk" data-dusk></div>
+    <div class="shade shade--top"></div>
+    <div class="shade shade--bottom" data-shade></div>
+    <canvas class="motes" data-motes aria-hidden="true"></canvas>
+
+    <aside class="side" data-side><span class="side__rule" aria-hidden="true"></span><p>The old world<br>meets the new.</p></aside>
+
+    <div class="copy">
+      <h1 id="hero-title">
+        <span class="ln" style="--i:0"><span>Built once.</span></span>
+        <span class="ln" style="--i:1"><span>Built well.</span></span>
+        <span class="ln" style="--i:2"><span>Yours to keep.</span></span>
       </h1>
-      <p class="lead">Pay once, in rand. See a demo first. Own the code, domain and hosting.</p>
-      <div class="hero__cta">
+      <div class="hero__cta rv" style="--i:1">
         <a class="btn btn--lg" href="mailto:{{email}}">Email us <span class="btn__arrow" aria-hidden="true">→</span></a>
         <a class="link" href="#levels">See the three levels</a>
       </div>
     </div>
-    <div class="hero__visual" aria-hidden="true">
-      <div class="hpanel">
-        <div class="hframe" data-hframe>
-          <div class="browser">
-            <div class="browser__bar">
-              <span class="browser__dots"><i></i><i></i><i></i></span>
-              <span class="browser__url">yourbusiness.co.za</span>
-            </div>
-            <div class="browser__view">
-{{hero_mock}}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <div class="cue" data-cue aria-hidden="true"><span>Scroll to enter</span><i></i></div>
+    <button class="skipintro" type="button" data-skip>Skip intro</button>
   </div>
 </section>
 
 <main class="flow" id="main">
 
-  <section class="sheet levels" id="levels" aria-labelledby="levels-title" data-section data-tier="standard">
+  <section class="sheet levels" id="levels" data-tone="light" aria-labelledby="levels-title" data-section data-tier="standard">
+    <div class="levels__bg" aria-hidden="true"></div>
     <div class="wrap">
       <header class="section__head reveal">
         <p class="eyebrow">The three levels</p>
@@ -100,7 +114,10 @@
 {{mocks}}
             </div>
           </div>
-          <p class="stage__note">Sample page.</p>
+          <div class="stage__foot">
+            <a class="btn" href="#demo-standard" data-demo-open><span data-demo-label>Open the Standard demo</span> <span class="btn__arrow" aria-hidden="true">→</span></a>
+            <p class="stage__note">Sample page. Opens full screen.</p>
+          </div>
         </div>
 
         <ol class="ladder__steps">
@@ -113,6 +130,7 @@
               <li>Everything on one page</li>
             </ul>
             <p class="step__price"><strong>{{price_standard}}</strong><span>once-off</span></p>
+            <a class="demolink" href="#demo-standard">See the Standard demo <span aria-hidden="true">→</span></a>
           </li>
           <li class="step" data-step="pro">
             <p class="step__tag">Pro</p>
@@ -125,6 +143,7 @@
               <li>Header that follows you down</li>
             </ul>
             <p class="step__price"><strong>{{price_pro}}</strong><span>once-off</span></p>
+            <a class="demolink" href="#demo-pro">See the Pro demo <span aria-hidden="true">→</span></a>
           </li>
           <li class="step" data-step="premium">
             <p class="step__tag step__tag--premium">Premium</p>
@@ -145,7 +164,7 @@
     </div>
   </section>
 
-  <section class="sheet samples" id="samples" aria-labelledby="samples-title" data-section>
+  <section class="sheet samples" id="samples" data-tone="light" aria-labelledby="samples-title" data-section>
     <div class="wrap samples__layout">
       <div class="samples__intro reveal">
         <p class="eyebrow">Samples</p>
@@ -164,43 +183,62 @@
     </div>
   </section>
 
-  <section class="sheet included" id="included" aria-labelledby="included-title" data-section>
+  <section class="sheet included" id="included" data-tone="light" aria-labelledby="included-title" data-section>
+    <svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+      <symbol id="i-devices" viewBox="0 0 24 24"><rect x="2.5" y="5" width="13" height="9" rx="1.5"/><path d="M6 18h6M9 14v4"/><rect x="17" y="8" width="4.5" height="9" rx="1.2"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></symbol>
+      <symbol id="i-type" viewBox="0 0 24 24"><path d="M5 6V4.5h14V6M12 4.5v15M9 19.5h6"/></symbol>
+      <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 1.6-2-.4-1 .3-2 1.4-2H17a4 4 0 0 0 4-4c0-5-4-10-9-10Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5 5 13.5h6l-1 8 9-12h-6.3L13 2.5Z"/></symbol>
+      <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></symbol>
+      <symbol id="i-form" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8.5h8M8 12.5h8M8 16.5h4.5"/></symbol>
+      <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+      <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.5a1.5 1.5 0 0 1-1.5 1.3H7.7a1.5 1.5 0 0 1-1.5-1.3L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-11.5a7 7 0 1 0-14 0c0 5.3 7 11.5 7 11.5Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10.5 9.2 4.5 2.8-4.5 2.8V9.2Z"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
+    </svg>
     <div class="wrap">
       <header class="section__head reveal">
         <p class="eyebrow">What you get</p>
         <h2 id="included-title">What is included.</h2>
       </header>
       <div class="included__grid">
-        <div class="included__col reveal">
-          <h3>In every level</h3>
-          <ul class="ticks ticks--big">
-            <li>A finished one-page site, tested from 375 to 1280 px</li>
-            <li>An email button as the main contact</li>
-            <li>A text logo, or your own</li>
-            <li>One colour theme to suit you</li>
-            <li>Search-ready title, description and preview image</li>
-            <li>Light pages. This one is about {{page_kb}} KB</li>
-            <li>The full code in your own GitHub repository</li>
+        <div class="included__col">
+          <h3 class="included__h reveal">In every level</h3>
+          <ul class="feat">
+            <li class="feat__item reveal"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-devices"/></svg></span><span class="feat__t">A finished one-page site, tested from 375 to 1280 px</span></div></li>
+            <li class="feat__item reveal" style="--d:.05s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-mail"/></svg></span><span class="feat__t">An email button as the main contact</span></div></li>
+            <li class="feat__item reveal" style="--d:.1s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-type"/></svg></span><span class="feat__t">A text logo, or your own</span></div></li>
+            <li class="feat__item reveal" style="--d:.15s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-palette"/></svg></span><span class="feat__t">One colour theme to suit you</span></div></li>
+            <li class="feat__item reveal" style="--d:.2s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-search"/></svg></span><span class="feat__t">Search-ready title, description and preview image</span></div></li>
+            <li class="feat__item reveal" style="--d:.25s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-bolt"/></svg></span><span class="feat__t">Light pages. This one is about {{page_kb}} KB</span></div></li>
+            <li class="feat__item feat__item--wide reveal" style="--d:.3s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-code"/></svg></span><span class="feat__t">The full code in your own GitHub repository</span></div></li>
           </ul>
         </div>
-        <div class="included__col included__col--extra reveal" style="--d:.1s">
-          <h3>Extras, quoted per business</h3>
-          <p>Priced per business.</p>
+        <aside class="included__col included__col--extra reveal" style="--d:.1s" aria-labelledby="extras-title">
+          <i class="extra__glow" aria-hidden="true"></i>
+          <p class="extra__tag">Add to any level</p>
+          <h3 id="extras-title">Extras, quoted per business</h3>
+          <p class="extra__sub">Priced per business.</p>
           <ul class="extras">
-            <li>Contact forms</li>
-            <li>Booking</li>
-            <li>An online shop</li>
-            <li>Logins</li>
-            <li>Maps</li>
-            <li>Embedded video</li>
-            <li>Photo galleries</li>
+            <li><svg class="ic"><use href="#i-form"/></svg>Contact forms</li>
+            <li><svg class="ic"><use href="#i-cal"/></svg>Booking</li>
+            <li><svg class="ic"><use href="#i-bag"/></svg>An online shop</li>
+            <li><svg class="ic"><use href="#i-lock"/></svg>Logins</li>
+            <li><svg class="ic"><use href="#i-pin"/></svg>Maps</li>
+            <li><svg class="ic"><use href="#i-play"/></svg>Embedded video</li>
+            <li><svg class="ic"><use href="#i-grid"/></svg>Photo galleries</li>
           </ul>
-        </div>
+          <a class="btn extra__btn" href="mailto:{{email}}?subject=Extras">Ask about an extra <span class="btn__arrow" aria-hidden="true">→</span></a>
+        </aside>
       </div>
     </div>
   </section>
 
-  <section class="sheet process" id="process" aria-labelledby="process-title" data-section>
+  <section class="sheet process" id="process" data-tone="light" aria-labelledby="process-title" data-section>
     <div class="wrap process__layout">
       <header class="section__head process__head reveal">
         <p class="eyebrow">How it works</p>
@@ -236,7 +274,7 @@
     </div>
   </section>
 
-  <section class="sheet faq" id="questions" aria-labelledby="faq-title" data-section>
+  <section class="sheet faq" id="questions" data-tone="light" aria-labelledby="faq-title" data-section>
     <div class="wrap faq__layout">
       <header class="section__head reveal">
         <p class="eyebrow">Common questions</p>
@@ -279,7 +317,7 @@
     </div>
   </section>
 
-  <section class="sheet contact" id="contact" aria-labelledby="contact-title" data-section>
+  <section class="sheet contact" id="contact" data-tone="ink" aria-labelledby="contact-title" data-section>
     <div class="contact__glow" aria-hidden="true"></div>
     <div class="wrap contact__inner">
       <p class="eyebrow reveal">Start here</p>
@@ -299,13 +337,16 @@
 
 </main>
 
-<footer class="site-footer">
+{{demos}}
+
+<footer class="site-footer" data-tone="light">
   <div class="wrap footer__bar">
     <p class="footer__name"><strong>{{name}}</strong></p>
     <p class="footer__meta">© {{year}} {{name}} · <a href="{{privacy_href}}">Privacy policy</a> · <a href="#top">Back to the top</a></p>
   </div>
 </footer>
 
+<script src="js/intro.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>
