@@ -528,8 +528,8 @@ def rocks():
     return "\n".join(out)
 
 
-# the swirl in the doorway of pro-hero.webp, as fractions of the picture: d = width of the turning circle, cx / cy = its centre
-DOOR = {"d": 0.115, "cx": 0.5000, "cy": 0.5244}
+# the doorway of pro-hero.webp, as fractions of the picture: where the clouds swirl in (centre, width, height of the oval inside the arch)
+MIST = {"cx": 0.5000, "cy": 0.5050, "w": 0.1700, "h": 0.5600}
 
 
 # pictures are background images set by class, so each one is stored once however often it is used
@@ -538,25 +538,36 @@ def photo_css():
     for key in ("plumbing", "salon", "cafe", "garage", "cleaning", "firm"):
         if has_img(f"trade-{key}.webp"):
             out.append(f"html .ph.ph-{key} {{ background-image: url(../img/trade-{key}.webp); background-size: cover; background-position: center; }}")
+            if has_img(f"trade-{key}-sm.webp"):
+                out.append(f"@media (max-width: 700px) {{ html .pp-pic.ph-{key} {{ background-image: url(../img/trade-{key}-sm.webp); }} }}")
     if has_img("levels-bg.webp"):
         out.append("html .levels__bg { background-image: url(../img/levels-bg.webp); background-size: cover; background-position: center bottom; }")
         out.append("html .ps-sky { background-image: url(../img/levels-bg.webp); }")   # the soft sunrise sky, Standard
     if has_img("pro-hero.webp"):
-        # the Pro opening: the portal picture, and a small round copy of the swirl in its doorway that turns
-        d, cx, cy, ar = DOOR["d"], DOOR["cx"], DOOR["cy"], 944 / 1680
-        px = (0.5 - cx / d) / (1 - 1 / d) * 100
-        py = (0.5 - (ar / d) * cy) / (1 - ar / d) * 100
-        out.append("html .pp-scene, html .pp-door { background-image: url(../img/pro-hero.webp); }")
-        out.append(f"html .pp-door {{ left: {cx * 100:.2f}%; top: {cy * 100:.2f}%; width: {d * 100:.2f}%; aspect-ratio: 1; "
-                   f"background-size: {100 / d:.2f}% auto; background-position: {px:.2f}% {py:.2f}%; }}")
+        # the Pro opening: the portal picture, and an oval of clouds over its doorway that swirl in (the clouds' own picture is pro-mist.webp)
+        m = MIST
+        out.append("html .pp-scene { background-image: url(../img/pro-hero.webp); }")
+        out.append(f"html .pp-mist {{ left: {m['cx'] * 100:.2f}%; top: {m['cy'] * 100:.2f}%; width: {m['w'] * 100:.2f}%; height: {m['h'] * 100:.2f}%; }}")
+        if has_img("pro-hero-sm.webp"):
+            out.append("@media (max-width: 700px) { html .pp-scene { background-image: url(../img/pro-hero-sm.webp); } }")
+    if has_img("pro-mist.webp"):
+        out.append("html .pp-mist b { background-image: url(../img/pro-mist.webp); }")
     if has_img("pro-valley.webp"):
         out.append("html .pp-contact__bg, html .ps-contact__bg { background-image: url(../img/pro-valley.webp); background-size: cover; background-position: center; }")
+        if has_img("pro-valley-sm.webp"):
+            out.append("@media (max-width: 700px) { html .pp-contact__bg { background-image: url(../img/pro-valley-sm.webp); } }")
     # the three forest backgrounds of the Standard page (already mixed into the off-white, see prep_images.py)
     for cls, img, pos in (("ps-top", "ps-castle", "70% 22%"), ("ps-band--gate", "ps-gateway", "72% 30%"), ("ps-band--path", "ps-path", "68% 50%")):
         if has_img(f"{img}.webp"):
             out.append(f"html .{cls} {{ background-image: url(../img/{img}.webp); background-size: cover; background-position: {pos}; }}")
             if cls == "ps-top":   # on a phone the tower sits to the right of the writing
                 out.append("@media (max-width: 899px) { html .ps-top { background-position: 84% 0; } }")
+    # the same three pictures behind Pro's bands: the picture is put under a veil that is written in tiers.css (--pp-veil-*)
+    for cls, img, pos in (("pp-band--castle", "ps-castle", "70% 30%"), ("pp-band--gate", "ps-gateway", "72% 30%"), ("pp-band--path", "ps-path", "68% 50%")):
+        if has_img(f"{img}.webp"):
+            out.append(f"html .{cls} {{ background-image: var(--pp-veil-{cls.split('--')[1]}), url(../img/{img}.webp); background-size: 100% 100%, cover; background-position: 0 0, {pos}; background-repeat: no-repeat; }}")
+            if has_img(f"{img}-sm.webp"):
+                out.append(f"@media (max-width: 700px) {{ html .{cls} {{ background-image: var(--pp-veil-{cls.split('--')[1]}), url(../img/{img}-sm.webp); }} }}")
     return "\n".join(out) + "\n"
 
 

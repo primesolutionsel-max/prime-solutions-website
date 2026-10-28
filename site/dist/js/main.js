@@ -338,14 +338,30 @@
   (() => {
     const list = $$('.demo');
     if (!list.length) return;
-    let openEl = null, opener = null, depth = 0, scroller = null, io = null;
+    let openEl = null, opener = null, depth = 0, scroller = null, io = null, proIO = [];
+
+    /* Pro, inside this page: the header is clear over its dark opening and a soft veil below it; the link of the part in view is underlined */
+    const proHeader = (el, root) => {
+      const head = $('.pp-head', el), hero = $('.pp-hero', el);
+      if (!head || !hero || !('IntersectionObserver' in window)) return [];
+      head.classList.add('on-hero');
+      const a = new IntersectionObserver(([en]) => head.classList.toggle('on-hero', en.isIntersecting), { root, rootMargin: '-72px 0px 0px 0px' });
+      a.observe(hero);
+      const links = $$('.pp-head a', el), key = (l) => l.dataset.goto || '';
+      const b = new IntersectionObserver((entries) => entries.forEach((en) => {
+        if (en.isIntersecting) links.forEach((l) => (key(l) === en.target.id ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current')));
+      }), { root, rootMargin: '-40% 0px -55% 0px' });
+      $$('.pp-head nav a', el).map((l) => doc.getElementById(key(l))).filter(Boolean).forEach((n) => b.observe(n));
+      return [a, b];
+    };
 
     const idNow = () => { const m = /^#demo-(standard|pro)$/.exec(location.hash); return m ? 'demo-' + m[1] : ''; };
 
     const teardown = () => {
       if (!openEl) return;
       if (io) io.disconnect();
-      io = null; scroller = null;
+      proIO.forEach((o) => o.disconnect());
+      io = null; proIO = []; scroller = null;
       openEl.classList.remove('is-open');
       openEl = null;
     };
@@ -370,6 +386,7 @@
         }, { root: scroller, threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
         rv.forEach((n) => io.observe(n));
       }
+      proIO = proHeader(el, scroller);
     };
 
     const close = () => {

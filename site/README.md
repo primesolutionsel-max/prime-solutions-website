@@ -11,7 +11,7 @@ Plain HTML, CSS and a small amount of JavaScript. No framework, no build tooling
 | Level | Address | What it is |
 |---|---|---|
 | Premium | `/` (the main address) | The front door: a pinned entrance (a stone arch you walk through, from midday through sunset to night, with the stones floating gently), then the sheets. |
-| Pro | `/pro/` | The same site with the portal picture as the opening and only the swirl turning, layered blocks, scroll reveals, a header that follows you down. Two typefaces. Less rich than Premium. No zoom-in opening. |
+| Pro | `/pro/` | The same site with the dark portal picture as the opening, and green clouds swirling in a vortex into the portal's glow. Below it the Standard colours (off-white, black, pastel and forest green), the same three forest pictures behind its bands (they melt into the page at their edges), layered blocks, scroll reveals and cards that lift on hover. The header follows you down: clear over the opening, a soft off-white veil below it, links in the middle, a burger on phones, and the link of the part you are reading underlined. Two typefaces. Less rich than Premium. No zoom-in opening. |
 | Standard | `/standard/` | The same site, calm and finished, in its own look: off-white (the main colour), black, pastel green and forest green, set in one serif typeface (Prime Serif, a cut-down copy of Lora). The opening has no portal: the castle-and-tower valley picture sits strong behind it and fades out as "The three levels" begins. Two more forest pictures sit lightly behind two bands, and the sunrise sky and the valley appear faintly. The header has no bar: links sit in the middle and a burger menu takes over on phones. A slow fade as each part arrives, nothing on hover. |
 
 Premium shows Standard and Pro in its "Three levels" section, and every level links to the others. Same sections, same words, same prices at every level. Only the treatment changes (Premium is richer than Pro, and Pro is richer than Standard).
@@ -87,6 +87,14 @@ A marker is any text in square brackets that starts with `[TO BE SUPPLIED`, `[JA
 - The three background pictures (`src/img/ps-castle.webp`, `ps-gateway.webp`, `ps-path.webp`) are the originals in `assets_in/bg-*.webp` mixed into the off-white. `standard_theme.veil` (0 to 1) says how much off-white goes over the two band pictures, and `veil_hero` how much goes over the castle picture in the opening (kept low, so it stays strong): higher is lighter. To change either, edit it and run `python3 prep_images.py`, then `python3 build.py`. The fade of the castle picture into "The three levels" is in `src/css/tiers.css` (`.ps-top`, `--ps-run`).
 - The typeface is `src/fonts/prime-serif.woff` (Lora cut down and renamed, see `CREDITS.md`). Only that one font file loads on the Standard page.
 - The three background pictures are AI-made, which the build rules for this project do not allow. They are marked in `CREDITS.md` for the owner to decide.
+
+## The Pro look
+
+- The clouds in the portal are `src/img/pro-mist.webp`, a soft spiral cloud picture drawn by `prep_images.py` (`mist()`, fixed seed). Three copies of it shrink and turn clockwise into the glow, one after another (`@keyframes pp-vortex` in `src/css/tiers.css`). On a phone there are two copies; with reduced motion they hold still. Where the oval sits over the doorway is `MIST` in `build.py`.
+- Pro uses the Standard colours from `site.json` (`standard_theme`), and its own two typefaces. The castle, gateway and path pictures sit behind its bands under a veil written in `tiers.css` (`--pp-veil-*`).
+- The header's clear and veil states are switched by a few lines in `src/js/tier.js` (and `main.js`, for the Pro demo inside Premium). Without the script it stays the soft veil.
+- Phones get smaller copies of the big pictures (`*-sm.webp`, made by `prep_images.py`), so Pro loads about 450 KB on a phone and about 630 KB on a desktop.
+- Harvey's brief said the Pro header must stay as it was. Hamza asked for it to be invisible with the links in the middle (as on Standard), so it was changed on his instruction.
 
 ## The floating stones and the sky (Premium only)
 

@@ -187,13 +187,17 @@ def rgb(hexcol):
     return ",".join(str(int(h[i:i + 2], 16)) for i in (0, 2, 4))
 
 
-def std_vars(site):
-    """the Standard page's own colours (site.json, standard_theme) and typeface, set on its frame. They override the shared Forest variables for this page only."""
+def theme_vars(site):
+    """the Standard colours (site.json, standard_theme) as the page's variables. Standard and Pro both use them; they override the shared Forest variables on the page's own frame only."""
     t = site["standard_theme"]
     return (f"--d-bg:{t['paper']};--d-ink:{t['ink']};--d-brand:{t['forest']};--d-deep:{t['forest_deep']};--d-acc:{t['sage_mid']};--d-on:{t['card']};"
             f"--d-mute:{t['mute']};--d-line:rgba(11,15,12,.16);--d-mint:{t['sage']};--d-mint2:{t['sage_soft']};--d-card:{t['card']};--d-paper2:{t['paper_deep']};"
-            f"--ps-rgb:{rgb(t['paper'])};"
-            "--f-body:'Prime Serif','Lora',Georgia,'Times New Roman',serif;--f-display:'Prime Serif','Lora',Georgia,'Times New Roman',serif")
+            f"--ps-rgb:{rgb(t['paper'])}")
+
+
+def std_vars(site):
+    """the Standard page also has its own typeface"""
+    return theme_vars(site) + ";--f-body:'Prime Serif','Lora',Georgia,'Times New Roman',serif;--f-display:'Prime Serif','Lora',Georgia,'Times New Roman',serif"
 
 
 def standard(c):
@@ -288,14 +292,16 @@ def pro(c):
     faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in C["faq"]["items"])
     I, K = C["included"], C["contact"]
     return f"""
-    <div class="d d--pro" id="pro-top">
+    <div class="d d--pro" id="pro-top" style="{theme_vars(c.site)}">
       <header class="pp-head"><div class="pp-wrap">
         <a class="pp-logo" {c.jump("top")} aria-label="{esc(fmt(C["top_aria"], name=c.name))}">{esc(C["brand"][0])} <span>{esc(C["brand"][1])}</span></a>
         <nav aria-label="{esc(C["viewer"]["page_aria"])}">{nav_html(c)}</nav>
         {email_btn(c)}
+        <details class="ps-menu"><summary aria-label="{esc(C["ui"]["menu_open"])}"><span class="ps-burger" aria-hidden="true"><i></i><i></i><i></i></span></summary>
+          <div class="ps-menu__panel">{nav_html(c)}</div></details>
       </div></header>
       <section class="pp-hero" aria-labelledby="pro-hero-t">
-        <div class="pp-hero__pic" role="img" aria-label="{esc(C["alt"]["portal"])}"><div class="pp-scene"><i class="pp-door" aria-hidden="true"></i></div></div>
+        <div class="pp-hero__pic" role="img" aria-label="{esc(C["alt"]["portal"])}"><div class="pp-scene"><div class="pp-mist" aria-hidden="true"><b></b><b></b><b></b></div></div></div>
         <div class="pp-wrap pp-hero__in">
           <div class="pp-hero__copy d-rv">
             <p class="pp-kicker">{esc(C["hero"]["eyebrow"])}</p>
@@ -305,20 +311,20 @@ def pro(c):
           </div>
         </div>
       </section>
-      <section class="pp-levels pp-wrap" id="pro-levels" aria-labelledby="pro-levels-t">
+      <div class="pp-band pp-band--castle"><section class="pp-levels pp-wrap" id="pro-levels" aria-labelledby="pro-levels-t">
         <div class="pp-levels__head d-rv"><p class="pp-kicker">{esc(C["levels"]["lead"].rstrip("."))}</p><h3 id="pro-levels-t">{esc(C["levels"]["title"])}</h3></div>
         <div class="pp-levels__row">
 {levels}
         </div>
         {pricing_note(c, "pp-note d-rv")}
-      </section>
+      </section></div>
       <section class="pp-sec pp-wrap" id="pro-samples" aria-labelledby="pro-samples-t">
         <div class="pp-sec__head d-rv"><p class="pp-kicker">{esc(C["samples"]["eyebrow"])}</p><h3 id="pro-samples-t">{esc(C["samples"]["title"])}</h3><p>{esc(C["samples"]["lead"])}</p></div>
         <div class="pp-samples">
 {samples}
         </div>
       </section>
-      <section class="pp-sec pp-wrap" id="pro-included" aria-labelledby="pro-included-t">
+      <div class="pp-band pp-band--gate"><section class="pp-sec pp-wrap" id="pro-included" aria-labelledby="pro-included-t">
         <div class="pp-sec__head d-rv"><p class="pp-kicker">{esc(I["eyebrow"])}</p><h3 id="pro-included-t">{esc(I["title"])}</h3></div>
         <div class="pp-incl">
           <div><p class="pp-sub2 d-rv">{esc(I["every"])}</p><ul class="pp-feat">{feat}</ul></div>
@@ -330,18 +336,18 @@ def pro(c):
             {email_btn(c, "", I["extras_button"], I["extras_subject"])}
           </aside>
         </div>
-      </section>
+      </section></div>
       <section class="pp-sec pp-wrap" id="pro-process" aria-labelledby="pro-process-t">
         <div class="pp-sec__head d-rv"><p class="pp-kicker">{esc(C["process"]["eyebrow"])}</p><h3 id="pro-process-t">{esc(C["process"]["title"])}</h3><p>{esc(C["process"]["lead"])}</p></div>
         <ol class="pp-steps">{steps}</ol>
         {process_notes(c, "pp-note d-rv")}
       </section>
-      <section class="pp-sec pp-wrap" id="pro-questions" aria-labelledby="pro-questions-t">
+      <div class="pp-band pp-band--path"><section class="pp-sec pp-wrap" id="pro-questions" aria-labelledby="pro-questions-t">
         <div class="pp-faq__layout">
           <div class="pp-sec__head d-rv"><p class="pp-kicker">{esc(C["faq"]["eyebrow"])}</p><h3 id="pro-questions-t">{esc(C["faq"]["title"])}</h3></div>
           <div class="pp-faq__list d-rv" style="--d:.08s">{faq}</div>
         </div>
-      </section>
+      </section></div>
       <section class="pp-contact" id="pro-contact" aria-labelledby="pro-contact-t">
         <div class="pp-contact__bg" aria-hidden="true"></div>
         <div class="pp-wrap d-rv">

@@ -17,6 +17,19 @@
     rv.forEach((n) => io.observe(n));
   }
 
+  /* Pro: the header is clear over the dark opening and becomes a soft off-white veil once the opening is behind it;
+     the link of the part you are reading is underlined. Without this the header simply stays the soft veil. */
+  const head = doc.querySelector('.pp-head'), hero = doc.querySelector('.pp-hero');
+  if (head && hero && 'IntersectionObserver' in window) {
+    head.classList.add('on-hero');
+    new IntersectionObserver(([en]) => head.classList.toggle('on-hero', en.isIntersecting), { rootMargin: '-72px 0px 0px 0px' }).observe(hero);
+    const links = $$('.pp-head a[href^="#"]'), key = (a) => a.dataset.goto || (a.getAttribute('href') || '').slice(1);
+    const spy = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) links.forEach((a) => (key(a) === en.target.id ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+    }), { rootMargin: '-40% 0px -55% 0px' });
+    $$('.pp-head nav a').map((a) => doc.getElementById(key(a))).filter(Boolean).forEach((n) => spy.observe(n));
+  }
+
   /* the phone menu is a plain <details>: close it after a tap on a link, or on Escape */
   $$('.ps-menu').forEach((m) => {
     m.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('.ps-menu__panel a')) m.removeAttribute('open'); });
