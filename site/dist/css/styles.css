@@ -846,8 +846,8 @@ mark.ph { background: var(--mint); color: var(--ink); border-radius: 4px; paddin
 
 /* ---------- demo viewer: the Standard, Pro and Premium sample pages, full screen ---------- */
 .demo { display: none; position: fixed; inset: 0; z-index: 90; flex-direction: column; background: var(--ink); color: var(--white); }
-.demo:target, .demo.is-open { display: flex; }
-html.demo-open .demo:not(.is-open) { display: none; }      /* while the script has one open, a stale address cannot show a second one */
+.demo.is-open { display: flex; }
+html:not(.demo-ready) .demo:target { display: flex; }      /* without the script (or before it has run) the address opens the page; once it has run, only it decides */
 html.demo-open { overflow: hidden; }
 .demo__bar {
   flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem;

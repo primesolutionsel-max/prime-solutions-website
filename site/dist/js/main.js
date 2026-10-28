@@ -391,7 +391,7 @@
   (() => {
     const list = $$('.demo');
     if (!list.length) return;
-    let openEl = null, opener = null, depth = 0, scroller = null, io = null, proIO = [], closeTimer = 0, setAt = 0;
+    let openEl = null, opener = null, depth = 0, scroller = null, io = null, proIO = [], closeTimer = 0, holdUntil = 0, settle = 0;
 
     /* Pro, inside this page: the header is clear over its dark opening and a soft veil below it; the link of the part in view is underlined */
     const proHeader = (el, root) => {
@@ -445,7 +445,7 @@
     };
 
     const closeNow = () => {
-      clearTimeout(closeTimer);
+      clearTimeout(closeTimer); clearTimeout(settle);
       depth = 0;
       const back = opener;
       teardown();
@@ -454,22 +454,42 @@
       opener = null;
     };
 
-    /* The links are followed here, and the address (the hash) is only kept in step with them. Some viewers hold links and the address
-       still, and if the page waited for the address to change, tapping a demo button would do nothing at all. */
+    /* The links are followed here, and the address (the hash) is only kept in step with them. Viewers watch the address and some send an
+       older one back a moment after a tap, which used to undo the tap. So: a tab tapped inside a demo does not write to the address at all,
+       an address that asks for a demo in the two seconds after a tap is ignored, and the address is caught up once things are quiet. */
+    const hold = () => { holdUntil = Date.now() + 2300; };
     const hashTo = (h, replace) => {
-      setAt = Date.now();
       try { if (replace) location.replace(h); else location.hash = h.slice(1); } catch (err) { /* ignore */ }
     };
-    const goTo = (el, replace) => {
-      hashTo('#' + el.id, replace);
-      if (!openEl) depth = !replace && location.hash === '#' + el.id ? 1 : 0;
+    const catchUp = () => {
+      clearTimeout(settle);
+      settle = setTimeout(() => {
+        const want = openEl ? '#' + openEl.id : '';
+        if (location.hash === want || (!openEl && !idNow())) return;
+        hold();
+        try { history.replaceState(history.state, '', want || location.pathname + location.search); } catch (err) { /* ignore */ }
+      }, 2600);
+    };
+    const goTo = (el, inside) => {
+      hold();
+      if (!inside || !openEl) {                // from the page itself: one step in the history, so Back closes it
+        const had = location.hash === '#' + el.id;
+        hashTo('#' + el.id, false);
+        if (!openEl) depth = !had && location.hash === '#' + el.id ? 1 : 0;
+      }
       if (openEl !== el) open(el);
+      catchUp();
     };
 
     const close = () => {
+      hold();
       if (depth > 0) history.back(); else hashTo('#levels', true);
       clearTimeout(closeTimer);
       closeTimer = setTimeout(() => { if (openEl) closeNow(); }, 250);       // the address did not move: close anyway
+    };
+    const leave = () => {                       // close at once and take the demo out of the address (the Premium tab)
+      closeNow(); hold();
+      try { if (location.hash) history.replaceState(history.state, '', location.pathname + location.search); } catch (err) { /* ignore */ }
     };
 
     const sync = (fromEvent) => {
@@ -482,9 +502,9 @@
       } else closeNow();
     };
     addEventListener('hashchange', () => {
-      /* an older address coming back just after a quick switch (some viewers repeat the address a moment late): keep what is open */
+      /* a demo asked for by the address just after a tap is the viewer repeating an older address, not the visitor: keep what they chose */
       const id = idNow();
-      if (openEl && id && id !== openEl.id && Date.now() - setAt < 900) { hashTo('#' + openEl.id, true); return; }
+      if (id && Date.now() < holdUntil && (!openEl || id !== openEl.id)) { catchUp(); return; }
       sync(true);
     });
 
@@ -530,7 +550,7 @@
         return;
       }
       const prem = t.closest('[data-premium]');
-      if (prem && !plain) { e.preventDefault(); closeNow(); hashTo('#top', true); scrollTo(0, 0); return; }
+      if (prem && !plain) { e.preventDefault(); leave(); scrollTo(0, 0); return; }
       const a = t.closest('.demo a[href^="#demo-"]');
       const to = a ? doc.getElementById(a.getAttribute('href').slice(1)) : null;
       if (to && !plain) { e.preventDefault(); goTo(to, true); }
@@ -548,6 +568,7 @@
     });
 
     sync(false);
+    root.classList.add('demo-ready');
   })();
 
   update();
