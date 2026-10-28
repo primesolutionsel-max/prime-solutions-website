@@ -1,6 +1,9 @@
 {
   "name": "Prime Solutions",
+  "mode": "advertise-only",
+  "status": "draft",
   "email": "primesolutionsel@gmail.com",
+  "domain": "[TO BE SUPPLIED: the live web address, for example https://example.com, no slash at the end]",
   "seo_title": "Prime Solutions | One-page websites for small South African businesses",
   "artifact_title": "Prime Solutions",
   "description": "Prime Solutions builds one-page websites for small businesses in South Africa. One once-off fee in rand. The code, the domain and the hosting are yours.",
@@ -12,10 +15,386 @@
     "brand": "#0B5D3B",
     "accent": "#1FAE6C"
   },
+  "standard_theme": {
+    "paper": "#F4F1E8",
+    "paper_deep": "#ECE8DA",
+    "card": "#FBFAF5",
+    "sage": "#CFE3CE",
+    "sage_soft": "#E3EFDF",
+    "sage_mid": "#9CC4A5",
+    "forest": "#0B5D3B",
+    "forest_deep": "#084A2F",
+    "ink": "#0B0F0C",
+    "mute": "#3F4A43",
+    "veil": 0.74,
+    "veil_hero": 0.12
+  },
+  "seo": {
+    "area_served": "South Africa",
+    "service_type": "One-page website design and build",
+    "language": "en",
+    "schema_type": "ProfessionalService"
+  },
+  "legal": {
+    "name": "Prime Solutions",
+    "email": "primesolutionsel@gmail.com",
+    "host": "[TO BE SUPPLIED: where the website is hosted]",
+    "pages": [
+      "privacy",
+      "terms",
+      "refunds"
+    ],
+    "markers": [
+      "TO BE SUPPLIED",
+      "JASON TO SUPPLY",
+      "ATTORNEY",
+      "VERIFY"
+    ]
+  },
   "prices": {
     "standard": "R1,000 – R1,500",
-    "pro": "About R3,000",
+    "pro": "from R3,000",
     "premium": "R10,000 – R14,000"
+  },
+  "price_tag": {
+    "standard": "estimated, once-off",
+    "pro": "once-off",
+    "premium": "estimated, once-off"
+  },
+  "advertise": {
+    "label": "Advertise only",
+    "footer": "Advertise only. Nothing on this website is an offer; all work is agreed in writing.",
+    "quote": "Prices are guide prices. Nothing is bought on this website. After you contact us we send a written quote and agreement. Work starts only after you accept it in writing and the deposit is paid."
+  },
+  "copy": {
+    "brand": [
+      "Prime",
+      "Solutions"
+    ],
+    "skip_link": "Skip to content",
+    "nav": [
+      [
+        "levels",
+        "Levels"
+      ],
+      [
+        "samples",
+        "Samples"
+      ],
+      [
+        "included",
+        "What you get"
+      ],
+      [
+        "process",
+        "How it works"
+      ],
+      [
+        "questions",
+        "Questions"
+      ]
+    ],
+    "nav_aria": "Main",
+    "mail": "Email us",
+    "cta": "Interested? Email us and we'll talk it through.",
+    "plan_mail": "Email us about {plan}",
+    "top": "Back to the top",
+    "top_aria": "{name}, back to the top",
+    "hero": {
+      "eyebrow": "One-page websites",
+      "lines": [
+        "Built once.",
+        "Built well.",
+        "Yours to keep."
+      ],
+      "lead": "For small businesses in South Africa and beyond.",
+      "see_levels": "See the three levels"
+    },
+    "entrance": {
+      "side": [
+        "The old world",
+        "meets the new."
+      ],
+      "cue": "Scroll to enter",
+      "skip": "Skip intro",
+      "alt_arch": "An ancient stone arch covered in moss, with a glowing green portal in its doorway.",
+      "alt_valley": "A green valley under cloudy mountains, with mossy stones scattered across the meadow and a few floating in the air."
+    },
+    "levels": {
+      "eyebrow": "The three levels",
+      "title": "Three levels.",
+      "lead": "The same page, three ways.",
+      "pick": "Choose a level to preview",
+      "browser_url": "yourbusiness.co.za",
+      "preview_alt": "A sample business page shown at the selected level. Standard is plain and tidy. Pro adds a photo-led opening and layered colour blocks. Premium adds large type, depth and a signature detail.",
+      "open_demo": "Open the {tier} demo",
+      "open_premium": "Back to the entrance",
+      "note_sample": "Sample page. Opens full screen.",
+      "note_premium": "You are on a Premium page now.",
+      "see_demo": "See the {tier} demo",
+      "see_premium": "See it at Premium",
+      "here": "This page is built at Premium level.",
+      "this_page": "This page",
+      "cards": [
+        {
+          "key": "standard",
+          "name": "Standard",
+          "title": "Clean and finished.",
+          "ticks": [
+            "One typeface",
+            "Calm, tidy layout",
+            "Everything on one page"
+          ]
+        },
+        {
+          "key": "pro",
+          "name": "Pro",
+          "title": "Photo-led and layered.",
+          "ticks": [
+            "Everything in Standard",
+            "Second typeface",
+            "Photo-led opening",
+            "Layered blocks, scroll reveals",
+            "Header that follows you down"
+          ]
+        },
+        {
+          "key": "premium",
+          "name": "Premium",
+          "title": "Crafted and striking.",
+          "ticks": [
+            "Everything in Pro",
+            "Large editorial type",
+            "Depth and layered surfaces",
+            "Choreographed section transitions",
+            "A signature detail for your trade"
+          ]
+        }
+      ],
+      "mock": {
+        "brand": "Your Business",
+        "title": "Your business name",
+        "line": "A short line about what you do and where you do it.",
+        "nav_standard": [
+          "About",
+          "Services",
+          "Contact"
+        ],
+        "nav_pro": [
+          "Home",
+          "Services",
+          "Contact"
+        ],
+        "services": [
+          "Service one",
+          "Service two",
+          "Service three"
+        ],
+        "stack": [
+          "Service 1",
+          "Service 2",
+          "Service 3"
+        ],
+        "premium_title": [
+          "Your",
+          "business."
+        ],
+        "seal": "Made for your trade • Made for your trade •"
+      }
+    },
+    "pricing": {
+      "note": "Prices are estimates. The price we quote depends on what you need. If you'd like extra features, we'll talk it through with you and quote the extra cost before we start.",
+      "small": "The one fee excludes extras. Prices include no VAT, because Prime Solutions is not VAT registered. Hosting and your domain are your own cost. There is no monthly fee."
+    },
+    "samples": {
+      "eyebrow": "Samples",
+      "title": "What yours could look like.",
+      "lead": "Six trades, six themes. Samples, not client sites.",
+      "caption": "{theme} theme",
+      "left": "Move the sample layouts to the left",
+      "right": "Move the sample layouts to the right",
+      "region": "Sample layouts. Scrolls sideways.",
+      "pause": "Pause",
+      "play": "Play",
+      "hint_hover": "Hover to look closer. Drag to move.",
+      "hint_touch": "Swipe either way."
+    },
+    "included": {
+      "eyebrow": "What you get",
+      "title": "What is included.",
+      "every": "In every level",
+      "features": [
+        {
+          "icon": "devices",
+          "text": "A finished one-page site, tested from 375 to 1280 px"
+        },
+        {
+          "icon": "mail",
+          "text": "An email button as the main contact"
+        },
+        {
+          "icon": "type",
+          "text": "A text logo, or your own"
+        },
+        {
+          "icon": "palette",
+          "text": "One colour theme to suit you"
+        },
+        {
+          "icon": "search",
+          "text": "Search-ready title, description and preview image"
+        },
+        {
+          "icon": "bolt",
+          "text": "Light pages that load fast"
+        },
+        {
+          "icon": "code",
+          "text": "The full code, handed over to you"
+        }
+      ],
+      "extras_tag": "Add to any level",
+      "extras_title": "Extras, quoted per business",
+      "extras_sub": "Priced per business.",
+      "extras": [
+        {
+          "icon": "form",
+          "text": "Contact forms"
+        },
+        {
+          "icon": "cal",
+          "text": "Booking"
+        },
+        {
+          "icon": "bag",
+          "text": "An online shop"
+        },
+        {
+          "icon": "lock",
+          "text": "Logins"
+        },
+        {
+          "icon": "pin",
+          "text": "Maps"
+        },
+        {
+          "icon": "play",
+          "text": "Embedded video"
+        },
+        {
+          "icon": "grid",
+          "text": "Photo galleries"
+        }
+      ],
+      "extras_button": "Ask about an extra",
+      "extras_subject": "Extras"
+    },
+    "process": {
+      "eyebrow": "How it works",
+      "title": "From first email to hand-over.",
+      "lead": "Email first, we talk, then we build.",
+      "steps": [
+        "Email us.",
+        "We send a quote and agreement.",
+        "You accept in writing and pay the deposit.",
+        "We build and hand over."
+      ],
+      "note": "Turnaround is agreed in your quote."
+    },
+    "faq": {
+      "eyebrow": "Common questions",
+      "title": "Questions we hear first.",
+      "items": [
+        [
+          "Is there a monthly fee?",
+          "No. One fee. Domain and hosting costs go to your providers."
+        ],
+        [
+          "Who owns the website?",
+          "You do. After hand-over we keep no connection to it."
+        ],
+        [
+          "Can I see it before I decide?",
+          "Yes. A demo first, then a preview."
+        ],
+        [
+          "What if something breaks later?",
+          "Tell us. We quote the fix."
+        ],
+        [
+          "Can you add a form, bookings or a shop?",
+          "Yes, as extras quoted per business."
+        ],
+        [
+          "What if I have no logo?",
+          "We set your name as a text logo."
+        ],
+        [
+          "Do I have to send photos?",
+          "No. Send what you have."
+        ],
+        [
+          "Which languages?",
+          "English only, for now."
+        ]
+      ]
+    },
+    "contact": {
+      "eyebrow": "Start here",
+      "title": "Tell us about your business.",
+      "copy": "Copy address",
+      "privacy_text": "When you email us we use your details only to reply, quote and, if you go ahead, build your site, and we share them with our small team for that purpose. See",
+      "privacy_link": "Privacy"
+    },
+    "footer": {
+      "legal": {
+        "privacy": "Privacy policy",
+        "terms": "Terms of use",
+        "refunds": "Refunds and cancellation"
+      }
+    },
+    "viewer": {
+      "label": "{tier} demo",
+      "sub": "This site, built at {tier} level.",
+      "tabs_aria": "Choose a level",
+      "close": "Close",
+      "end_title": "This was the {tier} level.",
+      "end_price": "{price}, {tag}.",
+      "end_mail": "Email us",
+      "end_subject": "{tier} level",
+      "page_aria": "This page",
+      "own_page": "Open this level on its own page"
+    },
+    "alt": {
+      "plumbing": "Copper pipes, fittings and wrenches on a workbench",
+      "salon": "A bright salon station with a mirror, a chair and plants",
+      "cafe": "A coffee machine and a cup of coffee on a café counter",
+      "garage": "A car on a lift in a tidy workshop",
+      "cleaning": "A basket of cleaning supplies and folded cloths in a living room",
+      "firm": "A tidy office desk with law books and a notebook",
+      "hills": "Green hills in morning mist, with the sun coming up",
+      "portal": "An ancient mossy stone arch with a glowing green portal, in a misty valley"
+    },
+    "ui": {
+      "menu_open": "Open menu",
+      "menu_close": "Close menu",
+      "copied": "Copied",
+      "selected": "Selected",
+      "copy": "Copy address",
+      "addr_copied": "Address copied.",
+      "addr_selected": "Address selected. Copy it from your keyboard or menu."
+    },
+    "legal_ui": {
+      "eyebrow": "Legal",
+      "draft": "Draft. This page is not final.",
+      "version": "Version {version}",
+      "updated": "Last updated {date}",
+      "back": "Back to the site",
+      "back_aria": "{name}, back to the home page",
+      "nav_aria": "Back",
+      "desc": "{title}. {name}.",
+      "title_sep": " | "
+    }
   },
   "samples": [
     {

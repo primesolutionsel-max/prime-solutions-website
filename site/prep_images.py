@@ -3,11 +3,20 @@
 
   assets_in/trades-sheet.png   3 x 2 sheet of trade photos  ->  src/img/trade-<key>.webp (six crops)
   assets_in/levels-bg.png      soft landscape               ->  src/img/levels-bg.webp
+  assets_in/bg-gateway.webp    the three forest backgrounds ->  src/img/ps-gateway.webp, ps-castle.webp, ps-path.webp
+  assets_in/bg-castle.webp     (Standard only: each is mixed into the page's off-white, so it shows softly behind the text;
+  assets_in/bg-path.webp        the strength is "veil" (and "veil_hero" for the castle) in site.json, standard_theme)
+
+  assets_in/bg-*.webp          the same three, for Premium ->  src/img/pm-gateway.webp, pm-path.webp (kept dark: they sit behind the sample and
+                               contact parts), pm-castle.webp (mixed into white: it sits softly behind "How it works")
+
+  (Pro, phones)                small copies of the big pictures (name-sm.webp)
 
 The site still builds when these are missing: every picture slot has a painted fallback.
 """
+import json
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageChops
 
 ROOT = Path(__file__).resolve().parent
 IN, OUT = ROOT / "assets_in", ROOT / "src" / "img"
@@ -22,8 +31,19 @@ ROWS = [(0, 504), (519, 1023)]
 INSET = 4          # stay clear of the white gutter
 
 
+def save(im, path, **kw):
+    """write a web picture, but leave the file alone when it would come out the same (keeps the git history quiet)"""
+    if path.exists():
+        old = Image.open(path).convert("RGB")
+        if old.size == im.size and ImageChops.difference(old, im.convert("RGB")).getbbox() is None:
+            return
+    im.save(path, "WEBP", **kw)
+
+
 def main():
     derive()
+    veiled()
+    premium()
     sheet = IN / "trades-sheet.png"
     if sheet.exists():
         im = Image.open(sheet).convert("RGB")
@@ -34,24 +54,59 @@ def main():
             crop = im.crop(box)
             if crop.width > 520:
                 crop = crop.resize((520, round(crop.height * 520 / crop.width)), Image.LANCZOS)
-            crop.save(OUT / f"trade-{key}.webp", "WEBP", quality=72, method=6)
+            save(crop, OUT / f"trade-{key}.webp", quality=72, method=6)
+            save(crop.resize((360, round(crop.height * 360 / crop.width)), Image.LANCZOS), OUT / f"trade-{key}-sm.webp", quality=66, method=6)
     bg = IN / "levels-bg.png"
     if bg.exists():
         im = Image.open(bg).convert("RGB")
         if im.width > 1400:
             im = im.resize((1400, round(im.height * 1400 / im.width)), Image.LANCZOS)
-        im.save(OUT / "levels-bg.webp", "WEBP", quality=58, method=6)
+        save(im, OUT / "levels-bg.webp", quality=58, method=6)
+
+
+def veiled():
+    """the Standard backgrounds: the picture mixed into the page's off-white. veil is the share of off-white (0.74 = three parts paper, one part picture)"""
+    t = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))["standard_theme"]
+    paper = tuple(int(t["paper"].lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    # the castle valley is the opening's picture and is kept strong ("veil_hero"); the two band pictures stay light ("veil")
+    for src, dst, key, size, q in (("bg-gateway", "ps-gateway", "veil", (1440, 809), 62), ("bg-castle", "ps-castle", "veil_hero", (1600, 899), 58),
+                                   ("bg-path", "ps-path", "veil", (1440, 809), 62)):
+        f = IN / f"{src}.webp"
+        if not f.exists():
+            continue
+        im = Image.open(f).convert("RGB").resize(size, Image.LANCZOS)
+        im = Image.blend(im, Image.new("RGB", im.size, paper), float(t.get(key, t["veil"])))
+        save(im, OUT / f"{dst}.webp", quality=q, method=6)
+        save(im.resize((800, round(im.height * 800 / im.width)), Image.LANCZOS), OUT / f"{dst}-sm.webp", quality=q - 4, method=6)   # for phones
+
+
+def premium():
+    """the Premium backgrounds. Two stay dark (a little ink mixed in, the rest of the darkening is a gradient written in styles.css):
+    the gateway behind the samples, the path behind contact. The castle is mixed into white so it shows softly behind the dark text of "How it works"."""
+    ink, white = (10, 15, 12), (255, 255, 255)
+    for src, dst, mix, k, q in (("bg-gateway", "pm-gateway", ink, 0.30, 50), ("bg-castle", "pm-castle", white, 0.76, 60), ("bg-path", "pm-path", ink, 0.26, 48)):
+        f = IN / f"{src}.webp"
+        if not f.exists():
+            continue
+        im = Image.open(f).convert("RGB").resize((1440, 809), Image.LANCZOS)
+        im = Image.blend(im, Image.new("RGB", im.size, mix), k)
+        save(im, OUT / f"{dst}.webp", quality=q, method=6)
+        save(im.resize((800, round(im.height * 800 / im.width)), Image.LANCZOS), OUT / f"{dst}-sm.webp", quality=q - 6, method=6)   # for phones
 
 
 def derive():
     """small copies of the portal and valley pictures for the Pro and Standard versions"""
-    far, beyond = OUT / "portal-far-1680.webp", OUT / "beyond-1680.webp"
+    # Pro and Standard use the whole valley picture, with its stones in place. (Premium's own copy, beyond-1680.webp,
+    # has the stones painted out because they float on their own: see tools/cut_rocks.py.)
+    far, valley = OUT / "portal-far-1680.webp", IN / "valley-1680.webp"
     if far.exists():
         im = Image.open(far).convert("RGB").resize((1400, 787), Image.LANCZOS)
-        im.save(OUT / "pro-hero.webp", "WEBP", quality=58, method=6)
-    if beyond.exists():
-        im = Image.open(beyond).convert("RGB").resize((1200, 674), Image.LANCZOS)
-        im.save(OUT / "pro-valley.webp", "WEBP", quality=50, method=6)
+        save(im, OUT / "pro-hero.webp", quality=58, method=6)
+        save(im.resize((900, round(im.height * 900 / im.width)), Image.LANCZOS), OUT / "pro-hero-sm.webp", quality=54, method=6)
+    if valley.exists():
+        im = Image.open(valley).convert("RGB").resize((1200, 674), Image.LANCZOS)
+        save(im, OUT / "pro-valley.webp", quality=50, method=6)
+        save(im.resize((720, round(im.height * 720 / im.width)), Image.LANCZOS), OUT / "pro-valley-sm.webp", quality=46, method=6)
 
 
 if __name__ == "__main__":

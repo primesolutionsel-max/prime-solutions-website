@@ -9,35 +9,32 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{seo_title}}">
 <meta property="og:description" content="{{description}}">
-<meta property="og:image" content="og.png">
+{{head_social}}
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{{favicon}}">
-<link rel="preload" href="fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
-<link rel="preload" href="fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/prime-display-bold.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/prime-text-regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/prime-text-semibold.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="img/portal-arch-1680.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="preload" href="img/portal-far-1680.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="stylesheet" href="css/styles.css">
 <script>document.documentElement.classList.add("js")</script>
 <script type="application/ld+json">{{jsonld}}</script>
 </head>
-<body>
-<a class="skip" href="#main">Skip to content</a>
+<body data-mode="{{mode}}">
+<a class="skip" href="#main">{{copy.skip_link}}</a>
 
 <header class="site-header" data-header data-tone="stage">
   <div class="wrap header__bar">
-    <a class="brand" href="#top" aria-label="{{name}}, back to the top"><span class="brand__a">Prime</span><span class="brand__b">Solutions</span></a>
-    <nav class="nav" id="nav-panel" aria-label="Main">
+    <a class="brand" href="#top" aria-label="{{brand_aria}}"><span class="brand__a">{{copy.brand.0}}</span><span class="brand__b">{{copy.brand.1}}</span></a>
+    <nav class="nav" id="nav-panel" aria-label="{{copy.nav_aria}}">
       <ul>
-        <li><a href="#levels" data-nav="levels">Levels</a></li>
-        <li><a href="#samples" data-nav="samples">Samples</a></li>
-        <li><a href="#included" data-nav="included">What you get</a></li>
-        <li><a href="#process" data-nav="process">How it works</a></li>
-        <li><a href="#questions" data-nav="questions">Questions</a></li>
-        <li class="nav__mail-li"><a class="btn btn--lg" href="mailto:{{email}}">Email us</a></li>
+{{nav_items}}
+        <li class="nav__mail-li"><a class="btn btn--lg" href="mailto:{{email}}">{{copy.mail}}</a></li>
       </ul>
     </nav>
-    <a class="header__mail" href="mailto:{{email}}">Email us</a>
-    <button class="burger" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu"><span></span><span></span></button>
+    <a class="header__mail" href="mailto:{{email}}">{{copy.mail}}</a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="{{copy.ui.menu_open}}"><span></span><span></span></button>
   </div>
 </header>
 
@@ -48,42 +45,33 @@
       <!-- the outside world, with the arch painted out of it -->
       <div class="layer layer--far" data-far><img src="img/portal-far-1680.webp" width="1680" height="944" alt="" decoding="async" fetchpriority="high"></div>
       <!-- the arch, cut out, so it moves faster than the mountains behind it -->
-      <div class="layer layer--arch" data-arch><img src="img/portal-arch-1680.webp" width="1680" height="944" alt="An ancient stone arch covered in moss, with a glowing green portal in its doorway." decoding="async" fetchpriority="high"></div>
+      <div class="layer layer--arch" data-arch><img src="img/portal-arch-1680.webp" width="1680" height="944" alt="{{copy.entrance.alt_arch}}" decoding="async" fetchpriority="high"></div>
       <!-- the world beyond the door -->
       <div class="layer layer--beyond" data-beyond>
-        <img src="img/beyond-1680.webp" width="1680" height="944" alt="A green valley under cloudy mountains, with mossy stones scattered across the meadow and a few floating in the air." decoding="async">
-        <div class="sun" data-sun></div>
-        <div class="moon" data-moon></div>
-        <div class="stars" data-stars></div>
-        <div class="glow" data-glow style="--x:76.2%;--y:31.8%;--s:17%"></div>
-        <div class="glow" data-glow style="--x:29.5%;--y:44.0%;--s:11%"></div>
-        <div class="glow" data-glow style="--x:38.5%;--y:49.5%;--s:7%"></div>
+        <img src="img/beyond-1680.webp" width="1680" height="944" alt="{{copy.entrance.alt_valley}}" decoding="async">
+{{rocks}}
       </div>
     </div>
 
     <div class="bloom" data-bloom aria-hidden="true"></div>
-    <div class="night" data-night></div>
-    <div class="dusk" data-dusk></div>
     <div class="shade shade--top"></div>
     <div class="shade shade--bottom" data-shade></div>
     <canvas class="motes" data-motes aria-hidden="true"></canvas>
 
-    <aside class="side" data-side><span class="side__rule" aria-hidden="true"></span><p>The old world<br>meets the new.</p></aside>
+    <aside class="side" data-side><span class="side__rule" aria-hidden="true"></span><p>{{copy.entrance.side.0}}<br>{{copy.entrance.side.1}}</p></aside>
 
     <div class="copy">
       <h1 id="hero-title">
-        <span class="ln" style="--i:0"><span>Built once.</span></span>
-        <span class="ln" style="--i:1"><span>Built well.</span></span>
-        <span class="ln" style="--i:2"><span>Yours to keep.</span></span>
+{{hero_lines}}
       </h1>
       <div class="hero__cta rv" style="--i:1">
-        <a class="btn btn--lg" href="mailto:{{email}}">Email us <span class="btn__arrow" aria-hidden="true">→</span></a>
-        <a class="link" href="#levels">See the three levels</a>
+        <a class="btn btn--lg" href="mailto:{{email}}">{{copy.mail}} <span class="btn__arrow" aria-hidden="true">→</span></a>
+        <a class="link" href="#levels">{{copy.hero.see_levels}}</a>
       </div>
     </div>
 
-    <div class="cue" data-cue aria-hidden="true"><span>Scroll to enter</span><i></i></div>
-    <button class="skipintro" type="button" data-skip>Skip intro</button>
+    <div class="cue" data-cue aria-hidden="true"><span>{{copy.entrance.cue}}</span><i></i></div>
+    <button class="skipintro" type="button" data-skip>{{copy.entrance.skip}}</button>
   </div>
 </section>
 
@@ -93,91 +81,54 @@
     <div class="levels__bg" aria-hidden="true"></div>
     <div class="wrap">
       <header class="section__head reveal">
-        <p class="eyebrow">The three levels</p>
-        <h2 id="levels-title">Three levels.</h2>
-        <p class="lead">The same page, three ways.</p>
+        <p class="eyebrow">{{copy.levels.eyebrow}}</p>
+        <h2 id="levels-title">{{copy.levels.title}}</h2>
+        <p class="lead">{{copy.levels.lead}}</p>
       </header>
 
       <div class="ladder" data-ladder data-tier="standard">
         <div class="ladder__stage">
-          <div class="pills" role="group" aria-label="Choose a level to preview">
-            <button class="pill" type="button" data-tier="standard" aria-pressed="true">Standard</button>
-            <button class="pill" type="button" data-tier="pro" aria-pressed="false">Pro</button>
-            <button class="pill" type="button" data-tier="premium" aria-pressed="false">Premium</button>
+          <div class="pills" role="group" aria-label="{{copy.levels.pick}}">
+{{pills}}
           </div>
           <div class="browser">
             <div class="browser__bar" aria-hidden="true">
               <span class="browser__dots"><i></i><i></i><i></i></span>
-              <span class="browser__url">yourbusiness.co.za</span>
+              <span class="browser__url">{{copy.levels.browser_url}}</span>
             </div>
-            <div class="browser__view" role="img" aria-label="A sample business page shown at the selected level. Standard is plain and tidy. Pro adds a photo-led opening and layered colour blocks. Premium adds large type, depth and a signature detail.">
+            <div class="browser__view" role="img" aria-label="{{copy.levels.preview_alt}}">
 {{mocks}}
             </div>
           </div>
           <div class="stage__foot">
-            <a class="btn" href="#demo-standard" data-demo-open><span data-demo-label>Open the Standard demo</span> <span class="btn__arrow" aria-hidden="true">→</span></a>
-            <p class="stage__note">Sample page. Opens full screen.</p>
+            <a class="btn" href="#demo-standard" data-demo-open><span data-demo-label>{{open_demo_standard}}</span> <span class="btn__arrow" aria-hidden="true">→</span></a>
+            <p class="stage__note">{{copy.levels.note_sample}}</p>
           </div>
         </div>
 
         <ol class="ladder__steps">
-          <li class="step is-active" data-step="standard">
-            <p class="step__tag">Standard</p>
-            <h3>Clean and finished.</h3>
-            <ul class="ticks">
-              <li>One typeface</li>
-              <li>Calm, tidy layout</li>
-              <li>Everything on one page</li>
-            </ul>
-            <p class="step__price"><strong>{{price_standard}}</strong><span>once-off</span></p>
-            <a class="demolink" href="#demo-standard">See the Standard demo <span aria-hidden="true">→</span></a>
-          </li>
-          <li class="step" data-step="pro">
-            <p class="step__tag">Pro</p>
-            <h3>Photo-led and layered.</h3>
-            <ul class="ticks">
-              <li>Everything in Standard</li>
-              <li>Second typeface</li>
-              <li>Photo-led opening</li>
-              <li>Layered blocks, scroll reveals</li>
-              <li>Header that follows you down</li>
-            </ul>
-            <p class="step__price"><strong>{{price_pro}}</strong><span>once-off</span></p>
-            <a class="demolink" href="#demo-pro">See the Pro demo <span aria-hidden="true">→</span></a>
-          </li>
-          <li class="step" data-step="premium">
-            <p class="step__tag step__tag--premium">Premium</p>
-            <h3>Crafted and striking.</h3>
-            <ul class="ticks">
-              <li>Everything in Pro</li>
-              <li>Large editorial type</li>
-              <li>Depth and layered surfaces</li>
-              <li>Choreographed section transitions</li>
-              <li>A signature detail for your trade</li>
-            </ul>
-            <p class="step__price"><strong>{{price_premium}}</strong><span>once-off</span></p>
-            <p class="step__here">This page is built at Premium level.</p>
-          </li>
+{{ladder_steps}}
         </ol>
       </div>
-      <p class="fine reveal">Prices are a guide. Your quote confirms them.</p>
+      {{pricing_note}}
     </div>
   </section>
 
-  <section class="sheet samples" id="samples" data-tone="light" aria-labelledby="samples-title" data-section>
+  <section class="sheet samples" id="samples" data-tone="ink" aria-labelledby="samples-title" data-section data-spot>
+    <div class="bgpic bgpic--gate" data-bgpic aria-hidden="true"><i></i></div>
     <div class="wrap samples__layout">
       <div class="samples__intro reveal">
-        <p class="eyebrow">Samples</p>
-        <h2 id="samples-title">What yours could look like.</h2>
-        <p>Six trades, six themes. Samples, not client sites.</p>
+        <p class="eyebrow">{{copy.samples.eyebrow}}</p>
+        <h2 id="samples-title">{{copy.samples.title}}</h2>
+        <p>{{copy.samples.lead}}</p>
         <div class="samples__ctrl">
-          <button class="round" type="button" data-rail="-1" aria-label="Move the sample layouts to the left"><span aria-hidden="true">←</span></button>
-          <button class="round" type="button" data-rail="1" aria-label="Move the sample layouts to the right"><span aria-hidden="true">→</span></button>
-          <button class="textbtn" type="button" data-rail-toggle>Pause</button>
-          <span class="samples__hint"><span class="hint-hover">Hover to look closer. Drag to move.</span><span class="hint-touch">Swipe either way.</span></span>
+          <button class="round" type="button" data-rail="-1" aria-label="{{copy.samples.left}}"><span aria-hidden="true">←</span></button>
+          <button class="round" type="button" data-rail="1" aria-label="{{copy.samples.right}}"><span aria-hidden="true">→</span></button>
+          <button class="textbtn" type="button" data-rail-toggle>{{copy.samples.pause}}</button>
+          <span class="samples__hint"><span class="hint-hover">{{copy.samples.hint_hover}}</span><span class="hint-touch">{{copy.samples.hint_touch}}</span></span>
         </div>
       </div>
-      <div class="samples__rail" tabindex="0" role="region" aria-label="Sample layouts. Scrolls sideways." data-rail-el>
+      <div class="samples__rail" tabindex="0" role="region" aria-label="{{copy.samples.region}}" data-rail-el>
 {{samples}}
       </div>
     </div>
@@ -202,136 +153,73 @@
     </svg>
     <div class="wrap">
       <header class="section__head reveal">
-        <p class="eyebrow">What you get</p>
-        <h2 id="included-title">What is included.</h2>
+        <p class="eyebrow">{{copy.included.eyebrow}}</p>
+        <h2 id="included-title">{{copy.included.title}}</h2>
       </header>
       <div class="included__grid">
         <div class="included__col">
-          <h3 class="included__h reveal">In every level</h3>
+          <h3 class="included__h reveal">{{copy.included.every}}</h3>
           <ul class="feat">
-            <li class="feat__item reveal"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-devices"/></svg></span><span class="feat__t">A finished one-page site, tested from 375 to 1280 px</span></div></li>
-            <li class="feat__item reveal" style="--d:.05s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-mail"/></svg></span><span class="feat__t">An email button as the main contact</span></div></li>
-            <li class="feat__item reveal" style="--d:.1s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-type"/></svg></span><span class="feat__t">A text logo, or your own</span></div></li>
-            <li class="feat__item reveal" style="--d:.15s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-palette"/></svg></span><span class="feat__t">One colour theme to suit you</span></div></li>
-            <li class="feat__item reveal" style="--d:.2s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-search"/></svg></span><span class="feat__t">Search-ready title, description and preview image</span></div></li>
-            <li class="feat__item reveal" style="--d:.25s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-bolt"/></svg></span><span class="feat__t">Light pages. This one is about {{page_kb}} KB</span></div></li>
-            <li class="feat__item feat__item--wide reveal" style="--d:.3s"><div class="feat__card"><span class="feat__ic"><svg class="ic"><use href="#i-code"/></svg></span><span class="feat__t">The full code in your own GitHub repository</span></div></li>
+{{features}}
           </ul>
         </div>
         <aside class="included__col included__col--extra reveal" style="--d:.1s" aria-labelledby="extras-title">
           <i class="extra__glow" aria-hidden="true"></i>
-          <p class="extra__tag">Add to any level</p>
-          <h3 id="extras-title">Extras, quoted per business</h3>
-          <p class="extra__sub">Priced per business.</p>
+          <p class="extra__tag">{{copy.included.extras_tag}}</p>
+          <h3 id="extras-title">{{copy.included.extras_title}}</h3>
+          <p class="extra__sub">{{copy.included.extras_sub}}</p>
           <ul class="extras">
-            <li><svg class="ic"><use href="#i-form"/></svg>Contact forms</li>
-            <li><svg class="ic"><use href="#i-cal"/></svg>Booking</li>
-            <li><svg class="ic"><use href="#i-bag"/></svg>An online shop</li>
-            <li><svg class="ic"><use href="#i-lock"/></svg>Logins</li>
-            <li><svg class="ic"><use href="#i-pin"/></svg>Maps</li>
-            <li><svg class="ic"><use href="#i-play"/></svg>Embedded video</li>
-            <li><svg class="ic"><use href="#i-grid"/></svg>Photo galleries</li>
+{{extras}}
           </ul>
-          <a class="btn extra__btn" href="mailto:{{email}}?subject=Extras">Ask about an extra <span class="btn__arrow" aria-hidden="true">→</span></a>
+          <a class="btn extra__btn" href="{{extras_mail}}">{{copy.included.extras_button}} <span class="btn__arrow" aria-hidden="true">→</span></a>
         </aside>
       </div>
     </div>
   </section>
 
   <section class="sheet process" id="process" data-tone="light" aria-labelledby="process-title" data-section>
+    <div class="bgpic bgpic--castle" data-bgpic aria-hidden="true"><i></i></div>
     <div class="wrap process__layout">
       <header class="section__head process__head reveal">
-        <p class="eyebrow">How it works</p>
-        <h2 id="process-title">From first email to hand-over.</h2>
-        <p class="lead">Six steps. You see it before it is yours.</p>
+        <p class="eyebrow">{{copy.process.eyebrow}}</p>
+        <h2 id="process-title">{{copy.process.title}}</h2>
+        <p class="lead">{{copy.process.lead}}</p>
       </header>
       <ol class="timeline" data-timeline>
-        <li class="t-step reveal">
-          <span class="t-num" aria-hidden="true">1</span>
-          <div><h3>Tell us about your business</h3><p>Email your business name, trade and the look you like.</p></div>
-        </li>
-        <li class="t-step reveal">
-          <span class="t-num" aria-hidden="true">2</span>
-          <div><h3>See a demo first</h3><p>A concept before we build. If it is not right, we try another.</p></div>
-        </li>
-        <li class="t-step reveal">
-          <span class="t-num" aria-hidden="true">3</span>
-          <div><h3>We build your site</h3><p>You get a preview.</p></div>
-        </li>
-        <li class="t-step reveal">
-          <span class="t-num" aria-hidden="true">4</span>
-          <div><h3>You approve it</h3><p>Tell us what to adjust.</p></div>
-        </li>
-        <li class="t-step reveal">
-          <span class="t-num" aria-hidden="true">5</span>
-          <div><h3>Hand-over</h3><p>The code goes to your GitHub. The domain and hosting are yours.</p></div>
-        </li>
-        <li class="t-step reveal">
-          <span class="t-num" aria-hidden="true">6</span>
-          <div><h3>Fixes later, quoted per job</h3><p>Need a change? We quote it, fix it, send it back.</p></div>
-        </li>
+{{timeline}}
       </ol>
+      {{process_notes}}
     </div>
   </section>
 
   <section class="sheet faq" id="questions" data-tone="light" aria-labelledby="faq-title" data-section>
     <div class="wrap faq__layout">
       <header class="section__head reveal">
-        <p class="eyebrow">Common questions</p>
-        <h2 id="faq-title">Questions we hear first.</h2>
+        <p class="eyebrow">{{copy.faq.eyebrow}}</p>
+        <h2 id="faq-title">{{copy.faq.title}}</h2>
       </header>
       <div class="faq__list reveal" style="--d:.08s">
-        <details>
-          <summary>Is there a monthly fee?</summary>
-          <p>No. One fee. Domain and hosting costs go to your providers.</p>
-        </details>
-        <details>
-          <summary>Who owns the website?</summary>
-          <p>You do. After hand-over we keep no connection to it.</p>
-        </details>
-        <details>
-          <summary>Can I see it before I decide?</summary>
-          <p>Yes. A demo first, then a preview.</p>
-        </details>
-        <details>
-          <summary>What if something breaks later?</summary>
-          <p>Tell us. We quote the fix.</p>
-        </details>
-        <details>
-          <summary>Can you add a form, bookings or a shop?</summary>
-          <p>Yes, as extras quoted per business.</p>
-        </details>
-        <details>
-          <summary>What if I have no logo?</summary>
-          <p>We set your name as a text logo.</p>
-        </details>
-        <details>
-          <summary>Do I have to send photos?</summary>
-          <p>No. Send what you have.</p>
-        </details>
-        <details>
-          <summary>Which languages?</summary>
-          <p>English only, for now.</p>
-        </details>
+{{faq_list}}
       </div>
     </div>
   </section>
 
-  <section class="sheet contact" id="contact" data-tone="ink" aria-labelledby="contact-title" data-section>
+  <section class="sheet contact" id="contact" data-tone="ink" aria-labelledby="contact-title" data-section data-spot>
+    <div class="bgpic bgpic--path" data-bgpic aria-hidden="true"><i></i></div>
     <div class="contact__glow" aria-hidden="true"></div>
     <div class="wrap contact__inner">
-      <p class="eyebrow reveal">Start here</p>
-      <h2 class="contact__title reveal" id="contact-title">Tell us about your business.</h2>
-      <p class="lead reveal" style="--d:.08s">Email us. We reply with a demo.</p>
+      <p class="eyebrow reveal">{{copy.contact.eyebrow}}</p>
+      <h2 class="contact__title reveal" id="contact-title">{{copy.contact.title}}</h2>
+      <p class="lead reveal" style="--d:.08s">{{copy.cta}}</p>
       <div class="contact__actions reveal" style="--d:.16s">
-        <a class="btn btn--lg" href="mailto:{{email}}">Email us <span class="btn__arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn--lg" href="mailto:{{email}}">{{copy.mail}} <span class="btn__arrow" aria-hidden="true">→</span></a>
         <div class="copyrow">
           <span class="copyrow__addr" id="addr">{{email}}</span>
-          <button class="copybtn" type="button" data-copy="{{email}}">Copy address</button>
+          <button class="copybtn" type="button" data-copy="{{email}}">{{copy.contact.copy}}</button>
           <span class="sr-only" role="status" aria-live="polite" data-copy-status></span>
         </div>
       </div>
-      <p class="fine reveal" style="--d:.2s">Prices in rand.</p>
+      <p class="fine reveal" style="--d:.2s">{{contact_privacy}}</p>
     </div>
   </section>
 
@@ -339,13 +227,9 @@
 
 {{demos}}
 
-<footer class="site-footer" data-tone="light">
-  <div class="wrap footer__bar">
-    <p class="footer__name"><strong>{{name}}</strong></p>
-    <p class="footer__meta">© {{year}} {{name}} · <a href="{{privacy_href}}">Privacy policy</a> · <a href="#top">Back to the top</a></p>
-  </div>
-</footer>
+{{footer}}
 
+{{ui_json}}
 <script src="js/intro.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>

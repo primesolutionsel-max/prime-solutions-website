@@ -1,7 +1,7 @@
 /* Prime Solutions: the entrance.
-   Scrolling zooms towards the door of an arch. Close to the door the page takes over and plays the rest
-   by itself (through the light, into the valley), then the headline opens. Scrolling on carries the
-   valley from day to night, and the plans follow. Scroll back up and the door closes the same way.
+   The page opens on the arch of the portal, held still. One swipe, scroll, key press or tap and the rest plays by itself: the camera walks
+   into the door, through the light and out into the valley. Nothing is left half done, and once you are inside there is no way back to the
+   arch (scrolling up only brings you back to the top of the valley). Then the headline opens and a short scroll carries the plans in.
    Plain JS, no libraries. Only transform and opacity are animated, so the page stays smooth on phones. */
 (() => {
   'use strict';
@@ -25,13 +25,7 @@
   const far = $('[data-far]');
   const arch = $('[data-arch]');
   const bloom = $('[data-bloom]');
-  const night = $('[data-night]');
-  const dusk = $('[data-dusk]');
   const shade = $('[data-shade]');
-  const sun = $('[data-sun]');
-  const moon = $('[data-moon]');
-  const starsEl = $('[data-stars]');
-  const glows = $$('[data-glow]');
   const cue = $('[data-cue]');
   const side = $('[data-side]');
   const skip = $('[data-skip]');
@@ -49,169 +43,146 @@
   };
   const tf = (el, s) => { if (put(el, 't', s)) el.style.transform = s; };
 
-  /* ---------- stars: fixed positions, in three groups so only three things twinkle ---------- */
-  (function stars() {
-    let s = 20261027;
-    const rnd = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-    const groups = [0, 1, 2].map(() => { const g = document.createElement('div'); g.className = 'sg'; starsEl.appendChild(g); return g; });
-    const n = phone ? 24 : 54;
-    for (let i = 0; i < n; i++) {
-      const el = document.createElement('i');
-      const size = 1 + rnd() * 1.6;
-      el.style.cssText = `left:${(rnd() * 100).toFixed(2)}%;top:${(rnd() * 100).toFixed(2)}%;width:${size.toFixed(1)}px;height:${size.toFixed(1)}px`;
-      groups[i % 3].appendChild(el);
-    }
-  })();
-
   /* ---------- measuring ---------- */
-  let vw = innerWidth, vh = innerHeight, sceneW = 1, panMax = 0, stageTop = 0, A = 1, W = 1;
+  let vw = innerWidth, vh = innerHeight, sceneW = 1, panMax = 0, stageTop = 0, W = 1, doorX = 0, doorY = 0;
   function measure() {
     vw = innerWidth; vh = pin.offsetHeight || innerHeight;
     sceneW = scene.offsetWidth;
     const sceneH = scene.offsetHeight;
     panMax = Math.max(0, (sceneW - vw) / 2 - 14);
-    const run = Math.max(1, stage.offsetHeight - vh);
-    A = run * (70 / 150);                                  // scroll that zooms to the door
-    W = run - A;                                           // scroll that carries the valley to night
+    W = Math.max(1, stage.offsetHeight - vh);              // the short scroll that carries the valley away (the stage height is set in styles.css)
     stageTop = stage.getBoundingClientRect().top + scrollY;
     // where the door sits on screen: the layers scale around it
-    pin.style.setProperty('--dx', (vw / 2 + (0.5006 - 0.5) * sceneW).toFixed(1) + 'px');
-    pin.style.setProperty('--dy', (vh / 2 + (0.525 - 0.5) * sceneH).toFixed(1) + 'px');
+    doorX = vw / 2 + (0.5006 - 0.5) * sceneW;
+    doorY = vh / 2 + (0.525 - 0.5) * sceneH;
+    // phones: how far the valley drifts sideways on its own once you are inside (never further than the picture allows)
+    pin.style.setProperty('--drift', Math.max(0, Math.min(panMax * 0.6, sceneW * 0.08)).toFixed(0) + 'px');
+    pin.style.setProperty('--dx', doorX.toFixed(1) + 'px');
+    pin.style.setProperty('--dy', doorY.toFixed(1) + 'px');
   }
 
   /* ---------- state ---------- */
   let door = 0;                    // 0 closed, 1 open. Moves with time, not with scroll.
-  let anim = null;                 // { from, to, t0, dur }
-  let as = 0, aT = 0;              // approach progress (scroll), smoothed and target
+  let anim = null;                 // { from, t0, dur }: the door opening
+  let entered = false;             // set by the first swipe; there is no way back
   let ws = 0, wT = 0;              // valley progress (scroll), smoothed and target
-  let mx = 0, my = 0, tx = 0, ty = 0;
-  let raf = 0, last = 0;
-  let isOpen = false;
-  let locked = false, lockY = 0, lockTimer = 0, pending = null;
-  let jumping = false, jumpTimer = 0;
+  let mx = 0, my = 0, tx = 0, ty = 0, near = 0, nearT = 0;
+  let raf = 0, last = 0, isOpen = false, lockTimer = 0, pending = null;
 
-  const OPEN_MS = phone ? 2300 : 2500;
-  const CLOSE_MS = 1500;
+  const OPEN_MS = phone ? 2900 : 3200;
+  const S2 = 7;                    // how close the arch gets before the light takes over
 
-  function readScroll() {
-    const rel = scrollY - stageTop;
-    aT = clamp(rel / A);
-    wT = clamp((rel - A) / W);
-    return rel;
-  }
+  function readScroll() { wT = clamp((scrollY - stageTop) / W); }
 
-  /* ---------- holding the page still while the door plays ---------- */
+  /* ---------- the gate: until the door has opened the page is held still and the first gesture opens it ---------- */
   const stopEv = (e) => { if (e.cancelable) e.preventDefault(); };
-  const stopKey = (e) => { if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' ', 'Spacebar'].includes(e.key)) stopEv(e); };
-  function lock(on) {
-    if (on === locked) return;
-    locked = on;
-    if (on) {
-      lockY = scrollY;
-      root.classList.add('is-locked');
-      addEventListener('wheel', stopEv, { passive: false });
-      addEventListener('touchmove', stopEv, { passive: false });
-      addEventListener('keydown', stopKey);
-    } else {
-      root.classList.remove('is-locked');
-      removeEventListener('wheel', stopEv);
-      removeEventListener('touchmove', stopEv);
-      removeEventListener('keydown', stopKey);
-      if (Math.abs(scrollY - lockY) > 1) scrollTo({ top: lockY, behavior: 'instant' });
-    }
+  let touchY = null;
+  const onWheel = (e) => { stopEv(e); if (!entered && e.deltaY > 1) enter(); };
+  const onTouchStart = (e) => { touchY = e.touches.length === 1 ? e.touches[0].clientY : null; };
+  const onTouchMove = (e) => {
+    stopEv(e);
+    if (!entered && touchY !== null && e.touches.length && touchY - e.touches[0].clientY > 12) { touchY = null; enter(); }   // a swipe up
+  };
+  const onKey = (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key;
+    const onControl = e.target.closest && e.target.closest('a, button, input, select, textarea, summary');
+    if (k === 'ArrowDown' || k === 'PageDown' || k === 'End' || ((k === ' ' || k === 'Spacebar') && !onControl)) { stopEv(e); if (!entered) enter(); }
+    else if (k === 'ArrowUp' || k === 'PageUp' || k === 'Home') stopEv(e);
+  };
+  let gated = false;
+  function gate(on) {
+    if (on === gated) return;
+    gated = on;
+    root.classList.toggle('gate', on);
+    const m = on ? addEventListener : removeEventListener;
+    m.call(window, 'wheel', onWheel, { passive: false });
+    m.call(window, 'touchstart', onTouchStart, { passive: true });
+    m.call(window, 'touchmove', onTouchMove, { passive: false });
+    m.call(window, 'keydown', onKey);
   }
+  pin.addEventListener('click', (e) => {                    // a tap or click on the picture goes in too
+    if (entered || (e.target.closest && e.target.closest('a, button'))) return;
+    enter();
+  });
 
   function syncOpen() {
-    const want = door >= 0.62 && (!anim || anim.to === 1);
+    const want = door >= 0.62;
     if (want !== isOpen) { isOpen = want; stage.classList.toggle('is-open', want); }
-    const st = anim ? (anim.to === 1 ? 'opening' : 'closing') : (door >= 1 ? 'open' : 'closed');
+    const st = anim ? 'opening' : (door >= 1 ? 'open' : 'closed');
     if (put(stage, 'st', st)) stage.dataset.state = st;
   }
 
-  function endAnim() {
-    const a = anim; anim = null;
-    door = a.to;
+  function finish() {
+    anim = null; door = 1;
     clearTimeout(lockTimer);
-    lock(false);
-    syncOpen();
+    gate(false);
+    syncOpen(); readScroll(); ws = wT; render(); kick();
     if (pending) { const f = pending; pending = null; f(); }
   }
 
-  function setDoor(to, o = {}) {
-    if (o.instant || rm) {
-      anim = null; door = to; clearTimeout(lockTimer); lock(false); syncOpen(); kick();
-      if (pending) { const f = pending; pending = null; f(); }
-      return;
-    }
-    const dur = o.dur || (to ? OPEN_MS : CLOSE_MS);
-    anim = { from: door, to, t0: performance.now(), dur };
-    lock(true);
+  function enter(o = {}) {
+    if (entered) return;
+    entered = true;
+    if (o.instant || rm) { finish(); return; }
+    const dur = o.dur || OPEN_MS;
+    anim = { from: door, t0: performance.now(), dur };
     clearTimeout(lockTimer);
-    lockTimer = setTimeout(() => { if (anim) endAnim(); }, dur + 900);   // never leave the page stuck
+    lockTimer = setTimeout(() => { if (anim) finish(); }, dur + 900);   // never leave the page stuck
     syncOpen();
     kick();
   }
 
   /* ---------- the whole film ---------- */
-  const S1 = 3.3;                  // how close scrolling alone gets you to the door
-  const S2 = 7;                    // how close the arch gets before the light takes over
   function render() {
-    const asE = as + (1 - as) * sm(0, 0.15, door);          // the camera keeps what scrolling did, then carries on
-    const zA = asE * (2 - asE);                              // quick to respond, easing to rest at the door
-    const zD = sm(0, 0.64, door);
-    const sN = Math.exp(Math.log(S1) * zA + Math.log(S2 / S1) * zD);
+    // the camera walks at the door: starts moving at once, speeds up into the light
+    const u = clamp(door / 0.6);
+    const sN = Math.exp(Math.log(S2) * (u * (0.35 + 0.65 * u)));
     const sF = Math.pow(sN, 0.36);                           // mountains move slower than the arch: that is the depth
-    const pw = door > 0 ? 0 : 1 - sm(0, 0.5, as);
-    const px = mx * pw, py = my * pw;
+    const closed = door > 0 ? 0 : 1;
+    const px = mx * closed, py = my * closed;
 
     tf(arch, `translate3d(${(-px * 11).toFixed(1)}px,${(-py * 7).toFixed(1)}px,0) scale(${sN.toFixed(3)})`);
     op(arch, 1 - sm(0.5, 0.62, door));
     tf(far, `translate3d(${(-px * 4).toFixed(1)}px,${(-py * 2.5).toFixed(1)}px,0) scale(${sF.toFixed(3)})`);
     op(far, 1 - sm(0.3, 0.52, door));
 
-    // the light
-    const bo = sm(0.16, 0.44, door) * (1 - sm(0.6, 0.92, door));
-    const bs = 0.05 + 15 * Math.pow(sm(0.16, 0.7, door), 1.6);
+    // the light. Before the door opens the pointer coaxes it: the nearer you are to the doorway the more it glows.
+    const tz = 1 - sm(0, 0.16, door);
+    const bo = Math.max(sm(0.16, 0.44, door) * (1 - sm(0.6, 0.92, door)), near * 0.6 * tz);
+    const bs = 0.05 + 15 * Math.pow(sm(0.16, 0.7, door), 1.6) + 0.55 * near * tz;
     tf(bloom, `scale(${bs.toFixed(3)})`);
     op(bloom, bo);
 
-    // the valley: comes out of the light, settles, then drifts while you scroll
+    // the valley: comes out of the light, settles, then drifts a little while you scroll
     const out = 1 - Math.pow(1 - sm(0.5, 1, door), 3);
-    const sB = 1.26 - 0.26 * out + 0.07 * ws;
-    const fx = 0.5 - 0.16 * sm(0.04, 0.4, ws) + 0.42 * sm(0.5, 0.95, ws);   // on a phone the camera slides across the valley
+    // wider screens: the camera eases in and slides a little while you scroll. Phones: the valley stays put (it only drifts sideways by
+    // itself, see .scene in styles.css), so scrolling down goes straight on to the plans.
+    const sB = 1.26 - 0.26 * out + (phone ? 0 : 0.07 * ws);
+    const fx = phone ? 0.5 : 0.5 - 0.16 * sm(0.04, 0.4, ws) + 0.42 * sm(0.5, 0.95, ws);
     const pan = clamp((0.5 - fx) * sceneW, -panMax, panMax);
-    const bp = sm(0.5, 0.7, door);
-    tf(beyond, `translate3d(${(-mx * 9 * bp + pan).toFixed(1)}px,${(-my * 5 * bp).toFixed(1)}px,0) scale(${sB.toFixed(3)})`);
-    op(beyond, sm(0.5, 0.66, door), as > 0.25 || door > 0 ? 0.003 : 0);
-
-    // day to night
-    const n = sm(0.08, 0.92, ws) * sm(0.6, 0.8, door);
-    op(night, n);
-    op(dusk, Math.sin(Math.PI * clamp((n - 0.05) / 0.6)) * 0.9);
-    op(sun, clamp(1 - n * 1.25));
-    op(moon, sm(0.45, 0.9, n));
-    op(starsEl, sm(0.3, 0.85, n));
-    const g = 0.15 + 0.85 * sm(0.2, 1, n);
-    glows.forEach((el) => op(el, g));
+    const bp = sm(0.5, 0.7, door) * (1 - ws);                // inside, the valley leans a little towards the pointer
+    tf(beyond, `translate3d(${(-mx * 14 * bp + pan).toFixed(1)}px,${(-my * 8 * bp).toFixed(1)}px,0) scale(${sB.toFixed(3)})`);
+    op(beyond, sm(0.5, 0.66, door), 0.003);
 
     // words
-    const closed = door > 0 ? 0 : 1;
-    op(side, (1 - sm(0.05, 0.35, as)) * closed);
-    tf(side, `translateX(${(-18 * sm(0.05, 0.35, as)).toFixed(1)}px)`);
-    op(cue, (1 - sm(0, 0.12, as)) * closed);
+    op(side, 1 - sm(0, 0.22, door));
+    tf(side, `translateX(${(-18 * sm(0, 0.22, door)).toFixed(1)}px)`);
+    op(cue, 1 - sm(0, 0.1, door));
     op(skip, 1 - sm(0, 0.2, door));
-    op(copy, sm(0.55, 0.65, door) * (1 - sm(0.03, 0.24, ws)));   // the words leave after a short scroll, so the next sheet is never far
-    op(shade, Math.max(1 - sm(0.1, 0.5, as), sm(0.55, 0.7, door)));
+    op(copy, sm(0.55, 0.65, door) * (1 - sm(0.12, 0.62, ws)));   // the headline lifts away within a short scroll, so the next sheet is never far
+    tf(copy, `translate3d(0,${(-ws * 36).toFixed(1)}px,0)`);
+    op(shade, Math.max(1 - sm(0.1, 0.45, door), sm(0.55, 0.7, door)));
 
-    motes.vis = Math.max(0.22 * (1 - sm(0, 0.3, as)) * closed, (0.3 + 0.7 * n) * sm(0.6, 0.78, door));
+    motes.vis = Math.max(0.22 * closed, 0.36 * sm(0.6, 0.78, door));
     motes.kick();
   }
 
   /* a still frame: reduced motion, or the scene before any script has run */
   function renderStatic() {
+    entered = true; door = 1;
     arch.style.display = 'none'; far.style.display = 'none';
     beyond.style.cssText += ';opacity:1;visibility:visible;transform:scale(1.03)';
-    glows.forEach((el) => { el.style.opacity = 0.35; });
     copy.style.cssText += ';opacity:1;visibility:visible';
     stage.classList.add('is-open');
     shade.style.opacity = 1;
@@ -248,7 +219,7 @@
       requestAnimationFrame(loop);
     }
     size(); addEventListener('resize', size);
-    new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible) o.kick(); }).observe(stage);
+    new IntersectionObserver((e) => { visible = e[0].isIntersecting; stage.classList.toggle('is-away', !visible); if (visible) o.kick(); }).observe(stage);
     document.addEventListener('visibilitychange', () => { visible = !document.hidden; if (visible) o.kick(); });
     return o;
   })();
@@ -259,37 +230,24 @@
     const dt = Math.min(0.05, (t - last) / 1000 || 0.016); last = t;
     if (anim) {
       const u = clamp((t - anim.t0) / anim.dur);
-      door = anim.from + (anim.to - anim.from) * u;
+      door = anim.from + (1 - anim.from) * u;
       syncOpen();
-      if (u >= 1) endAnim();
+      if (u >= 1) { finish(); return; }
     }
     const k = 1 - Math.exp(-dt * 8);
-    as += (aT - as) * k; if (Math.abs(aT - as) < 0.0005) as = aT;
     ws += (wT - ws) * k; if (Math.abs(wT - ws) < 0.0005) ws = wT;
     const km = 1 - Math.exp(-dt * 5);
     mx += (tx - mx) * km; my += (ty - my) * km;
+    near += (nearT - near) * (1 - Math.exp(-dt * 6)); if (Math.abs(nearT - near) < 0.004) near = nearT;
     render();
-    if (anim || as !== aT || ws !== wT || Math.abs(tx - mx) > 0.002 || Math.abs(ty - my) > 0.002) raf = requestAnimationFrame(tick);
+    if (anim || ws !== wT || Math.abs(tx - mx) > 0.002 || Math.abs(ty - my) > 0.002 || near !== nearT) raf = requestAnimationFrame(tick);
   }
   function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } }
 
-  /* ---------- scroll rules ---------- */
+  /* ---------- scroll ---------- */
   function onScroll() {
-    if (locked) { if (Math.abs(scrollY - lockY) > 2) scrollTo({ top: lockY, behavior: 'instant' }); return; }
-    const rel = readScroll();
-    if (jumping) { armJump(160); }
-    else if (door === 0 && !anim && rel >= A * 0.96) setDoor(1, rel > A + 0.6 * vh ? { instant: true } : {});
-    else if (door === 1 && !anim && rel < A - 0.16 * vh) setDoor(0);
-    kick();
-  }
-  function armJump(ms) { clearTimeout(jumpTimer); jumpTimer = setTimeout(endJump, ms); }
-  function endJump() {
-    jumping = false;
-    const rel = readScroll();
-    if (!anim) {
-      if (door === 1 && rel < A - 0.16 * vh) setDoor(0);                           // arrived back at the top: close the door
-      else if (door === 0 && rel >= A * 0.96) setDoor(1, { instant: true });
-    }
+    if (!entered) { if (scrollY > 4) enter({ instant: true }); return; }   // something scrolled the page (a link, the back button, a restored position): you are in
+    readScroll();
     kick();
   }
 
@@ -297,17 +255,19 @@
   const HEAD = 76;
   const known = ['top', 'main', 'levels', 'samples', 'included', 'process', 'questions', 'contact'];
   function goto(y) {
-    const go = () => { jumping = true; armJump(1500); scrollTo({ top: y, behavior: rm ? 'auto' : 'smooth' }); };
-    if (door === 0 && y - stageTop >= A * 0.96) { pending = go; setDoor(1, { dur: 800 }); } else go();
+    const go = () => scrollTo({ top: y, behavior: rm ? 'auto' : 'smooth' });
+    if (entered && !anim) { go(); return; }
+    if (!entered && y < 4) return;                           // "top" at the arch: nothing to do
+    pending = go;
+    enter({ dur: 1000 });                                    // a link past the door: through it, quickly, then on to the part
   }
   document.addEventListener('click', (e) => {
     const a = e.target.closest && e.target.closest('a[href^="#"]');
-    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    // (a link inside a demo is the demo's own business; a viewer that has already stopped the browser's default action does not stop this)
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button || a.closest('.demo')) return;
     const id = a.getAttribute('href').slice(1);
-    if (!known.includes(id) && id !== '') {                  // anything else (like the privacy section) is left to the browser
-      jumping = true; armJump(1500); return;
-    }
-    if (location.hash === '#privacy') { jumping = true; armJump(1500); return; }
+    if (!known.includes(id) && id !== '') return;            // anything else (like the privacy section or a sample page) is left to the browser
+    if (location.hash === '#privacy') return;
     const el = id && id !== 'top' ? document.getElementById(id) : null;
     const y = el ? el.getBoundingClientRect().top + scrollY - HEAD : 0;
     e.preventDefault();
@@ -315,7 +275,9 @@
   });
   skip.addEventListener('click', () => {
     const el = document.getElementById('levels');
-    goto(el ? el.getBoundingClientRect().top + scrollY - HEAD : stageTop + A + W);
+    const y = el ? el.getBoundingClientRect().top + scrollY - HEAD : stageTop + W;
+    enter({ instant: true });
+    scrollTo({ top: Math.max(0, y), behavior: rm ? 'auto' : 'smooth' });
   });
 
   /* ---------- go ---------- */
@@ -323,17 +285,21 @@
   if (rm) {
     renderStatic();
   } else {
-    const rel = readScroll();
-    if (rel >= A * 0.96) { door = 1; }
-    as = aT; ws = wT;
+    const h = location.hash;
+    entered = scrollY > 4 || (!!h && h !== '#' && h !== '#top');      // opened with a part of the page in the address, or at a restored position: already inside
+    if (entered) door = 1; else gate(true);
+    readScroll(); ws = wT;
     syncOpen();
     render();
     addEventListener('scroll', onScroll, { passive: true });
     if (fine) {
       addEventListener('pointermove', (e) => {
-        if (door > 0 || anim || locked) return;
-        tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; kick();
+        if (stage.classList.contains('is-away') || (entered && !anim && ws >= 0.98)) return;
+        tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2;
+        if (!entered) nearT = Math.pow(clamp(1 - Math.hypot(e.clientX - doorX, (e.clientY - doorY) * 0.55) / (0.34 * Math.min(vw, vh * 1.5))), 1.4);
+        kick();
       }, { passive: true });
+      document.documentElement.addEventListener('mouseleave', () => { tx = ty = 0; nearT = 0; kick(); });
     }
     // have the valley decoded and painted before the door opens, so the crossfade never hitches
     $$('.layer img').forEach((img) => { if (img.decode) img.decode().catch(() => {}); });

@@ -10,6 +10,11 @@
   const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
+  /* every word this script puts on the page comes from site.json, through the #ui-copy block that build.py writes into the page */
+  const UI = (() => { try { return JSON.parse($('#ui-copy').textContent); } catch (err) { return {}; } })();
+  const say = (key, vars) => (UI[key] == null ? '' : String(UI[key]).replace(/\{(\w+)\}/g, (m, k) => (vars && vars[k] != null ? vars[k] : m)));
+  const setText = (el, key, vars) => { const t = say(key, vars); if (el && t) el.textContent = t; };
+
   const header = $('[data-header]');
   const levels = $('#levels');
   const ladder = $('[data-ladder]');
@@ -28,7 +33,7 @@
     nav.classList.toggle('is-open', open);
     header.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
-    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menuBtn.setAttribute('aria-label', say(open ? 'menu_close' : 'menu_open') || menuBtn.getAttribute('aria-label'));
     doc.body.style.overflow = open ? 'hidden' : '';
     if (open) { const first = $('a', nav); if (first) first.focus(); }
   };
@@ -57,20 +62,27 @@
   const demoBtn = $('[data-demo-open]');
   const demoLabel = $('[data-demo-label]');
   const demoNote = $('.stage__note');
-  const TIER_NAME = { standard: 'Standard', pro: 'Pro', premium: 'Premium' };
+  const TIER_NAME = UI.tiers || {};
   const setTier = (tier) => {
     if (!ladder || ladder.dataset.tier === tier) return;
     ladder.dataset.tier = tier;
     const prem = tier === 'premium';
     if (demoBtn) demoBtn.setAttribute('href', prem ? '#top' : '#demo-' + tier);
-    if (demoLabel) demoLabel.textContent = prem ? 'Back to the entrance' : 'Open the ' + TIER_NAME[tier] + ' demo';
-    if (demoNote) demoNote.textContent = prem ? 'You are on a Premium page now.' : 'Sample page. Opens full screen.';
+    setText(demoLabel, prem ? 'open_premium' : 'open_demo', { tier: TIER_NAME[tier] });
+    setText(demoNote, prem ? 'note_premium' : 'note_sample');
     if (levels) levels.dataset.tier = tier;
     pills.forEach((p) => p.setAttribute('aria-pressed', String(p.dataset.tier === tier)));
     steps.forEach((s) => s.classList.toggle('is-active', s.dataset.step === tier));
   };
+  /* A level button pins its level while the page scrolls to it. Without this the scroll loop picks whichever level the page is
+     passing over on the way, and the sample page flips back and forth before it settles. Any hand on the page lets go of it. */
+  let pinned = '', pinTimer = 0;
+  const unpin = () => { pinned = ''; clearTimeout(pinTimer); };
+  const pin = (tier, ms) => { pinned = tier; clearTimeout(pinTimer); pinTimer = setTimeout(unpin, ms); };
+  ['wheel', 'touchstart', 'keydown'].forEach((ev) => addEventListener(ev, unpin, { passive: true }));
   const updateLadder = () => {
     if (!ladder) return;
+    if (pinned) { setTier(pinned); pin(pinned, 180); return; }      // still travelling to the level that was picked
     const wide = innerWidth >= 900;
     const sb = stage.getBoundingClientRect().bottom;
     const line = wide ? innerHeight * 0.5 : sb + (innerHeight - sb) * 0.4;
@@ -86,6 +98,7 @@
     const step = steps.find((s) => s.dataset.step === p.dataset.tier);
     setTier(p.dataset.tier);
     if (!step) return;
+    pin(p.dataset.tier, 700);
     const wide = innerWidth >= 900;
     const r = step.getBoundingClientRect();
     const sb = stage.getBoundingClientRect().bottom;
@@ -93,12 +106,57 @@
     scrollTo({ top, behavior: reduce.matches ? 'auto' : 'smooth' });
   }));
 
+  /* ---------- pictures behind three parts of the page ----------
+     A picture is only fetched when its part is close (the class is-near turns it on in the CSS) and it drifts a little slower than the page. */
+  const pics = $$('[data-bgpic]');
+  const livePics = new Set();
+  if (pics.length && 'IntersectionObserver' in window) {
+    const near = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('is-near'); livePics.add(en.target); } else livePics.delete(en.target);
+    }), { rootMargin: '120% 0px 120% 0px' });
+    pics.forEach((el) => near.observe(el));
+  } else pics.forEach((el) => el.classList.add('is-near'));
+  const drift = () => {
+    if (reduce.matches) return;
+    livePics.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      const mid = r.top + r.height / 2 - innerHeight / 2;
+      el.firstElementChild.style.transform = `translate3d(0,${(-mid * 0.1).toFixed(1)}px,0)`;
+    });
+  };
+
+  /* ---------- a soft light that follows the pointer (mouse and trackpad only) ---------- */
+  if (!reduce.matches && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    $$('[data-spot]').forEach((sec) => {
+      const pic = $('[data-bgpic]', sec);
+      if (!pic) return;
+      let raf = 0, px = 0, py = 0;
+      sec.addEventListener('pointermove', (e) => {
+        const r = sec.getBoundingClientRect();
+        px = e.clientX - r.left; py = e.clientY - r.top;
+        if (!raf) raf = requestAnimationFrame(() => { raf = 0; pic.style.setProperty('--mx', px.toFixed(0) + 'px'); pic.style.setProperty('--my', py.toFixed(0) + 'px'); pic.style.setProperty('--spot', '1'); });
+      }, { passive: true });
+      sec.addEventListener('pointerleave', () => pic.style.setProperty('--spot', '0'));
+    });
+    const grid = $('.included__grid');
+    if (grid) {
+      grid.addEventListener('pointermove', (e) => {
+        const c = e.target.closest('.feat__card, .included__col--extra');
+        if (!c) return;
+        const r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px');
+        c.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px');
+      }, { passive: true });
+    }
+  }
+
   /* ---------- scroll loop ---------- */
   let ticking = false;
   const update = () => {
     ticking = false;
     const y = scrollY;
     updateTone();
+    drift();
 
     updateLadder();
 
@@ -208,11 +266,11 @@
 
     const setPaused = (p) => {
       paused = p;
-      if (toggleBtn) toggleBtn.textContent = p ? 'Play' : 'Pause';
+      setText(toggleBtn, p ? 'play' : 'pause');
       kick();
     };
     if (toggleBtn) {
-      toggleBtn.textContent = paused ? 'Play' : 'Pause';
+      setText(toggleBtn, paused ? 'play' : 'pause');
       toggleBtn.addEventListener('click', () => setPaused(!paused));
     }
 
@@ -321,9 +379,9 @@
         sel.removeAllRanges();
         sel.addRange(range);
       }
-      status.textContent = ok ? 'Address copied.' : 'Address selected. Copy it from your keyboard or menu.';
-      copyBtn.textContent = ok ? 'Copied' : 'Selected';
-      setTimeout(() => { copyBtn.textContent = 'Copy address'; }, 2200);
+      setText(status, ok ? 'addr_copied' : 'addr_selected');
+      setText(copyBtn, ok ? 'copied' : 'selected');
+      setTimeout(() => { setText(copyBtn, 'copy'); }, 2200);
     });
   }
 
@@ -333,20 +391,38 @@
   (() => {
     const list = $$('.demo');
     if (!list.length) return;
-    let openEl = null, opener = null, depth = 0, scroller = null, io = null;
+    let openEl = null, opener = null, depth = 0, scroller = null, io = null, proIO = [], closeTimer = 0, holdUntil = 0, settle = 0;
+
+    /* Pro, inside this page: the header is clear over its dark opening and a soft veil below it; the link of the part in view is underlined */
+    const proHeader = (el, root) => {
+      const head = $('.pp-head', el), hero = $('.pp-hero', el);
+      if (!head || !hero || !('IntersectionObserver' in window)) return [];
+      head.classList.add('on-hero');
+      const a = new IntersectionObserver(([en]) => head.classList.toggle('on-hero', en.isIntersecting), { root, rootMargin: '-72px 0px 0px 0px' });
+      a.observe(hero);
+      const links = $$('.pp-head a', el), key = (l) => l.dataset.goto || '';
+      const b = new IntersectionObserver((entries) => entries.forEach((en) => {
+        if (en.isIntersecting) links.forEach((l) => (key(l) === en.target.id ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current')));
+      }), { root, rootMargin: '-40% 0px -55% 0px' });
+      $$('.pp-head nav a', el).map((l) => doc.getElementById(key(l))).filter(Boolean).forEach((n) => b.observe(n));
+      return [a, b];
+    };
 
     const idNow = () => { const m = /^#demo-(standard|pro)$/.exec(location.hash); return m ? 'demo-' + m[1] : ''; };
 
     const teardown = () => {
       if (!openEl) return;
       if (io) io.disconnect();
-      io = null; scroller = null;
+      proIO.forEach((o) => o.disconnect());
+      io = null; proIO = []; scroller = null;
+      $$('.ps-menu[open]', openEl).forEach((d) => d.removeAttribute('open'));      // the phone menu is shut when you come back
       openEl.classList.remove('is-open');
       openEl = null;
     };
 
     const open = (el) => {
       const fresh = !openEl;
+      clearTimeout(closeTimer);       // a close that is still waiting must not shut the page opened after it
       if (fresh) opener = doc.activeElement && doc.activeElement !== doc.body ? doc.activeElement : null;
       teardown();
       openEl = el;
@@ -365,10 +441,55 @@
         }, { root: scroller, threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
         rv.forEach((n) => io.observe(n));
       }
+      proIO = proHeader(el, scroller);
+    };
+
+    const closeNow = () => {
+      clearTimeout(closeTimer); clearTimeout(settle);
+      depth = 0;
+      const back = opener;
+      teardown();
+      root.classList.remove('demo-open');
+      if (back && back.focus) { try { back.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+      opener = null;
+    };
+
+    /* The links are followed here, and the address (the hash) is only kept in step with them. Viewers watch the address and some send an
+       older one back a moment after a tap, which used to undo the tap. So: a tab tapped inside a demo does not write to the address at all,
+       an address that asks for a demo in the two seconds after a tap is ignored, and the address is caught up once things are quiet. */
+    const hold = () => { holdUntil = Date.now() + 2300; };
+    const hashTo = (h, replace) => {
+      try { if (replace) location.replace(h); else location.hash = h.slice(1); } catch (err) { /* ignore */ }
+    };
+    const catchUp = () => {
+      clearTimeout(settle);
+      settle = setTimeout(() => {
+        const want = openEl ? '#' + openEl.id : '';
+        if (location.hash === want || (!openEl && !idNow())) return;
+        hold();
+        try { history.replaceState(history.state, '', want || location.pathname + location.search); } catch (err) { /* ignore */ }
+      }, 2600);
+    };
+    const goTo = (el, inside) => {
+      hold();
+      if (!inside || !openEl) {                // from the page itself: one step in the history, so Back closes it
+        const had = location.hash === '#' + el.id;
+        hashTo('#' + el.id, false);
+        if (!openEl) depth = !had && location.hash === '#' + el.id ? 1 : 0;
+      }
+      if (openEl !== el) open(el);
+      catchUp();
     };
 
     const close = () => {
-      if (depth > 0) history.back(); else location.replace('#levels');
+      hold();
+      if (depth > 0) history.back(); else hashTo('#levels', true);
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(() => { if (openEl) closeNow(); }, 250);       // the address did not move: close anyway
+    };
+    const leave = () => {                       // close at once and take the demo out of the address (the Premium tab)
+      closeNow(); hold();
+      try { if (location.hash) history.replaceState(history.state, '', location.pathname + location.search); } catch (err) { /* ignore */ }
     };
 
     const sync = (fromEvent) => {
@@ -378,16 +499,24 @@
       if (el) {
         depth = fromEvent && !openEl ? 1 : (openEl ? depth : 0);
         open(el);
-      } else {
-        depth = 0;
-        const back = opener;
-        teardown();
-        root.classList.remove('demo-open');
-        if (back && back.focus) { try { back.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
-        opener = null;
-      }
+      } else closeNow();
     };
-    addEventListener('hashchange', () => sync(true));
+    addEventListener('hashchange', () => {
+      /* a demo asked for by the address just after a tap is the viewer repeating an older address, not the visitor: keep what they chose */
+      const id = idNow();
+      if (id && Date.now() < holdUntil && (!openEl || id !== openEl.id)) { catchUp(); return; }
+      sync(true);
+    });
+
+    /* the "See the Standard demo" and "See the Pro demo" buttons (and the open-demo button beside the sample page) */
+    doc.addEventListener('click', (e) => {
+      if (openEl || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      const a = e.target.closest && e.target.closest('a[href^="#demo-"]');
+      const el = a ? doc.getElementById(a.getAttribute('href').slice(1)) : null;
+      if (!el || !el.classList.contains('demo')) return;
+      e.preventDefault();
+      goTo(el, false);
+    });
 
     const copyAddress = async (btn) => {
       let ok = false;
@@ -395,9 +524,15 @@
         const el = btn.parentNode.querySelector('.d-addr');
         if (el) { const r = doc.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
       }
-      btn.textContent = ok ? 'Copied' : 'Selected';
-      setTimeout(() => { btn.textContent = 'Copy address'; }, 2200);
+      setText(btn, ok ? 'copied' : 'selected');
+      setTimeout(() => { setText(btn, 'copy'); }, 2200);
     };
+
+    /* the Standard demo's phone menu: close it after a tap on one of its links */
+    doc.addEventListener('click', (e) => {
+      const m = e.target.closest && e.target.closest('.ps-menu__panel a');
+      if (m) { const d = m.closest('.ps-menu'); if (d) d.removeAttribute('open'); }
+    });
 
     doc.addEventListener('click', (e) => {
       const t = e.target;
@@ -415,9 +550,10 @@
         return;
       }
       const prem = t.closest('[data-premium]');
-      if (prem && !plain) { e.preventDefault(); location.replace('#top'); return; }
+      if (prem && !plain) { e.preventDefault(); leave(); scrollTo(0, 0); return; }
       const a = t.closest('.demo a[href^="#demo-"]');
-      if (a && !plain) { e.preventDefault(); location.replace(a.getAttribute('href')); }
+      const to = a ? doc.getElementById(a.getAttribute('href').slice(1)) : null;
+      if (to && !plain) { e.preventDefault(); goTo(to, true); }
     });
 
     doc.addEventListener('keydown', (e) => {
@@ -432,6 +568,7 @@
     });
 
     sync(false);
+    root.classList.add('demo-ready');
   })();
 
   update();
