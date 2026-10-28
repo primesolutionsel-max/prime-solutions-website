@@ -106,7 +106,8 @@ A marker is any text in square brackets that starts with `[TO BE SUPPLIED`, `[JA
 - **Pictures.** The samples part sits on the stone gateway, "How it works" on the castle valley (mixed into white) and contact on the mossy path. They are made by `premium()` in `prep_images.py` (small copies for phones), load only when their part is close to the screen, and drift a little as you scroll. They are the AI-made Canva backgrounds, so the same owner decision as in `CREDITS.md` applies.
 - **Fonts.** Poppins (headings) and Inter (text), cut down and renamed "Prime Display" and "Prime Text" by `prep_fonts.py`. Pro and Standard keep their own typefaces (the Pro sample inside Premium shows Pro's).
 - **Interaction.** The doorway glows as the pointer comes near it; the valley leans slightly with the pointer; the samples part and contact have a soft light that follows the pointer (mouse only, off on touch); the "What you get" cards light up under the pointer; the questions open smoothly. All of it is light, stops for reduced motion and stores nothing.
-- The plans and demo part ("Three levels") has not been changed in this round.
+- **On phones** (under 700 px for the valley, under 900 px for the plans): after the portal the valley stays still while you scroll (no zoom, no sliding) and only drifts slowly from side to side by itself, so scrolling goes straight on to the plans. In "Three levels" the pinned sample box is gone: each level carries its own sample page (`step_box()` in `build.py`) right above its writing, and the two scroll down together. Laptops and PCs keep the pinned box and the level buttons.
+- The rest of the plans and demo part ("Three levels", the demo viewer) is as before. The "Back to the entrance" button only scrolls up to the top of the valley.
 
 ## Notes
 

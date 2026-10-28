@@ -359,6 +359,7 @@ def ladder_steps():
                 f'<a class="demolink" href="#demo-{key}">{esc(fmt(C["levels"]["see_demo"], tier=name))} <span aria-hidden="true">→</span></a>')
         subject = quote(fmt(C["viewer"]["end_subject"], tier=name), safe="")
         out.append(f'''          <li class="step{" is-active" if i == 0 else ""}" data-step="{key}">
+{step_box(key)}
             <p class="step__tag{" step__tag--premium" if prem else ""}">{esc(name)}</p>
             <h3>{esc(c["title"])}</h3>
             <ul class="ticks">
@@ -445,8 +446,9 @@ def ui_json():
     return '<script type="application/json" id="ui-copy">' + json.dumps(ui, ensure_ascii=False).replace("</", "<\\/") + "</script>"
 
 
-def mocks():
-    m, b = C["levels"]["mock"], None
+def mock_set(uid=""):
+    """the three sample-page mock-ups, as {key: markup}. uid is added to the one id inside them, so a second copy on the page never repeats it"""
+    m = C["levels"]["mock"]
     e = lambda s: esc(s)
     mail = e(C["mail"])
     nav_s = "".join(f"<span>{e(x)}</span>" for x in m["nav_standard"])
@@ -454,28 +456,47 @@ def mocks():
     cols = lambda: "".join(f"<div><b>{e(s)}</b><i></i><i></i></div>" for s in m["services"])
     stack = "".join(f'<div class="c{i}"><b>{e(s)}</b><i></i></div>' for i, s in enumerate(m["stack"], 1))
     br = e(m["brand"])
-    return f'''              <div class="mock mock--standard"><div class="m">
+    seal = f"seal-path{uid}"
+    return {
+        "standard": f'''              <div class="mock mock--standard"><div class="m">
                 <div class="m-nav"><b>{br}</b>{nav_s}</div>
                 <div class="m-hero"><h4>{e(m["title"])}</h4><p>{e(m["line"])}</p><span class="m-btn">{mail}</span></div>
                 <div class="m-cols">{cols()}</div>
-              </div></div>
-              <div class="mock mock--pro"><div class="m">
+              </div></div>''',
+        "pro": f'''              <div class="mock mock--pro"><div class="m">
                 <div class="m-top">
                   <div class="m-nav"><b>{br}</b>{nav_p}</div>
                   <div class="m-copy"><h4>{e(m["title"])}</h4><p>{e(m["line"])}</p><span class="m-btn">{mail}</span></div>
                   <div class="m-art"><div class="m-blk b1"></div><div class="m-blk b2"></div><div class="m-blk b3"></div></div>
                 </div>
                 <div class="m-cards">{cols()}</div>
-              </div></div>
-              <div class="mock mock--premium"><div class="m">
+              </div></div>''',
+        "premium": f'''              <div class="mock mock--premium"><div class="m">
                 <div class="m-glow"></div>
                 <div class="m-nav"><b>{br}</b>{nav_p}</div>
                 <h4><span>{e(m["premium_title"][0])}</span><span class="o">{e(m["premium_title"][1])}</span></h4>
                 <p>{e(m["line"])}</p>
                 <span class="m-btn">{mail}</span>
-                <svg class="m-seal" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="seal-path" d="M50,50 m-36,0 a36,36 0 1,1 72,0 a36,36 0 1,1 -72,0"/></defs><g class="m-seal__ring"><text><textPath href="#seal-path" textLength="222" lengthAdjust="spacing">{e(m["seal"])}</textPath></text></g><circle cx="50" cy="50" r="6"/></svg>
+                <svg class="m-seal" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="{seal}" d="M50,50 m-36,0 a36,36 0 1,1 72,0 a36,36 0 1,1 -72,0"/></defs><g class="m-seal__ring"><text><textPath href="#{seal}" textLength="222" lengthAdjust="spacing">{e(m["seal"])}</textPath></text></g><circle cx="50" cy="50" r="6"/></svg>
                 <div class="m-stack">{stack}</div>
-              </div></div>'''
+              </div></div>''',
+    }
+
+
+def mocks():
+    return "\n".join(mock_set().values())
+
+
+def step_box(key):
+    """phones: each level shows its own sample page right above its writing, so the two scroll together (the pinned box is for wider screens)"""
+    return f'''            <div class="step__box" aria-hidden="true">
+              <div class="browser">
+                <div class="browser__bar"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">{esc(C["levels"]["browser_url"])}</span></div>
+                <div class="browser__view">
+{mock_set("-s")[key]}
+                </div>
+              </div>
+            </div>'''
 
 
 def sample(s):

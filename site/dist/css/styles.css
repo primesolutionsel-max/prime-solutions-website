@@ -312,8 +312,17 @@ html.gate .pin { cursor: pointer; }
 .js .side, .js .cue, .js .skipintro { will-change: opacity; }
 html { scrollbar-gutter: stable; }
 
+/* phones: once you are in, the valley stays still while you scroll and just drifts slowly from side to side by itself */
+@keyframes valley-drift {
+  0%   { translate: 0 0; }
+  25%  { translate: calc(var(--drift, 0px) * -1) 0; }
+  75%  { translate: var(--drift, 0px) 0; }
+  100% { translate: 0 0; }
+}
 @media (max-width: 700px) {
   .js .stage { height: calc(100vh + 48vh); height: calc(100svh + 48svh); }
+  .stage[data-state="open"] .scene { animation: valley-drift 72s ease-in-out infinite; }
+  .stage.is-away .scene { animation-play-state: paused; }
   .copy h1 { font-size: clamp(2rem, 10vw, 2.7rem); }
   .cue { left: var(--gut-l); transform: none; justify-items: start; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
   .skipintro { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
@@ -329,7 +338,7 @@ html { scrollbar-gutter: stable; }
 .rm.js .copy, .rm.js .copy .rv { opacity: 1; visibility: visible; transform: none; }
 .rm.js .copy .ln > span { transform: none; }
 :root:not(.js) .side, :root:not(.js) .cue, :root:not(.js) .skipintro, :root:not(.js) .layer--far, :root:not(.js) .layer--arch, :root:not(.js) .bloom, :root:not(.js) .motes { display: none; }
-.rm .rock, .rm .glow { animation: none; }
+.rm .rock, .rm .glow, .rm .scene { animation: none; }
 .rm .glow { opacity: .4; }
 
 /* ---------- sheets (sections stacked like layered cards) ---------- */
@@ -446,7 +455,8 @@ h3 { font-weight: 700; font-size: clamp(1.25rem, 1.1rem + .7vw, 1.65rem); line-h
 .demolink:hover { background: var(--forest); color: var(--white); transform: translateX(3px); }
 .demolink:focus-visible { outline-offset: 3px; }
 .ladder .browser { transition: box-shadow .8s ease, transform .8s var(--ease); }
-.ladder[data-tier="premium"] .browser { transform: translateY(-4px); }
+.ladder[data-tier="premium"] .ladder__stage .browser { transform: translateY(-4px); }
+.step__box { display: none; }
 
 .ladder__steps { display: flex; flex-direction: column; }
 .step {
@@ -482,13 +492,12 @@ h3 { font-weight: 700; font-size: clamp(1.25rem, 1.1rem + .7vw, 1.65rem); line-h
 
 @media (max-width: 899px) {
   .ladder { grid-template-columns: 1fr; gap: 1rem; }
-  .ladder__stage { top: calc(var(--head-h) + 6px); padding: 10px 0 12px; background-color: var(--tier-bg); box-shadow: 0 16px 18px -14px rgba(10, 15, 12, .12); }
+  /* phones: no pinned box. Each level carries its own sample page right above its writing, and the two scroll down together */
+  .ladder__stage { display: none; }
+  .step__box { display: block; max-width: 36rem; margin-bottom: .75rem; }
+  .step__box .mock { opacity: 1; visibility: visible; transition: none; }
   .levels__bg { height: 240px; -webkit-mask-image: linear-gradient(180deg, #000 0, #000 30%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 30%, transparent 100%); }
-  .stage__foot { display: none; }
-  .pills { gap: .4rem; }
-  .stage__note { display: none; }
-  .ladder .browser, .pills { max-width: 36rem; }
-  .step { min-height: 62vh; justify-content: flex-start; padding-top: 2.5rem; }
+  .step { min-height: 0; justify-content: flex-start; padding-block: 1.75rem 2rem; }
 }
 
 /* ---- sample page mock-ups (sizes in cqw so they scale with the frame) ---- */

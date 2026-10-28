@@ -55,6 +55,8 @@
     // where the door sits on screen: the layers scale around it
     doorX = vw / 2 + (0.5006 - 0.5) * sceneW;
     doorY = vh / 2 + (0.525 - 0.5) * sceneH;
+    // phones: how far the valley drifts sideways on its own once you are inside (never further than the picture allows)
+    pin.style.setProperty('--drift', Math.max(0, Math.min(panMax * 0.6, sceneW * 0.08)).toFixed(0) + 'px');
     pin.style.setProperty('--dx', doorX.toFixed(1) + 'px');
     pin.style.setProperty('--dy', doorY.toFixed(1) + 'px');
   }
@@ -154,8 +156,10 @@
 
     // the valley: comes out of the light, settles, then drifts a little while you scroll
     const out = 1 - Math.pow(1 - sm(0.5, 1, door), 3);
-    const sB = 1.26 - 0.26 * out + 0.07 * ws;
-    const fx = 0.5 - 0.16 * sm(0.04, 0.4, ws) + 0.42 * sm(0.5, 0.95, ws);   // on a phone the camera slides across the valley
+    // wider screens: the camera eases in and slides a little while you scroll. Phones: the valley stays put (it only drifts sideways by
+    // itself, see .scene in styles.css), so scrolling down goes straight on to the plans.
+    const sB = 1.26 - 0.26 * out + (phone ? 0 : 0.07 * ws);
+    const fx = phone ? 0.5 : 0.5 - 0.16 * sm(0.04, 0.4, ws) + 0.42 * sm(0.5, 0.95, ws);
     const pan = clamp((0.5 - fx) * sceneW, -panMax, panMax);
     const bp = sm(0.5, 0.7, door) * (1 - ws);                // inside, the valley leans a little towards the pointer
     tf(beyond, `translate3d(${(-mx * 14 * bp + pan).toFixed(1)}px,${(-my * 8 * bp).toFixed(1)}px,0) scale(${sB.toFixed(3)})`);
