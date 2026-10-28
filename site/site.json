@@ -38,7 +38,8 @@
   "legal": {
     "name": "Prime Solutions",
     "email": "primesolutionsel@gmail.com",
-    "host": "[TO BE SUPPLIED: where the website is hosted]",
+    "host": "HostAfrica",
+    "host_check": "[VERIFY: HostAfrica really hosts this website. It is named on the privacy page; only the domain registration is confirmed (Cherry's package, 28 Oct 2026). Not shown on any page.]",
     "pages": [
       "privacy",
       "terms",

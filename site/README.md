@@ -22,7 +22,7 @@ The legal pages are at `/privacy/`, `/terms/` and `/refunds/`, and every page li
 
 ```
 site.json            ALL the wording (copy), prices, contact email, mode, status, the domain, the Forest theme, the six sample layouts
-legal/privacy.md     the privacy policy      one source file per legal page, each with its own version and last-updated line
+legal/privacy.md     the privacy policy      one source file per legal page, each with its own last-updated line
 legal/terms.md       the terms
 legal/refunds.md     the refund and cancellation page
 CREDITS.md           the source and licence of every picture and font
@@ -66,13 +66,14 @@ Open http://localhost:8000 (Premium), http://localhost:8000/pro/ and http://loca
 
 ## The legal pages
 
-Each page has its own source file in `legal/`: `privacy.md`, `terms.md`, `refunds.md`. A file starts with a few lines between two `---` lines (`title`, `version`, `last_updated`, `status`, `banner`) and then the text. The page shows its version and "last updated" line from those, so a change is a one-file edit.
+Each page has its own source file in `legal/`: `privacy.md`, `terms.md`, `refunds.md`. A file starts with a few lines between two `---` lines (`title`, `last_updated`, `status`, `banner`, and `version` if the page has one) and then the text. The page shows its "last updated" line (and its version, when there is one) from those, so a change is a one-file edit.
 
-- **To publish a different version of a page,** replace the text below the `---` lines with the new text, update `version` and `last_updated`, and run `python3 build.py`. Do not edit anything in `dist/`.
+- **To publish a different version of a page,** replace the text below the `---` lines with the new text, update `last_updated` (and `version`, if the page has one), and run `python3 build.py`. Do not edit anything in `dist/`.
 - **The words common to all three pages** (the name, the email, where the site is hosted) are one block in `site.json` (`legal`). A source file can use them as `{{legal.email}}`, `{{legal.name}}` and `{{legal.host}}`. No legal wording is written into the templates or the scripts.
 - **The Draft notice.** Until a page is final it carries a "Draft. This page is not final." notice. `banner: site` shows the site's notice; `banner: own` is for a file that already has its own Draft banner. The site never says a page is final or legally approved.
 - **Text kept internal.** If a source file has an internal "do not publish" box, fence it with `<!-- INTERNAL-START -->` and `<!-- INTERNAL-END -->` (or leave it as a heading or quote that says "do not publish" or "internal") and the build leaves it out of the published page. The build refuses to finish if "do not publish" text is still in a published page.
-- **Right now** each file holds one marked placeholder naming the file it is waiting for. The real wording has not been supplied, and nothing here has been written in its place.
+- **Right now** `privacy.md` holds Cherry's final privacy-policy text (from her 29 October 2026 package), still marked Draft with the site's notice. Its date line is the one in her text. `terms.md` and `refunds.md` still hold one marked placeholder each, naming the file they are waiting for; nothing has been written in their place.
+- **Privacy page and the site must stay in step.** The policy says the site has no forms, cookies, local storage, analytics, payments or outside requests, and that the copy buttons only copy to the clipboard. If any of that changes, the policy changes first. The host named in it (`legal.host` in `site.json`, now HostAfrica) is not confirmed: the marker `legal.host_check` stays in `OPEN-MARKERS.md` until Jason confirms where the site is hosted.
 - `archive/legal/` holds older policy drafts that do not fit Advertise Only. They are not used and must not be published.
 
 ## Markers: what is still to be supplied
