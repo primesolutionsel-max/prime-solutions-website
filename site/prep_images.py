@@ -5,7 +5,7 @@
   assets_in/levels-bg.png      soft landscape               ->  src/img/levels-bg.webp
   assets_in/bg-gateway.webp    the three forest backgrounds ->  src/img/ps-gateway.webp, ps-castle.webp, ps-path.webp
   assets_in/bg-castle.webp     (Standard only: each is mixed into the page's off-white, so it shows softly behind the text;
-  assets_in/bg-path.webp        the strength is "veil" in site.json, standard_theme)
+  assets_in/bg-path.webp        the strength is "veil" (and "veil_hero" for the castle) in site.json, standard_theme)
 
 The site still builds when these are missing: every picture slot has a painted fallback.
 """
@@ -61,13 +61,15 @@ def veiled():
     """the Standard backgrounds: the picture mixed into the page's off-white. veil is the share of off-white (0.74 = three parts paper, one part picture)"""
     t = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))["standard_theme"]
     paper = tuple(int(t["paper"].lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
-    for src, dst in (("bg-gateway", "ps-gateway"), ("bg-castle", "ps-castle"), ("bg-path", "ps-path")):
+    # the castle valley is the opening's picture and is kept strong ("veil_hero"); the two band pictures stay light ("veil")
+    for src, dst, key, size, q in (("bg-gateway", "ps-gateway", "veil", (1440, 809), 62), ("bg-castle", "ps-castle", "veil_hero", (1600, 899), 58),
+                                   ("bg-path", "ps-path", "veil", (1440, 809), 62)):
         f = IN / f"{src}.webp"
         if not f.exists():
             continue
-        im = Image.open(f).convert("RGB").resize((1440, 809), Image.LANCZOS)
-        im = Image.blend(im, Image.new("RGB", im.size, paper), float(t["veil"]))
-        save(im, OUT / f"{dst}.webp", quality=62, method=6)
+        im = Image.open(f).convert("RGB").resize(size, Image.LANCZOS)
+        im = Image.blend(im, Image.new("RGB", im.size, paper), float(t.get(key, t["veil"])))
+        save(im, OUT / f"{dst}.webp", quality=q, method=6)
 
 
 def derive():

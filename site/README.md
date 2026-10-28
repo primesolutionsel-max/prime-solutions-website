@@ -12,7 +12,7 @@ Plain HTML, CSS and a small amount of JavaScript. No framework, no build tooling
 |---|---|---|
 | Premium | `/` (the main address) | The front door: a pinned entrance (a stone arch you walk through, from midday through sunset to night, with the stones floating gently), then the sheets. |
 | Pro | `/pro/` | The same site with the portal picture as the opening and only the swirl turning, layered blocks, scroll reveals, a header that follows you down. Two typefaces. Less rich than Premium. No zoom-in opening. |
-| Standard | `/standard/` | The same site, calm and finished, in its own look: off-white (the main colour), black, pastel green and forest green, set in one serif typeface (Prime Serif, a cut-down copy of Lora). Soft forest pictures sit lightly behind the opening and two bands, the portal picture is kept still in a frame, and the sunrise sky and the valley appear faintly. The header has no bar: links sit in the middle and a burger menu takes over on phones. A slow fade as each part arrives, nothing on hover. |
+| Standard | `/standard/` | The same site, calm and finished, in its own look: off-white (the main colour), black, pastel green and forest green, set in one serif typeface (Prime Serif, a cut-down copy of Lora). The opening has no portal: the castle-and-tower valley picture sits strong behind it and fades out as "The three levels" begins. Two more forest pictures sit lightly behind two bands, and the sunrise sky and the valley appear faintly. The header has no bar: links sit in the middle and a burger menu takes over on phones. A slow fade as each part arrives, nothing on hover. |
 
 Premium shows Standard and Pro in its "Three levels" section, and every level links to the others. Same sections, same words, same prices at every level. Only the treatment changes (Premium is richer than Pro, and Pro is richer than Standard).
 
@@ -84,7 +84,7 @@ A marker is any text in square brackets that starts with `[TO BE SUPPLIED`, `[JA
 ## The Standard look
 
 - Colours and softness are in `site.json` under `standard_theme` (`paper`, `card`, `sage`, `forest`, `ink` and the rest). `demos.py` (`std_vars`) turns them into the page's variables, so the Standard page has its own palette without touching Pro or Premium.
-- The three background pictures (`src/img/ps-castle.webp`, `ps-gateway.webp`, `ps-path.webp`) are the originals in `assets_in/bg-*.webp` mixed into the off-white. `standard_theme.veil` (0 to 1) says how much off-white goes over them: higher is lighter. To change it, edit `veil` and run `python3 prep_images.py`, then `python3 build.py`.
+- The three background pictures (`src/img/ps-castle.webp`, `ps-gateway.webp`, `ps-path.webp`) are the originals in `assets_in/bg-*.webp` mixed into the off-white. `standard_theme.veil` (0 to 1) says how much off-white goes over the two band pictures, and `veil_hero` how much goes over the castle picture in the opening (kept low, so it stays strong): higher is lighter. To change either, edit it and run `python3 prep_images.py`, then `python3 build.py`. The fade of the castle picture into "The three levels" is in `src/css/tiers.css` (`.ps-top`, `--ps-run`).
 - The typeface is `src/fonts/prime-serif.woff` (Lora cut down and renamed, see `CREDITS.md`). Only that one font file loads on the Standard page.
 - The three background pictures are AI-made, which the build rules for this project do not allow. They are marked in `CREDITS.md` for the owner to decide.
 

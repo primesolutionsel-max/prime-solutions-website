@@ -26,7 +26,8 @@
     "forest_deep": "#084A2F",
     "ink": "#0B0F0C",
     "mute": "#3F4A43",
-    "veil": 0.74
+    "veil": 0.74,
+    "veil_hero": 0.12
   },
   "seo": {
     "area_served": "South Africa",

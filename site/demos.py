@@ -223,7 +223,6 @@ def standard(c):
           <p class="ps-lead">{esc(C["hero"]["lead"])}</p>
           <div class="ps-cta">{email_btn(c, "d-btn--lg")}<a class="d-link" {c.jump("levels")}>{esc(C["hero"]["see_levels"])}</a></div>
         </div>
-        <div class="ps-frame"><div class="ps-photo ph-portal" role="img" aria-label="{esc(C["alt"]["portal"])}"></div></div>
       </section>
       </div>
       <section class="ps-band ps-band--soft" id="std-levels" aria-labelledby="std-levels-t"><div class="ps-sky" aria-hidden="true"></div><div class="ps-wrap ps-block">

@@ -22,7 +22,7 @@
    Three soft forest pictures sit behind parts of the page, already mixed into the off-white; the portal and the sunrise sky are the
    same pictures as Pro and Premium, kept still. One gentle fade as each part arrives. No swirl, no sticky header, nothing on hover. */
 .tier--standard { --f-body: 'Prime Serif', 'Lora', Georgia, 'Times New Roman', serif; --f-display: 'Prime Serif', 'Lora', Georgia, 'Times New Roman', serif; }   /* the skip link too, so the other typeface is never fetched here */
-.d--standard { --ps-shadow: 0 1px 2px rgba(11, 15, 12, .06), 0 16px 30px -22px rgba(8, 74, 47, .42); --ps-shadow-lg: 0 2px 4px rgba(11, 15, 12, .06), 0 30px 48px -28px rgba(8, 74, 47, .55); --ps-lead: #2B352F;
+.d--standard { --ps-run: clamp(4.5rem, 9vw, 7rem); --ps-shadow: 0 1px 2px rgba(11, 15, 12, .06), 0 16px 30px -22px rgba(8, 74, 47, .42); --ps-shadow-lg: 0 2px 4px rgba(11, 15, 12, .06), 0 30px 48px -28px rgba(8, 74, 47, .55); --ps-lead: #2B352F;
   background: var(--d-bg); font-size: 1.0625rem; line-height: 1.65; font-variant-numeric: lining-nums; }
 .d--standard :is(h2, h3, h4) { font-family: var(--f-body); font-weight: 700; text-wrap: balance; }
 .ps-wrap { width: 100%; max-width: 68rem; margin-inline: auto; padding-inline: clamp(1.25rem, 4vw, 2.5rem); }
@@ -32,9 +32,12 @@
 .d--standard .d-btn { letter-spacing: .01em; }
 
 /* the top: header and opening share one picture (the castle valley), faded into the off-white on the left and at the bottom */
-.ps-top { position: relative; isolation: isolate; background-color: var(--d-bg); }
+.ps-top { position: relative; isolation: isolate; background-color: var(--d-bg); padding-bottom: var(--ps-run); margin-bottom: calc(-1 * var(--ps-run)); }
 .ps-top::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(90deg, rgba(var(--ps-rgb), .9) 0%, rgba(var(--ps-rgb), .55) 42%, rgba(var(--ps-rgb), 0) 74%), linear-gradient(180deg, rgba(var(--ps-rgb), 0) 55%, rgb(var(--ps-rgb)) 100%); }
+  background:
+    linear-gradient(180deg, rgba(var(--ps-rgb), .86) 0, rgba(var(--ps-rgb), .5) 5.5rem, rgba(var(--ps-rgb), 0) 11rem),
+    linear-gradient(90deg, rgba(var(--ps-rgb), .94) 0%, rgba(var(--ps-rgb), .78) 30%, rgba(var(--ps-rgb), .22) 56%, rgba(var(--ps-rgb), 0) 74%),
+    linear-gradient(180deg, rgba(var(--ps-rgb), 0) 52%, rgba(var(--ps-rgb), .7) 80%, rgb(var(--ps-rgb)) 100%); }
 /* the header has no bar of its own: the picture shows through. Links in the middle; a burger on phones */
 .ps-head .ps-wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 1rem 1.5rem; min-height: 76px; }
 .ps-logo { justify-self: start; font-size: 1.2rem; font-weight: 700; letter-spacing: -.005em; color: var(--d-ink); text-decoration: none; }
@@ -60,24 +63,18 @@
 .ps-eyebrow { display: inline-flex; align-items: center; gap: .6rem; font: 600 .8125rem/1.2 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: var(--d-brand); }
 .ps-eyebrow::before { content: ""; width: 1.6rem; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--d-brand), var(--d-acc)); }
 
-.ps-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; padding-block: clamp(2.25rem, 6vw, 4.5rem) clamp(3rem, 7vw, 5.5rem); }
-.ps-hero__copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+.ps-hero { display: flex; align-items: center; min-height: min(72vh, 38rem); padding-block: clamp(2.5rem, 7vw, 5rem) clamp(3.5rem, 8vw, 6rem); }
+.ps-hero__copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; max-width: 34rem; animation: ps-in .9s var(--ease) both; }
 .ps-hero h2 { font-weight: 700; font-size: clamp(2.4rem, 5.4vw, 3.9rem); line-height: 1.05; letter-spacing: -.015em; }
 .ps-hero h2 span { display: block; }
 .ps-hero h2 span:last-child { color: var(--d-brand); }
 .ps-lead { font-size: 1.2rem; line-height: 1.55; color: var(--ps-lead); max-width: 28ch; }
 .ps-cta { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem 1.5rem; margin-top: .4rem; }
-/* the portal picture, still, set in a frame like a plate on the wall, with a pastel green plate behind it */
-.ps-frame { position: relative; isolation: isolate; padding: 10px; border-radius: 22px; background: var(--d-card); box-shadow: var(--ps-shadow-lg), 0 0 0 1px var(--d-line); }
-.ps-frame::before { content: ""; position: absolute; z-index: -1; inset: 8% -5% -7% 10%; border-radius: 26px; background: var(--d-mint); box-shadow: inset 0 0 0 1px rgba(11, 93, 59, .14); }
-.ps-photo { aspect-ratio: 5 / 4; border-radius: 14px; background-color: #1B2B21; box-shadow: inset 0 0 0 1px rgba(11, 15, 12, .2); }
-.ps-hero__copy, .ps-frame { animation: ps-in .9s var(--ease) both; }
-.ps-frame { animation-delay: .14s; }
 @keyframes ps-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 /* the bands */
 .ps-band { position: relative; isolation: isolate; }
-.ps-band--soft { background: var(--d-bg); }
+.ps-band--soft { background: linear-gradient(180deg, transparent 0, var(--d-bg) var(--ps-run, 6rem)); }
 .ps-band--tint { background: linear-gradient(180deg, var(--d-mint2) 0%, var(--d-paper2) 100%); box-shadow: inset 0 1px 0 var(--d-line), inset 0 -1px 0 var(--d-line); }
 .ps-band--gate, .ps-band--path { background-color: var(--d-bg); box-shadow: inset 0 1px 0 var(--d-line), inset 0 -1px 0 var(--d-line); }
 /* writing straight on a picture takes the deeper green, so it stays readable over the darkest parts */
@@ -292,12 +289,13 @@
 
 /* ------------------------------------------------------------------------------------- narrower screens */
 @media (max-width: 899px) {
+  /* on a phone the writing runs across the whole width, so the picture is veiled from the top down instead of from the left */
+  .ps-top::before { background: linear-gradient(180deg, rgba(var(--ps-rgb), .9) 0, rgba(var(--ps-rgb), .66) 6rem, rgba(var(--ps-rgb), .6) 58%, rgba(var(--ps-rgb), .82) 82%, rgb(var(--ps-rgb)) 100%); }
+  .ps-hero { min-height: 0; }
   .ps-head nav, .pp-head nav { display: none; }
   .ps-head .ps-wrap { grid-template-columns: minmax(0, 1fr) auto auto; gap: .5rem; }
   .ps-menu { display: block; }
-  .ps-hero, .ps-incl, .ps-contact__in { grid-template-columns: 1fr; }
-  .ps-photo { aspect-ratio: 4 / 3; }
-  .ps-frame::before { inset: 6% -2% -4% 4%; }
+  .ps-incl, .ps-contact__in { grid-template-columns: 1fr; }
   .ps-levels, .ps-samples, .pp-levels__row { grid-template-columns: 1fr; }
   .pp-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ps-steps { grid-template-columns: 1fr; }
@@ -321,7 +319,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pp-door, .ps-hero__copy, .ps-frame { animation: none; }
+  .pp-door, .ps-hero__copy { animation: none; }
   .pp-sample .pp-pic, .pp-level, .pp-feat li, .pp-steps li { transition: none; }
   .pp-sample:hover .pp-pic, .pp-level:hover, .pp-feat li:hover, .pp-steps li:hover { transform: none; }
 }

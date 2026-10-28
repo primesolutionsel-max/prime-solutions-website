@@ -551,12 +551,12 @@ def photo_css():
                    f"background-size: {100 / d:.2f}% auto; background-position: {px:.2f}% {py:.2f}%; }}")
     if has_img("pro-valley.webp"):
         out.append("html .pp-contact__bg, html .ps-contact__bg { background-image: url(../img/pro-valley.webp); background-size: cover; background-position: center; }")
-    if has_img("pro-hero.webp"):
-        out.append("html .ps-photo.ph-portal { background-image: url(../img/pro-hero.webp); background-size: cover; background-position: 50% 62%; }")   # the portal picture, still, in a frame
     # the three forest backgrounds of the Standard page (already mixed into the off-white, see prep_images.py)
-    for cls, img, pos in (("ps-top", "ps-castle", "62% 8%"), ("ps-band--gate", "ps-gateway", "72% 30%"), ("ps-band--path", "ps-path", "68% 50%")):
+    for cls, img, pos in (("ps-top", "ps-castle", "70% 22%"), ("ps-band--gate", "ps-gateway", "72% 30%"), ("ps-band--path", "ps-path", "68% 50%")):
         if has_img(f"{img}.webp"):
             out.append(f"html .{cls} {{ background-image: url(../img/{img}.webp); background-size: cover; background-position: {pos}; }}")
+            if cls == "ps-top":   # on a phone the tower sits to the right of the writing
+                out.append("@media (max-width: 899px) { html .ps-top { background-position: 84% 0; } }")
     return "\n".join(out) + "\n"
 
 
