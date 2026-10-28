@@ -19,7 +19,7 @@ Anything not yet known is a marked field. The build lists every open marker in `
 
 None. The site is plain HTML, CSS and a little JavaScript. `build.py` uses Python 3 and Pillow (build time only, nothing from it is shipped).
 The small icons are plain SVG shapes written in this project (`ICONS` in `demos.py`, and the page template); no icon library is used.
-`pro-mist.webp` (the clouds that swirl in the Pro portal) is drawn by `prep_images.py` from random noise, so it has no outside source. The `*-sm.webp` pictures are small copies of the pictures above, made for phones, so they follow the same sources and licences.
+The `*-sm.webp` pictures are small copies of the pictures above, made for phones, so they follow the same sources and licences.
 `og.png` (the picture shown when the link is shared) is drawn by `build.py` from the words in `site.json`, the Forest colours and the fonts above.
 
 ## Pictures (`src/img/`, made from the originals in `assets_in/`)

@@ -1036,7 +1036,7 @@ html.demo-open { overflow: hidden; }
 /* ------------------------------------------------------------------------------------- Pro
    Dark portal opening (the glow needs the dark), then the Standard colours: off-white, black, pastel and forest green. Two typefaces.
    The same three forest pictures as Standard sit behind its bands, but they melt into the page at their edges. Richer than Standard:
-   a header that follows you down and goes clear, a vortex of clouds in the portal, layered cards that lift on hover. Less than Premium. */
+   a header that follows you down and goes clear, a vortex in the portal, layered cards that lift on hover. Less than Premium. */
 .d--pro { --pp-night: #07110B; --pp-lead: #2B352F; --pp-shadow: 0 1px 2px rgba(11, 15, 12, .06), 0 20px 34px -24px rgba(8, 74, 47, .5);
   --pp-veil-castle: linear-gradient(180deg, rgba(7, 17, 11, 1) 0, rgba(7, 17, 11, 0) 7rem), linear-gradient(180deg, rgba(var(--ps-rgb), .34) 0, rgba(var(--ps-rgb), .64) 42%, rgba(var(--ps-rgb), .95) 100%);
   --pp-veil-gate: linear-gradient(180deg, rgb(var(--ps-rgb)) 0, rgba(var(--ps-rgb), 0) 6rem, rgba(var(--ps-rgb), 0) calc(100% - 6rem), rgb(var(--ps-rgb)) 100%);
@@ -1071,18 +1071,13 @@ html.demo-open { overflow: hidden; }
 .pp-hero__pic { position: absolute; inset: 0 0 0 20%; z-index: -1; container-type: size; pointer-events: none; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 40%); mask-image: linear-gradient(90deg, transparent 0, #000 40%); }
 .pp-scene { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1680 / 944; transform: translate(-50%, -50%); background-size: 100% 100%; background-repeat: no-repeat; }
 @supports (width: 1cqw) { .pp-scene { width: max(100cqw, 177.97cqh); } }
-.pp-mist { position: absolute; transform: translate(-50%, -50%); -webkit-mask-image: radial-gradient(closest-side, #000 58%, transparent 100%); mask-image: radial-gradient(closest-side, #000 58%, transparent 100%); }
-.pp-mist b { position: absolute; inset: 0; background-size: 100% 100%; background-repeat: no-repeat; opacity: 0; animation: pp-vortex 12s linear infinite; will-change: transform, opacity; }
-.pp-mist b:nth-child(1) { --r: 0deg; }
-.pp-mist b:nth-child(2) { --r: 125deg; animation-delay: -4s; }
-.pp-mist b:nth-child(3) { --r: 250deg; animation-delay: -8s; }
-/* each cloud starts wide and faint, swirls clockwise as it shrinks into the light, and fades out just before it gets there */
-@keyframes pp-vortex {
-  0% { transform: scale(2.3) rotate(var(--r)); opacity: 0; }
-  16% { opacity: .9; }
-  80% { opacity: .8; }
-  100% { transform: scale(.1) rotate(calc(var(--r) + 170deg)); opacity: 0; }
-}
+/* the swirl in the doorway turns clockwise around the white light: the whole doorway slowly, its middle faster, so it reads as a vortex.
+   It is the doorway's own picture that turns (squashed round, turned, stretched back: see build.py), nothing is added on top. */
+.pp-door { position: absolute; aspect-ratio: 1; -webkit-mask-image: radial-gradient(closest-side, #000 58%, transparent 100%); mask-image: radial-gradient(closest-side, #000 58%, transparent 100%); }
+.pp-door i { position: absolute; left: 50%; top: 50%; aspect-ratio: 1; background-repeat: no-repeat; will-change: transform; }
+.pp-door i:first-child { width: 100%; animation: pp-turn 42s linear infinite; }
+.pp-door i:last-child { border-radius: 50%; animation: pp-turn 14s linear infinite; -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%); mask-image: radial-gradient(closest-side, #000 55%, transparent 100%); }
+@keyframes pp-turn { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 .pp-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(90deg, var(--pp-night) 0%, rgba(7, 17, 11, .8) 26%, rgba(7, 17, 11, 0) 52%), linear-gradient(0deg, var(--pp-night) 0%, rgba(7, 17, 11, 0) 22%); }
 .pp-hero__in { width: 100%; }
 .pp-hero__copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.2rem; max-width: 30rem; }
@@ -1224,9 +1219,6 @@ html.demo-open { overflow: hidden; }
 @media (max-width: 700px) {
   .ps-head .ps-wrap > .d-btn, .pp-head .pp-wrap > .d-btn { display: none; }   /* the opening already has the email button */
   .ps-head .ps-wrap, .pp-head .pp-wrap { grid-template-columns: minmax(0, 1fr) auto; }
-  .pp-mist b:nth-child(3) { display: none; }   /* two cloud layers are enough on a phone */
-  .pp-mist b { animation-duration: 10s; }
-  .pp-mist b:nth-child(2) { animation-delay: -5s; }
   .pp-feat, .pp-steps { grid-template-columns: 1fr; }
   .pp-samples::before { inset: 6% -3% 0 12%; }
   .ps-foot__row, .pp-foot__row { flex-direction: column; }
@@ -1234,8 +1226,7 @@ html.demo-open { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .ps-hero__copy { animation: none; }
-  .pp-mist b { animation: none; }   /* the clouds hold still: one soft layer, no swirl */
-  .pp-mist b:nth-child(1) { opacity: .6; transform: scale(1.05) rotate(20deg); }
+  .pp-door i, .pp-door i:first-child, .pp-door i:last-child { animation: none; }   /* the swirl holds still */
   .pp-head, .pp-head .pp-wrap > .d-btn { transition: none; }
   .pp-sample .pp-pic, .pp-level, .pp-feat li, .pp-steps li { transition: none; }
   .pp-sample:hover .pp-pic, .pp-level:hover, .pp-feat li:hover, .pp-steps li:hover { transform: none; }
@@ -1256,10 +1247,11 @@ html .ph.ph-firm { background-image: url(../img/trade-firm.webp); background-siz
 @media (max-width: 700px) { html .pp-pic.ph-firm { background-image: url(../img/trade-firm-sm.webp); } }
 html .levels__bg { background-image: url(../img/levels-bg.webp); background-size: cover; background-position: center bottom; }
 html .ps-sky { background-image: url(../img/levels-bg.webp); }
-html .pp-scene { background-image: url(../img/pro-hero.webp); }
-html .pp-mist { left: 50.00%; top: 50.50%; width: 17.00%; height: 56.00%; }
-@media (max-width: 700px) { html .pp-scene { background-image: url(../img/pro-hero-sm.webp); } }
-html .pp-mist b { background-image: url(../img/pro-mist.webp); }
+html .pp-scene, html .pp-door i { background-image: url(../img/pro-hero.webp); }
+html .pp-door { left: 50.00%; top: 52.44%; width: 15.60%; transform: translate(-50%, -50%) scaleY(1.975); }
+html .pp-door i:first-child { background-size: 641.03% 182.38%; background-position: 50.00% 55.40%; }
+html .pp-door i:last-child { width: 50%; background-size: 1282.05% 364.75%; background-position: 50.00% 53.36%; }
+@media (max-width: 700px) { html .pp-scene, html .pp-door i { background-image: url(../img/pro-hero-sm.webp); } }
 html .pp-contact__bg, html .ps-contact__bg { background-image: url(../img/pro-valley.webp); background-size: cover; background-position: center; }
 @media (max-width: 700px) { html .pp-contact__bg { background-image: url(../img/pro-valley-sm.webp); } }
 html .ps-top { background-image: url(../img/ps-castle.webp); background-size: cover; background-position: 70% 22%; }

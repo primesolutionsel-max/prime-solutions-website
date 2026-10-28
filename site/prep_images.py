@@ -7,7 +7,7 @@
   assets_in/bg-castle.webp     (Standard only: each is mixed into the page's off-white, so it shows softly behind the text;
   assets_in/bg-path.webp        the strength is "veil" (and "veil_hero" for the castle) in site.json, standard_theme)
 
-  (Pro only)                   a soft cloud texture drawn here, and small copies of the big pictures for phones (name-sm.webp)
+  (Pro, phones)                small copies of the big pictures (name-sm.webp)
 
 The site still builds when these are missing: every picture slot has a painted fallback.
 """
@@ -40,7 +40,6 @@ def save(im, path, **kw):
 def main():
     derive()
     veiled()
-    mist()
     sheet = IN / "trades-sheet.png"
     if sheet.exists():
         im = Image.open(sheet).convert("RGB")
@@ -75,38 +74,6 @@ def veiled():
         im = Image.blend(im, Image.new("RGB", im.size, paper), float(t.get(key, t["veil"])))
         save(im, OUT / f"{dst}.webp", quality=q, method=6)
         save(im.resize((800, round(im.height * 800 / im.width)), Image.LANCZOS), OUT / f"{dst}-sm.webp", quality=q - 4, method=6)   # for phones
-
-
-def mist():
-    """a soft cloud texture (pale green-white, see-through, fading out toward its edges) for the clouds that swirl into the Pro portal.
-    Smoothed random noise, bent into spiral arms around the centre so that turning it while it shrinks reads as a vortex. Fixed seed: same every time."""
-    import numpy as np
-    n, big = 320, 640
-    rng = np.random.default_rng(11)
-    f, amp, tot = np.zeros((big, big)), 1.0, 0.0
-    for o in range(5):
-        g = rng.random((3 * 2 ** o, 3 * 2 ** o))
-        f += np.asarray(Image.fromarray((g * 255).astype("uint8")).resize((big, big), Image.BICUBIC), float) / 255 * amp
-        tot += amp
-        amp *= .55
-    f /= tot
-    y, x = np.mgrid[0:n, 0:n] / (n - 1)
-    dx, dy = (x - .5) * 2, (y - .5) * 2
-    r, th = np.sqrt(dx ** 2 + dy ** 2), np.arctan2(dy, dx)
-    th2 = th + 3.4 * r                                          # the spiral: the further out, the more the noise is wound
-    u = np.clip(((.5 + .5 * r * np.cos(th2)) * (big - 1)).astype(int), 0, big - 1)
-    v = np.clip(((.5 + .5 * r * np.sin(th2)) * (big - 1)).astype(int), 0, big - 1)
-    d = np.clip((f[v, u] - .35) * 3.0, 0, 1)
-    d = d * d * (3 - 2 * d)                                     # smoothstep: soft cloud edges
-    fall = np.clip(1 - r, 0, 1)
-    fall = fall * fall * (3 - 2 * fall)
-    inner = np.clip(r / .16, 0, 1)                              # a clear hole at the very centre, where the light is
-    a = np.clip(d * fall * inner * 1.4, 0, .95)
-    a = np.clip(a + (rng.random(a.shape) - .5) * .006, 0, 1)    # a whisper of grain so the soft edges do not band
-    lo, hi = np.array([140, 224, 180], float), np.array([236, 252, 242], float)
-    rgb = lo + (hi - lo) * d[..., None]
-    out = np.dstack([rgb, a * 255]).astype("uint8")
-    Image.fromarray(out, "RGBA").save(OUT / "pro-mist.webp", "WEBP", quality=70, alpha_quality=80, method=6)
 
 
 def derive():

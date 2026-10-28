@@ -301,7 +301,7 @@ def pro(c):
           <div class="ps-menu__panel">{nav_html(c)}</div></details>
       </div></header>
       <section class="pp-hero" aria-labelledby="pro-hero-t">
-        <div class="pp-hero__pic" role="img" aria-label="{esc(C["alt"]["portal"])}"><div class="pp-scene"><div class="pp-mist" aria-hidden="true"><b></b><b></b><b></b></div></div></div>
+        <div class="pp-hero__pic" role="img" aria-label="{esc(C["alt"]["portal"])}"><div class="pp-scene"><div class="pp-door" aria-hidden="true"><i></i><i></i></div></div></div>
         <div class="pp-wrap pp-hero__in">
           <div class="pp-hero__copy d-rv">
             <p class="pp-kicker">{esc(C["hero"]["eyebrow"])}</p>

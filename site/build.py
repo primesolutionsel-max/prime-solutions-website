@@ -528,8 +528,9 @@ def rocks():
     return "\n".join(out)
 
 
-# the doorway of pro-hero.webp, as fractions of the picture: where the clouds swirl in (centre, width, height of the oval inside the arch)
-MIST = {"cx": 0.5000, "cy": 0.5050, "w": 0.1700, "h": 0.5600}
+# the doorway of pro-hero.webp: cx / cy = the white light at the centre of the swirl (fractions of the picture's width / height),
+# a = half the width of the doorway (fraction of the picture's width), k = how much taller than wide the doorway is, core = the faster-turning middle (share of a)
+DOOR = {"cx": 0.5000, "cy": 0.5244, "a": 0.078, "k": 1.975, "core": 0.5}
 
 
 # pictures are background images set by class, so each one is stored once however often it is used
@@ -544,14 +545,21 @@ def photo_css():
         out.append("html .levels__bg { background-image: url(../img/levels-bg.webp); background-size: cover; background-position: center bottom; }")
         out.append("html .ps-sky { background-image: url(../img/levels-bg.webp); }")   # the soft sunrise sky, Standard
     if has_img("pro-hero.webp"):
-        # the Pro opening: the portal picture, and an oval of clouds over its doorway that swirl in (the clouds' own picture is pro-mist.webp)
-        m = MIST
-        out.append("html .pp-scene { background-image: url(../img/pro-hero.webp); }")
-        out.append(f"html .pp-mist {{ left: {m['cx'] * 100:.2f}%; top: {m['cy'] * 100:.2f}%; width: {m['w'] * 100:.2f}%; height: {m['h'] * 100:.2f}%; }}")
+        # the Pro opening: the portal picture, and the swirl in its doorway turning clockwise around the white light, the whole doorway slowly and its middle faster.
+        # The doorway is an oval, so the swirl is squashed to a circle (the picture is drawn 1/k as tall), turned, and the whole thing stretched back by k:
+        # that way the swirl turns as one with the stones staying still, and nothing is added on top of the picture.
+        cx, cy, ar, a, k = DOOR["cx"], DOOR["cy"], 944 / 1680, DOOR["a"], DOOR["k"]
+
+        def layer(sd):   # sd = the side of the turning square, as a fraction of the picture's width
+            px = (0.5 * sd - cx) / (sd - 1) * 100
+            py = (0.5 * sd - cy * ar / k) / (sd - ar / k) * 100
+            return f"background-size: {100 / sd:.2f}% {100 * ar / (k * sd):.2f}%; background-position: {px:.2f}% {py:.2f}%;"
+        out.append("html .pp-scene, html .pp-door i { background-image: url(../img/pro-hero.webp); }")
+        out.append(f"html .pp-door {{ left: {cx * 100:.2f}%; top: {cy * 100:.2f}%; width: {2 * a * 100:.2f}%; transform: translate(-50%, -50%) scaleY({k}); }}")
+        out.append(f"html .pp-door i:first-child {{ {layer(2 * a)} }}")
+        out.append(f"html .pp-door i:last-child {{ width: {DOOR['core'] * 100:.0f}%; {layer(2 * a * DOOR['core'])} }}")
         if has_img("pro-hero-sm.webp"):
-            out.append("@media (max-width: 700px) { html .pp-scene { background-image: url(../img/pro-hero-sm.webp); } }")
-    if has_img("pro-mist.webp"):
-        out.append("html .pp-mist b { background-image: url(../img/pro-mist.webp); }")
+            out.append("@media (max-width: 700px) { html .pp-scene, html .pp-door i { background-image: url(../img/pro-hero-sm.webp); } }")
     if has_img("pro-valley.webp"):
         out.append("html .pp-contact__bg, html .ps-contact__bg { background-image: url(../img/pro-valley.webp); background-size: cover; background-position: center; }")
         if has_img("pro-valley-sm.webp"):
