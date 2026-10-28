@@ -7,6 +7,9 @@
   assets_in/bg-castle.webp     (Standard only: each is mixed into the page's off-white, so it shows softly behind the text;
   assets_in/bg-path.webp        the strength is "veil" (and "veil_hero" for the castle) in site.json, standard_theme)
 
+  assets_in/bg-*.webp          the same three, for Premium ->  src/img/pm-gateway.webp, pm-path.webp (kept dark: they sit behind the sample and
+                               contact parts), pm-castle.webp (mixed into white: it sits softly behind "How it works")
+
   (Pro, phones)                small copies of the big pictures (name-sm.webp)
 
 The site still builds when these are missing: every picture slot has a painted fallback.
@@ -40,6 +43,7 @@ def save(im, path, **kw):
 def main():
     derive()
     veiled()
+    premium()
     sheet = IN / "trades-sheet.png"
     if sheet.exists():
         im = Image.open(sheet).convert("RGB")
@@ -74,6 +78,20 @@ def veiled():
         im = Image.blend(im, Image.new("RGB", im.size, paper), float(t.get(key, t["veil"])))
         save(im, OUT / f"{dst}.webp", quality=q, method=6)
         save(im.resize((800, round(im.height * 800 / im.width)), Image.LANCZOS), OUT / f"{dst}-sm.webp", quality=q - 4, method=6)   # for phones
+
+
+def premium():
+    """the Premium backgrounds. Two stay dark (a little ink mixed in, the rest of the darkening is a gradient written in styles.css):
+    the gateway behind the samples, the path behind contact. The castle is mixed into white so it shows softly behind the dark text of "How it works"."""
+    ink, white = (10, 15, 12), (255, 255, 255)
+    for src, dst, mix, k, q in (("bg-gateway", "pm-gateway", ink, 0.30, 50), ("bg-castle", "pm-castle", white, 0.76, 60), ("bg-path", "pm-path", ink, 0.26, 48)):
+        f = IN / f"{src}.webp"
+        if not f.exists():
+            continue
+        im = Image.open(f).convert("RGB").resize((1440, 809), Image.LANCZOS)
+        im = Image.blend(im, Image.new("RGB", im.size, mix), k)
+        save(im, OUT / f"{dst}.webp", quality=q, method=6)
+        save(im.resize((800, round(im.height * 800 / im.width)), Image.LANCZOS), OUT / f"{dst}-sm.webp", quality=q - 6, method=6)   # for phones
 
 
 def derive():

@@ -12,8 +12,9 @@
 {{head_social}}
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{{favicon}}">
-<link rel="preload" href="{{base}}fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
-<link rel="preload" href="{{base}}fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/prime-display-bold.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/prime-text-regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="{{base}}fonts/prime-text-semibold.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="img/portal-arch-1680.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="preload" href="img/portal-far-1680.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="stylesheet" href="css/styles.css">
@@ -49,13 +50,6 @@
       <div class="layer layer--beyond" data-beyond>
         <img src="img/beyond-1680.webp" width="1680" height="944" alt="{{copy.entrance.alt_valley}}" decoding="async">
 {{rocks}}
-        <div class="sun" data-sun></div>
-        <div class="sunset" data-sunset></div>
-        <div class="dusk" data-dusk></div>
-        <div class="twilight" data-twilight></div>
-        <div class="night" data-night></div>
-        <div class="moon" data-moon></div>
-        <div class="stars" data-stars></div>
       </div>
     </div>
 
@@ -120,7 +114,8 @@
     </div>
   </section>
 
-  <section class="sheet samples" id="samples" data-tone="light" aria-labelledby="samples-title" data-section>
+  <section class="sheet samples" id="samples" data-tone="ink" aria-labelledby="samples-title" data-section data-spot>
+    <div class="bgpic bgpic--gate" data-bgpic aria-hidden="true"><i></i></div>
     <div class="wrap samples__layout">
       <div class="samples__intro reveal">
         <p class="eyebrow">{{copy.samples.eyebrow}}</p>
@@ -183,6 +178,7 @@
   </section>
 
   <section class="sheet process" id="process" data-tone="light" aria-labelledby="process-title" data-section>
+    <div class="bgpic bgpic--castle" data-bgpic aria-hidden="true"><i></i></div>
     <div class="wrap process__layout">
       <header class="section__head process__head reveal">
         <p class="eyebrow">{{copy.process.eyebrow}}</p>
@@ -208,7 +204,8 @@
     </div>
   </section>
 
-  <section class="sheet contact" id="contact" data-tone="ink" aria-labelledby="contact-title" data-section>
+  <section class="sheet contact" id="contact" data-tone="ink" aria-labelledby="contact-title" data-section data-spot>
+    <div class="bgpic bgpic--path" data-bgpic aria-hidden="true"><i></i></div>
     <div class="contact__glow" aria-hidden="true"></div>
     <div class="wrap contact__inner">
       <p class="eyebrow reveal">{{copy.contact.eyebrow}}</p>

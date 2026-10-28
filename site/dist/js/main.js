@@ -98,12 +98,57 @@
     scrollTo({ top, behavior: reduce.matches ? 'auto' : 'smooth' });
   }));
 
+  /* ---------- pictures behind three parts of the page ----------
+     A picture is only fetched when its part is close (the class is-near turns it on in the CSS) and it drifts a little slower than the page. */
+  const pics = $$('[data-bgpic]');
+  const livePics = new Set();
+  if (pics.length && 'IntersectionObserver' in window) {
+    const near = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('is-near'); livePics.add(en.target); } else livePics.delete(en.target);
+    }), { rootMargin: '120% 0px 120% 0px' });
+    pics.forEach((el) => near.observe(el));
+  } else pics.forEach((el) => el.classList.add('is-near'));
+  const drift = () => {
+    if (reduce.matches) return;
+    livePics.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      const mid = r.top + r.height / 2 - innerHeight / 2;
+      el.firstElementChild.style.transform = `translate3d(0,${(-mid * 0.1).toFixed(1)}px,0)`;
+    });
+  };
+
+  /* ---------- a soft light that follows the pointer (mouse and trackpad only) ---------- */
+  if (!reduce.matches && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    $$('[data-spot]').forEach((sec) => {
+      const pic = $('[data-bgpic]', sec);
+      if (!pic) return;
+      let raf = 0, px = 0, py = 0;
+      sec.addEventListener('pointermove', (e) => {
+        const r = sec.getBoundingClientRect();
+        px = e.clientX - r.left; py = e.clientY - r.top;
+        if (!raf) raf = requestAnimationFrame(() => { raf = 0; pic.style.setProperty('--mx', px.toFixed(0) + 'px'); pic.style.setProperty('--my', py.toFixed(0) + 'px'); pic.style.setProperty('--spot', '1'); });
+      }, { passive: true });
+      sec.addEventListener('pointerleave', () => pic.style.setProperty('--spot', '0'));
+    });
+    const grid = $('.included__grid');
+    if (grid) {
+      grid.addEventListener('pointermove', (e) => {
+        const c = e.target.closest('.feat__card, .included__col--extra');
+        if (!c) return;
+        const r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px');
+        c.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px');
+      }, { passive: true });
+    }
+  }
+
   /* ---------- scroll loop ---------- */
   let ticking = false;
   const update = () => {
     ticking = false;
     const y = scrollY;
     updateTone();
+    drift();
 
     updateLadder();
 

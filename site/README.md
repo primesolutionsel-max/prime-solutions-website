@@ -10,7 +10,7 @@ Plain HTML, CSS and a small amount of JavaScript. No framework, no build tooling
 
 | Level | Address | What it is |
 |---|---|---|
-| Premium | `/` (the main address) | The front door: a pinned entrance (a stone arch you walk through, from midday through sunset to night, with the stones floating gently), then the sheets. |
+| Premium | `/` (the main address) | The front door: a pinned entrance (a stone arch you walk through with one swipe, with the stones floating gently), then the sheets. Poppins headings and Inter text (renamed Prime Display and Prime Text), the three forest pictures behind the samples, "How it works" and contact, and light pointer effects on top. |
 | Pro | `/pro/` | The same site with the dark portal picture as the opening, and the swirl in its doorway turning like a vortex around the white light. Below it the Standard colours (off-white, black, pastel and forest green), the same three forest pictures behind its bands (they melt into the page at their edges), layered blocks, scroll reveals and cards that lift on hover. The header follows you down: clear over the opening, a soft off-white veil below it, links in the middle, a burger on phones, and the link of the part you are reading underlined. Two typefaces. Less rich than Premium. No zoom-in opening. |
 | Standard | `/standard/` | The same site, calm and finished, in its own look: off-white (the main colour), black, pastel green and forest green, set in one serif typeface (Prime Serif, a cut-down copy of Lora). The opening has no portal: the castle-and-tower valley picture sits strong behind it and fades out as "The three levels" begins. Two more forest pictures sit lightly behind two bands, and the sunrise sky and the valley appear faintly. The header has no bar: links sit in the middle and a burger menu takes over on phones. A slow fade as each part arrives, nothing on hover. |
 
@@ -30,13 +30,14 @@ OPEN-MARKERS.md      the one list of everything still to be supplied (written by
 build.py             fills the templates from site.json and legal/, writes dist/, checks the markers
 demos.py             the markup of the Standard and Pro pages (no wording in it: it reads site.json)
 prep_images.py       turns the originals in assets_in/ into the small web images in src/img/
+prep_fonts.py        cuts down and renames the Premium fonts (Poppins, Inter) into src/fonts/ (run only if the cut or the weights change)
 tools/cut_rocks.py   cuts the floating stones out of the valley picture (run only if that picture changes)
 assets_in/           the original pictures
 src/index.html       the Premium page template ({{tokens}} filled from site.json)
 src/tier.html        the template for the Standard and Pro pages
 src/legal.html       the template for the legal pages
 src/css, src/js      styles and scripts (styles.css, tiers.css, intro.js, main.js, tier.js)
-src/img, src/fonts   web pictures and the two local fonts (Archivo, Schibsted Grotesk; SIL Open Font License)
+src/img, src/fonts   web pictures and the local fonts (Poppins and Inter for Premium, Archivo and Schibsted Grotesk for Pro, Lora for Standard; all SIL Open Font License)
 archive/             old files kept only so nothing is lost; do not use or publish them
 dist/                the finished site. Upload this folder to any static host
 ```
@@ -96,15 +97,19 @@ A marker is any text in square brackets that starts with `[TO BE SUPPLIED`, `[JA
 - Phones get smaller copies of the big pictures (`*-sm.webp`, made by `prep_images.py`), so Pro loads under 450 KB on a phone and about 600 KB on a desktop.
 - Harvey's brief said the Pro header must stay as it was. Hamza asked for it to be invisible with the links in the middle (as on Standard), so it was changed on his instruction.
 
-## The floating stones and the sky (Premium only)
+## The entrance and the look of Premium
 
-- The seven stones are cut-outs (`src/img/rock-1..7.webp`), placed by the percentages in `src/rocks.json` and drifted slowly up and down with CSS transforms, each with its own random delay and speed. They stop for `prefers-reduced-motion` and while the entrance is not on screen.
-- The valley picture without the stones is `src/img/beyond-1680.webp`. If the original valley picture changes, run `python3 tools/cut_rocks.py` and then `python3 prep_images.py`.
-- The entrance runs from midday through sunset to night while you scroll, so the entrance is one screen taller than before.
-- Pro and Standard use the valley picture as it is, without the floating stones.
+- **One swipe in.** The page opens locked on the entrance. One scroll down, one swipe up, one tap on the doorway or one press of the arrow, space or page-down key starts a timed walk through the portal (about 3 seconds, a little less on phones). It runs by itself, so there is no half-way stop, and once you are through the page never closes the door again (scrolling back up stays in the valley). Links to a part of the page, and the "skip" link, take you straight in. A visitor who arrives part-way down (a link with `#levels`, or a reload) is let in at once. With reduced motion the finished valley is shown straight away.
+- **No day-to-night.** The sky cycle is gone, so the plans are about one screen of scrolling below the headline. The stones still float.
+- The seven stones are cut-outs (`src/img/rock-1..7.webp`), placed by the percentages in `src/rocks.json` and drifted slowly up and down with CSS transforms, each with its own random delay and speed; their glow breathes. They stop for `prefers-reduced-motion`.
+- The valley picture without the stones is `src/img/beyond-1680.webp`. If the original valley picture changes, run `python3 tools/cut_rocks.py` and then `python3 prep_images.py`. Pro and Standard use the valley picture as it is, without the floating stones.
+- **Pictures.** The samples part sits on the stone gateway, "How it works" on the castle valley (mixed into white) and contact on the mossy path. They are made by `premium()` in `prep_images.py` (small copies for phones), load only when their part is close to the screen, and drift a little as you scroll. They are the AI-made Canva backgrounds, so the same owner decision as in `CREDITS.md` applies.
+- **Fonts.** Poppins (headings) and Inter (text), cut down and renamed "Prime Display" and "Prime Text" by `prep_fonts.py`. Pro and Standard keep their own typefaces (the Pro sample inside Premium shows Pro's).
+- **Interaction.** The doorway glows as the pointer comes near it; the valley leans slightly with the pointer; the samples part and contact have a soft light that follows the pointer (mouse only, off on touch); the "What you get" cards light up under the pointer; the questions open smoothly. All of it is light, stops for reduced motion and stores nothing.
+- The plans and demo part ("Three levels") has not been changed in this round.
 
 ## Notes
 
-- Motion follows `prefers-reduced-motion`: the entrance is shown open, the stones and swirl hold still, the fade-ins are off. The pages store and send no data.
+- Motion follows `prefers-reduced-motion`: the entrance is shown open, the stones and swirl hold still, the pointer effects are off, the fade-ins are off. The pages store and send no data.
 - The Email us buttons are plain `mailto:` links, and the address is also shown as text with a Copy button, so the contact still works where a mail link does nothing.
 - Pictures and fonts: see `CREDITS.md`. Its sources are not all filled in yet.

@@ -13,8 +13,9 @@
 <!-- the canonical link and the absolute og:image need the "domain" field in site.json -->
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B5D3B'/%3E%3Cpath d='M10 24V8h7.2a5 5 0 0 1 0 10H14' fill='none' stroke='%23FFFFFF' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="preload" href="fonts/archivo-display.woff" as="font" type="font/woff" crossorigin>
-<link rel="preload" href="fonts/schibsted-body.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/prime-display-bold.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/prime-text-regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/prime-text-semibold.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="img/portal-arch-1680.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="preload" href="img/portal-far-1680.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="stylesheet" href="css/styles.css">
@@ -60,13 +61,6 @@
         <div class="rock" style="left:69.405%;top:36.229%;width:2.440%;--amp:9%;--dur:11.6s;--delay:-11.0s"><img src="img/rock-5.webp" width="41" height="48" alt="" decoding="async"></div>
         <div class="rock" style="left:83.512%;top:46.610%;width:2.798%;--amp:8.5%;--dur:11.1s;--delay:-2.6s"><img src="img/rock-6.webp" width="47" height="58" alt="" decoding="async"></div>
         <div class="rock" style="left:21.131%;top:50.847%;width:2.202%;--amp:9%;--dur:10.0s;--delay:-9.0s"><img src="img/rock-7.webp" width="37" height="50" alt="" decoding="async"></div>
-        <div class="sun" data-sun></div>
-        <div class="sunset" data-sunset></div>
-        <div class="dusk" data-dusk></div>
-        <div class="twilight" data-twilight></div>
-        <div class="night" data-night></div>
-        <div class="moon" data-moon></div>
-        <div class="stars" data-stars></div>
       </div>
     </div>
 
@@ -195,7 +189,8 @@
     </div>
   </section>
 
-  <section class="sheet samples" id="samples" data-tone="light" aria-labelledby="samples-title" data-section>
+  <section class="sheet samples" id="samples" data-tone="ink" aria-labelledby="samples-title" data-section data-spot>
+    <div class="bgpic bgpic--gate" data-bgpic aria-hidden="true"><i></i></div>
     <div class="wrap samples__layout">
       <div class="samples__intro reveal">
         <p class="eyebrow">Samples</p>
@@ -293,6 +288,7 @@
   </section>
 
   <section class="sheet process" id="process" data-tone="light" aria-labelledby="process-title" data-section>
+    <div class="bgpic bgpic--castle" data-bgpic aria-hidden="true"><i></i></div>
     <div class="wrap process__layout">
       <header class="section__head process__head reveal">
         <p class="eyebrow">How it works</p>
@@ -364,7 +360,8 @@
     </div>
   </section>
 
-  <section class="sheet contact" id="contact" data-tone="ink" aria-labelledby="contact-title" data-section>
+  <section class="sheet contact" id="contact" data-tone="ink" aria-labelledby="contact-title" data-section data-spot>
+    <div class="bgpic bgpic--path" data-bgpic aria-hidden="true"><i></i></div>
     <div class="contact__glow" aria-hidden="true"></div>
     <div class="wrap contact__inner">
       <p class="eyebrow reveal">Start here</p>

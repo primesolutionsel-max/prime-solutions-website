@@ -576,6 +576,12 @@ def photo_css():
             out.append(f"html .{cls} {{ background-image: var(--pp-veil-{cls.split('--')[1]}), url(../img/{img}.webp); background-size: 100% 100%, cover; background-position: 0 0, {pos}; background-repeat: no-repeat; }}")
             if has_img(f"{img}-sm.webp"):
                 out.append(f"@media (max-width: 700px) {{ html .{cls} {{ background-image: var(--pp-veil-{cls.split('--')[1]}), url(../img/{img}-sm.webp); }} }}")
+    # Premium: the same three pictures behind its samples (dark gateway), "How it works" (soft castle, mixed into white) and contact (dark path) parts; see prep_images.py premium()
+    for cls, img, pos in (("bgpic--gate", "pm-gateway", "62% 50%"), ("bgpic--castle", "pm-castle", "70% 35%"), ("bgpic--path", "pm-path", "66% 40%")):
+        if has_img(f"{img}.webp"):
+            out.append(f"html .{cls} > i {{ background-image: url(../img/{img}.webp); background-position: {pos}; }}")
+            if has_img(f"{img}-sm.webp"):
+                out.append(f"@media (max-width: 700px) {{ html .{cls} > i {{ background-image: url(../img/{img}-sm.webp); }} }}")
     return "\n".join(out) + "\n"
 
 
@@ -660,23 +666,19 @@ def make_og():
         d.ellipse((960 - r, 315 - r, 960 + r, 315 + r), fill=col)
     d.ellipse((960 - 26, 315 - 26, 960 + 26, 315 + 26), fill="#FFFFFF")
 
-    def head(size, wght):
-        f = ImageFont.truetype(str(SRC / "fonts" / "archivo-display.woff"), size)
-        f.set_variation_by_axes([wght, 104])
-        return f
-    body = ImageFont.truetype(str(SRC / "fonts" / "schibsted-body.woff"), 30)
-    body.set_variation_by_axes([400])
-    eb = ImageFont.truetype(str(SRC / "fonts" / "schibsted-body.woff"), 22)
-    eb.set_variation_by_axes([700])
+    def head(size, wght=None):
+        return ImageFont.truetype(str(SRC / "fonts" / "prime-display-bold.woff"), size)
+    body = ImageFont.truetype(str(SRC / "fonts" / "prime-text-regular.woff"), 30)
+    eb = ImageFont.truetype(str(SRC / "fonts" / "prime-text-semibold.woff"), 22)
     x, y = 72, 86
     for ch in C["hero"]["eyebrow"].upper():                      # the small label, with a little space between the letters
         d.text((x, y), ch, font=eb, fill=t["brand"])
         x += eb.getlength(ch) + 3.2
-    big = head(104, 800)
+    big = head(96)
     for i, line in enumerate(C["hero"]["lines"]):
-        d.text((68, 128 + i * 104), line, font=big, fill=t["brand"] if i == len(C["hero"]["lines"]) - 1 else t["ink"])
-    d.text((72, 470), C["hero"]["lead"], font=body, fill="#44504A")
-    d.text((72, 546), site["name"], font=head(34, 800), fill=t["brand"])
+        d.text((68, 122 + i * 100), line, font=big, fill=t["brand"] if i == len(C["hero"]["lines"]) - 1 else t["ink"])
+    d.text((72, 478), C["hero"]["lead"], font=body, fill="#44504A")
+    d.text((72, 552), site["name"], font=head(34), fill=t["brand"])
     im.save(DIST / "og.png", optimize=True)
 
 

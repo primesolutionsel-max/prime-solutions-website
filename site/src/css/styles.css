@@ -1,9 +1,34 @@
 /* Prime Solutions — Premium level, "Forest" theme: white, black and three greens
-   (forest, emerald, mint).
+   (forest, emerald, mint). Type: Prime Display (headings) and Prime Text (body), see src/fonts and CREDITS.md.
    Layout concept: a pinned entrance (an arch you walk through into a valley) and then a stack of white
    sheets sliding over it. One signature moment: the same sample page upgrades from Standard to Premium
    as you scroll, and the section changes colour with it. */
 
+@font-face {
+  font-family: "Prime Display";
+  src: url(../fonts/prime-display-medium.woff) format("woff");
+  font-weight: 400 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Prime Display";
+  src: url(../fonts/prime-display-bold.woff) format("woff");
+  font-weight: 700 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Prime Text";
+  src: url(../fonts/prime-text-regular.woff) format("woff");
+  font-weight: 400 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Prime Text";
+  src: url(../fonts/prime-text-semibold.woff) format("woff");
+  font-weight: 600 800;
+  font-display: swap;
+}
+/* the Pro level keeps its own pair (Archivo and Schibsted Grotesk); they are only fetched when a Pro page is opened */
 @font-face {
   font-family: "Archivo Prime";
   src: url(../fonts/archivo-display.woff) format("woff");
@@ -39,8 +64,10 @@
   --line: rgba(10, 15, 12, .12);
   --line-strong: #5F6A64;
 
-  --f-display: "Archivo Prime", "Archivo", "Arial Narrow", system-ui, sans-serif;
-  --f-body: "Schibsted Prime", "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-display: "Prime Display", "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-body: "Prime Text", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-pro-display: "Archivo Prime", "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --f-pro-body: "Schibsted Prime", "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --gut-l: max(20px, env(safe-area-inset-left, 0px));
   --gut-r: max(20px, env(safe-area-inset-right, 0px));
@@ -49,6 +76,8 @@
   --ease: cubic-bezier(.2, .8, .2, 1);
   --shadow-sheet: 0 -1px 0 var(--line), 0 -22px 50px -24px rgba(10, 15, 12, .18);
 }
+
+.tier--pro, .d--pro { --f-display: var(--f-pro-display); --f-body: var(--f-pro-body); }
 
 *, *::before, *::after { box-sizing: border-box; }
 html {
@@ -192,14 +221,18 @@ a { color: inherit; }
 @media (max-width: 480px) { .header__back { display: none; } }
 
 /* ---------- the entrance: one pinned scene ----------
-   Scrolling zooms towards the door. Close to the door it plays on its own: through the light, into the valley.
-   Then the headline opens, and scrolling carries the valley from day to night before the plans arrive. */
+   The page opens on the arch, held still. The first swipe, scroll or tap plays the whole walk in by itself: towards the door, through the
+   light, into the valley (intro.js). Inside, the headline opens, and a short scroll carries the plans in. There is no way back to the arch. */
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 .stage { position: relative; z-index: 0; height: 100vh; height: 100svh; background: var(--ink); color: var(--white); }
-.js .stage { height: calc(100vh + 150vh + 100vh); height: calc(100svh + 150svh + 100svh); }   /* the last 100 is the sky cycle's own scroll (intro.js: hold) */
+.js .stage { height: calc(100vh + 55vh); height: calc(100svh + 55svh); }   /* the extra 55 is the short scroll that carries the valley away (intro.js reads it) */
 .pin { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--ink); }
 .js .pin { position: sticky; top: 0; }
+/* until the door has opened the page is held still: the first gesture opens it */
+html.gate { overflow: hidden; overscroll-behavior: none; touch-action: none; }
+html.gate body { overflow: hidden; }
+html.gate .pin { cursor: pointer; }
 
 .scene { position: absolute; left: 50%; top: 50%; width: max(104vw, 185.1vh); width: max(104vw, 185.1svh); aspect-ratio: 1680 / 944; transform: translate(-50%, -50%); }
 .layer { position: absolute; inset: 0; transform-origin: 50.06% 52.5%; will-change: transform, opacity; }
@@ -214,43 +247,18 @@ a { color: inherit; }
   from { transform: translate3d(0, calc(var(--amp, 6%) * .5), 0); }
   to   { transform: translate3d(0, calc(var(--amp, 6%) * -.5), 0); }
 }
-.stage.is-away .rock { animation-play-state: paused; }
+.stage.is-away .rock, .stage.is-away .glow { animation-play-state: paused; }
 .js .layer--beyond { opacity: 0; visibility: hidden; }
 .layer--far, .layer--arch { transform-origin: 50.06% 52.5%; }
-
-/* sky and night extras live inside the valley layer, so they move with it */
-.sun {   /* midday: a bright, high sun */
-  position: absolute; left: 0; top: 0; width: 100%; height: 74%; pointer-events: none; will-change: opacity, transform;
-  background:
-    radial-gradient(ellipse 13% 22% at 57% 9%, rgba(255, 255, 252, 1), rgba(255, 252, 232, .75) 40%, transparent 80%),
-    radial-gradient(ellipse 34% 52% at 57% 6%, rgba(255, 250, 226, .78), rgba(255, 244, 210, .3) 55%, transparent 86%),
-    radial-gradient(ellipse 80% 70% at 57% -6%, rgba(255, 248, 224, .55), transparent 80%),
-    linear-gradient(180deg, rgba(255, 255, 246, .26) 0%, rgba(255, 255, 246, .12) 46%, transparent 72%);
-}
-.sunset {   /* sunset: a low, warm sun over the far ridge, and warm light along the sky */
-  position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; will-change: opacity, transform;
-  background:
-    radial-gradient(ellipse 8% 7% at 66% 45%, rgba(255, 246, 214, 1), rgba(255, 206, 128, .92) 45%, transparent 100%),
-    radial-gradient(ellipse 30% 11% at 66% 46%, rgba(255, 190, 110, .72), rgba(255, 140, 70, .26) 60%, transparent 100%),
-    radial-gradient(ellipse 56% 34% at 66% 47%, rgba(255, 140, 64, .5), rgba(255, 100, 56, .16) 62%, transparent 100%),
-    linear-gradient(180deg, rgba(255, 196, 130, 0) 8%, rgba(255, 160, 96, .3) 40%, rgba(240, 110, 80, .2) 62%, rgba(120, 50, 80, .1) 100%);
-}
-.moon {
-  position: absolute; left: 82%; top: 11%; width: 3.4%; aspect-ratio: 1; border-radius: 50%; opacity: 0; pointer-events: none; will-change: opacity;
-  background: radial-gradient(circle at 38% 36%, #fff 0, #E8F6EE 55%, #BFE3CF 100%);
-  box-shadow: 0 0 40px 14px rgba(214, 241, 226, .35), 0 0 120px 50px rgba(31, 174, 108, .18);
-}
-.stars { position: absolute; left: 0; right: 0; top: 0; height: 44%; opacity: 0; pointer-events: none; will-change: opacity; }
-.stars .sg { position: absolute; inset: 0; animation: twinkle 4.6s ease-in-out infinite; }
-.stars .sg:nth-child(2) { animation-duration: 3.4s; animation-delay: -1.2s; }
-.stars .sg:nth-child(3) { animation-duration: 5.6s; animation-delay: -2.7s; }
-.stars i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff; box-shadow: 0 0 5px 1px rgba(255, 255, 255, .7); }
-@keyframes twinkle { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+/* three of the stones carry a soft green light that slowly breathes */
 .glow {
   position: absolute; left: var(--x); top: var(--y); width: var(--s); aspect-ratio: 1; transform: translate(-50%, -50%);
-  border-radius: 50%; pointer-events: none; opacity: .15; will-change: opacity;
+  border-radius: 50%; pointer-events: none; opacity: .5; animation: glow-breathe 5.5s ease-in-out infinite alternate;
   background: radial-gradient(circle, rgba(60, 255, 150, .8), rgba(31, 174, 108, .32) 40%, transparent 70%);
 }
+.rock:nth-of-type(2) .glow { animation-duration: 7s; animation-delay: -2s; }
+.rock:nth-of-type(3) .glow { animation-duration: 4.6s; animation-delay: -3.4s; }
+@keyframes glow-breathe { from { opacity: .22; } to { opacity: .75; } }
 
 /* the light you walk into: a small soft disc that is scaled up, so it costs almost nothing */
 .bloom {
@@ -260,37 +268,33 @@ a { color: inherit; }
 }
 
 /* grading */
-.night, .dusk, .twilight, .shade { position: absolute; inset: 0; pointer-events: none; }
-/* the three grades sit inside the valley layer, below the moon and stars, so those stay bright against them */
-.night { opacity: 0; visibility: hidden; background: linear-gradient(180deg, rgba(3, 9, 26, .84) 0%, rgba(3, 18, 14, .74) 55%, rgba(2, 10, 8, .62) 100%); will-change: opacity; }
-.dusk { opacity: 0; visibility: hidden; background: radial-gradient(ellipse 80% 40% at 62% 56%, rgba(255, 140, 64, .4), rgba(255, 96, 56, .15) 52%, transparent 80%), linear-gradient(180deg, rgba(255, 150, 80, .12), rgba(228, 92, 70, .12) 55%, rgba(80, 36, 78, .18)); will-change: opacity; }
-.twilight { opacity: 0; visibility: hidden; background: radial-gradient(ellipse 70% 24% at 62% 50%, rgba(255, 120, 124, .34), transparent 72%), linear-gradient(180deg, rgba(84, 68, 152, .44) 0%, rgba(172, 84, 132, .3) 48%, rgba(52, 36, 92, .4) 100%); will-change: opacity; }
+.shade { position: absolute; inset: 0; pointer-events: none; }
 .shade--top { height: 200px; bottom: auto; background: radial-gradient(ellipse 46% 100% at 0% 0%, rgba(5, 10, 7, .62), transparent 75%), linear-gradient(180deg, rgba(5, 10, 7, .55), transparent); }
 .shade--bottom { top: auto; height: 62%; background: linear-gradient(0deg, rgba(5, 10, 7, .82), rgba(5, 10, 7, .4) 45%, transparent); will-change: opacity; }
 .motes { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
 /* words */
-.side { position: absolute; z-index: 10; left: var(--gut-l); bottom: clamp(36px, 12vh, 120px); color: var(--white); text-shadow: 0 2px 20px rgba(0, 0, 0, .7); will-change: opacity, transform; pointer-events: none; }
+.side { position: absolute; z-index: 10; left: max(var(--gut-l), calc((100% - 1280px) / 2 + var(--gut-l))); bottom: clamp(36px, 12vh, 120px); color: var(--white); text-shadow: 0 2px 20px rgba(0, 0, 0, .7); will-change: opacity, transform; pointer-events: none; }
 .side__rule { display: block; width: 36px; height: 2px; background: var(--emerald); margin-bottom: 14px; }
-.side p { font-family: var(--f-display); font-weight: 600; font-stretch: 100%; font-size: clamp(1.15rem, 1.7vw, 1.55rem); line-height: 1.22; letter-spacing: -.015em; }
-.cue { position: absolute; z-index: 10; left: 50%; bottom: 18px; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--white); text-shadow: 0 1px 10px rgba(0, 0, 0, .7); pointer-events: none; will-change: opacity; }
+.side p { font-family: var(--f-display); font-weight: 500; font-size: clamp(1.1rem, 1.55vw, 1.4rem); line-height: 1.28; letter-spacing: -.01em; }
+.cue { position: absolute; z-index: 10; left: 50%; bottom: 18px; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--white); text-shadow: 0 1px 10px rgba(0, 0, 0, .7); pointer-events: none; will-change: opacity; }
 .cue i { width: 1px; height: 28px; background: linear-gradient(180deg, #fff, transparent); animation: cue 2s ease-in-out infinite; transform-origin: top; }
 @keyframes cue { 0% { transform: scaleY(0); opacity: 0; } 40% { opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
 .skipintro {
   position: absolute; z-index: 12; right: max(var(--gut-r), 16px); bottom: calc(22px + env(safe-area-inset-bottom, 0px)); min-height: 44px; padding: 0 16px;
   border: 1.5px solid rgba(255, 255, 255, .7); border-radius: 999px; background: rgba(10, 15, 12, .4); color: #fff;
-  font: 600 .875rem var(--f-body); cursor: pointer; will-change: opacity;
+  font: 600 .875rem var(--f-body); cursor: pointer; will-change: opacity; transition: background-color .25s;
 }
 .skipintro:hover { background: rgba(255, 255, 255, .18); }
 
-.copy { position: absolute; z-index: 10; left: var(--gut-l); bottom: clamp(32px, 9vh, 96px); max-width: min(640px, calc(100% - var(--gut-l) - var(--gut-r))); text-shadow: 0 2px 24px rgba(0, 0, 0, .55); will-change: opacity; display: flex; flex-direction: column; gap: clamp(.9rem, 1.6vw, 1.3rem); }
+.copy { position: absolute; z-index: 10; left: max(var(--gut-l), calc((100% - 1280px) / 2 + var(--gut-l))); bottom: clamp(32px, 9vh, 96px); max-width: min(640px, calc(100% - var(--gut-l) - var(--gut-r))); text-shadow: 0 2px 24px rgba(0, 0, 0, .55); will-change: opacity, transform; display: flex; flex-direction: column; gap: clamp(.9rem, 1.6vw, 1.3rem); }
 .copy::before {
   content: ""; position: absolute; z-index: -1; pointer-events: none; left: -14vw; right: -12vw; top: -130px; bottom: -80px;
   background: radial-gradient(closest-side, rgba(5, 10, 7, .68), rgba(5, 10, 7, .5) 45%, rgba(5, 10, 7, .2) 75%, transparent 100%);
 }
 .copy .eyebrow { color: var(--mint); }
-.copy h1 { font-weight: 800; font-stretch: 100%; font-size: clamp(2.5rem, 5.4vw, 4.8rem); line-height: .98; letter-spacing: -.035em; }
-.copy .ln { display: block; overflow: hidden; padding-bottom: .14em; margin-bottom: -.14em; }
+.copy h1 { font-weight: 700; font-size: clamp(2.35rem, 4.9vw, 4.35rem); line-height: 1.02; letter-spacing: -.03em; }
+.copy .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
 .copy .ln:last-child { color: #5BF0A0; }
 .copy .lead { color: #E9F3ED; max-width: 34ch; }
 .hero__cta { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1.75rem; }
@@ -306,19 +310,18 @@ a { color: inherit; }
 .js .stage.is-open .copy .rv { opacity: 1; transform: none; transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: calc(.4s + var(--i) * .12s); }
 .js .copy { opacity: 0; visibility: hidden; }
 .js .side, .js .cue, .js .skipintro { will-change: opacity; }
-html.is-locked { overflow: hidden; }
 html { scrollbar-gutter: stable; }
 
 @media (max-width: 700px) {
-  .js .stage { height: calc(100vh + 140vh + 100vh); height: calc(100svh + 140svh + 100svh); }
-  .copy h1 { font-size: clamp(2.1rem, 10.8vw, 2.9rem); }
-  .cue { display: none; }
+  .js .stage { height: calc(100vh + 48vh); height: calc(100svh + 48svh); }
+  .copy h1 { font-size: clamp(2rem, 10vw, 2.7rem); }
+  .cue { left: var(--gut-l); transform: none; justify-items: start; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
   .skipintro { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
   .shade--top { height: 130px; }
   .copy { bottom: clamp(70px, 11vh, 110px); }
 }
 
-/* reduced motion and no JavaScript: the finished valley, no scroll film */
+/* reduced motion and no JavaScript: the finished valley, no film */
 .rm .stage, .rm.js .stage { height: auto; min-height: 100svh; }
 .rm .pin, .rm.js .pin { position: relative; min-height: 100svh; }
 .rm .cue, .rm .skipintro, .rm .layer--far, .rm .layer--arch, .rm .bloom { display: none; }
@@ -326,7 +329,8 @@ html { scrollbar-gutter: stable; }
 .rm.js .copy, .rm.js .copy .rv { opacity: 1; visibility: visible; transform: none; }
 .rm.js .copy .ln > span { transform: none; }
 :root:not(.js) .side, :root:not(.js) .cue, :root:not(.js) .skipintro, :root:not(.js) .layer--far, :root:not(.js) .layer--arch, :root:not(.js) .bloom, :root:not(.js) .motes { display: none; }
-.rm .stars .sg, .rm .rock { animation: none; }
+.rm .rock, .rm .glow { animation: none; }
+.rm .glow { opacity: .4; }
 
 /* ---------- sheets (sections stacked like layered cards) ---------- */
 .flow { position: relative; z-index: 2; margin-top: calc(var(--r) * -1); }
@@ -354,23 +358,54 @@ html { scrollbar-gutter: stable; }
   mask-image: linear-gradient(180deg, #000 0, #000 52%, transparent 100%);
 }
 .levels .wrap { position: relative; }
-.samples { background: var(--white); }
+.samples { background: var(--ink); color: var(--white); overflow: clip; isolation: isolate; }
 .included { background: var(--mist); }
-.process { background: var(--white); }
+.process { background: var(--white); overflow: clip; isolation: isolate; }
 .faq { background: var(--mist); }
-.contact { background: var(--ink); color: var(--white); overflow: clip; }
+.contact { background: var(--ink); color: var(--white); overflow: clip; isolation: isolate; }
+
+/* ---------- pictures behind three parts (samples, how it works, contact) ----------
+   The files are written into the page by build.py (photo_css). A picture is only fetched when its part is close (main.js adds .is-near), fades in,
+   and drifts a little slower than the page (--py). A soft green light follows the pointer over the dark ones (--mx, --my, --spot). */
+.bgpic { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+.bgpic > i {
+  position: absolute; z-index: 0; left: 0; right: 0; top: -12%; bottom: -12%; background-size: cover; background-position: center; background-repeat: no-repeat;
+  transform: translate3d(0, var(--py, 0px), 0); will-change: transform; opacity: 0; transition: opacity 1.2s ease;
+}
+.bgpic.is-near > i, :root:not(.js) .bgpic > i { opacity: 1; }
+html.js .bgpic:not(.is-near) > i { background-image: none; }
+.bgpic::after { content: ""; position: absolute; z-index: 1; inset: 0; }
+.bgpic::before {
+  content: ""; position: absolute; z-index: 2; inset: 0; opacity: var(--spot, 0); transition: opacity .6s;
+  background: radial-gradient(460px circle at var(--mx, 50%) var(--my, 40%), rgba(60, 255, 150, .16), transparent 68%);
+}
+.bgpic--gate::after {
+  background:
+    linear-gradient(180deg, var(--ink) 0, rgba(10, 15, 12, 0) 8rem, rgba(10, 15, 12, 0) calc(100% - 8rem), var(--ink) 100%),
+    linear-gradient(90deg, rgba(8, 13, 10, .9) 0, rgba(8, 13, 10, .66) 32%, rgba(8, 13, 10, .28) 70%, rgba(8, 13, 10, .2) 100%);
+}
+.bgpic--castle::after { background: linear-gradient(180deg, #fff 0, rgba(255, 255, 255, 0) 9rem, rgba(255, 255, 255, 0) calc(100% - 9rem), #fff 100%); }
+.bgpic--castle::before { display: none; }
+.bgpic--path::after {
+  background:
+    linear-gradient(180deg, var(--ink) 0, rgba(10, 15, 12, .3) 24%, rgba(10, 15, 12, .12) 58%, rgba(10, 15, 12, .8) 100%),
+    linear-gradient(90deg, rgba(10, 15, 12, .78) 0, rgba(10, 15, 12, .34) 56%, rgba(10, 15, 12, .08) 100%);
+}
 
 .section__head { display: flex; flex-direction: column; gap: 1rem; max-width: 52rem; margin-bottom: clamp(2.5rem, 5vw, 4.5rem); }
 h2 {
-  font-weight: 700; font-stretch: 100%;
-  font-size: clamp(2.05rem, 1rem + 4.6vw, 4.4rem);
-  line-height: 1; letter-spacing: -.035em;
+  font-weight: 700;
+  font-size: clamp(1.95rem, 1rem + 3.9vw, 3.8rem);
+  line-height: 1.06; letter-spacing: -.03em;
 }
-h3 { font-weight: 700; font-stretch: 100%; font-size: clamp(1.35rem, 1.15rem + .8vw, 1.8rem); line-height: 1.12; letter-spacing: -.02em; }
+h3 { font-weight: 700; font-size: clamp(1.25rem, 1.1rem + .7vw, 1.65rem); line-height: 1.18; letter-spacing: -.015em; }
 
 /* reveal on scroll: starts partly visible so nothing is ever blank */
 .js .reveal { opacity: .22; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: var(--d, 0s); }
 .js .reveal.in { opacity: 1; transform: none; }
+.section__head .eyebrow { display: inline-flex; align-items: center; gap: .7rem; }
+.section__head .eyebrow::before { content: ""; width: 2rem; height: 2px; border-radius: 2px; background: currentColor; transition: width .9s var(--ease) .25s; }
+.js .section__head.reveal:not(.in) .eyebrow::before { width: 0; }
 
 /* ---------- browser frame (the levels preview) ---------- */
 .browser {
@@ -538,6 +573,16 @@ h3 { font-weight: 700; font-stretch: 100%; font-size: clamp(1.35rem, 1.15rem + .
 }
 .textbtn:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
 .samples__hint { flex-basis: 100%; font-size: .875rem; color: var(--slate); }
+/* the samples sit on the dark forest picture */
+.samples .eyebrow { color: #5BF0A0; }
+.samples h2 { color: var(--white); }
+.samples__intro p:not(.eyebrow), .samples__hint { color: #D5E3DB; }
+.samples .round, .samples .textbtn { background: rgba(255, 255, 255, .08); color: var(--white); border-color: rgba(255, 255, 255, .55); }
+.samples .round:hover, .samples .textbtn:hover { background: var(--white); color: var(--ink); border-color: var(--white); }
+.samples .sample figcaption { color: var(--white); }
+.samples .sample figcaption span { color: #BFD0C6; }
+.samples :focus-visible { outline-color: var(--white); }
+.samples .sample__view { box-shadow: 0 0 0 1px rgba(255, 255, 255, .14), 0 28px 44px -22px rgba(0, 0, 0, .85); }
 .hint-touch { display: none; }
 @media (hover: none) { .hint-hover { display: none; } .hint-touch { display: inline; } }
 
@@ -560,7 +605,7 @@ h3 { font-weight: 700; font-stretch: 100%; font-size: clamp(1.35rem, 1.15rem + .
 .sample figcaption { display: flex; flex-direction: column; font-size: .9375rem; line-height: 1.3; }
 .sample figcaption span { color: var(--slate); font-size: .8125rem; }
 @media (hover: hover) {
-  .sample:hover .sample__view { transform: scale(1.14); box-shadow: 0 0 0 1px rgba(10, 15, 12, .12), 0 40px 60px -26px rgba(10, 15, 12, .55); }
+  .sample:hover .sample__view { transform: scale(1.14); box-shadow: 0 0 0 1px rgba(255, 255, 255, .3), 0 40px 60px -22px rgba(0, 0, 0, .9), 0 0 50px -8px rgba(60, 255, 150, .35); }
 }
 .sample:focus-visible .sample__view { transform: scale(1.08); }
 .samples__rail.is-loop { overflow: hidden; touch-action: pan-y; }
@@ -625,7 +670,7 @@ h3 { font-weight: 700; font-stretch: 100%; font-size: clamp(1.35rem, 1.15rem + .
 .feat { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .feat__item--wide { grid-column: 1 / -1; }
 .feat__card {
-  height: 100%; display: flex; align-items: flex-start; gap: 14px; padding: 18px 18px 20px; background: var(--white); border-radius: 20px;
+  position: relative; height: 100%; display: flex; align-items: flex-start; gap: 14px; padding: 18px 18px 20px; background: var(--white); border-radius: 20px;
   box-shadow: 0 0 0 1px rgba(10, 15, 12, .07), 0 16px 26px -20px rgba(10, 15, 12, .4);
   transition: transform .45s var(--ease), box-shadow .45s var(--ease);
 }
@@ -637,6 +682,12 @@ h3 { font-weight: 700; font-stretch: 100%; font-size: clamp(1.35rem, 1.15rem + .
   transition: transform .45s var(--ease);
 }
 .feat__card:hover .feat__ic { transform: rotate(-6deg) scale(1.08); }
+.feat__card::after, .included__col--extra::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .35s;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(31, 174, 108, .17), transparent 70%);
+}
+.included__col--extra::after { background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(91, 240, 160, .2), transparent 70%); }
+@media (hover: hover) { .feat__card:hover::after, .included__col--extra:hover::after { opacity: 1; } }
 .feat__t { font-weight: 600; line-height: 1.4; padding-top: .2rem; }
 
 .included__col--extra {
@@ -711,7 +762,12 @@ summary::after {
   transition: transform .4s var(--ease);
 }
 details[open] summary::after { transform: rotate(135deg); }
+summary { transition: color .25s, padding-left .35s var(--ease); }
 summary:hover { color: var(--forest); }
+@media (hover: hover) { summary:hover { padding-left: .5rem; } }
+.faq details { interpolate-size: allow-keywords; }
+.faq details::details-content { block-size: 0; overflow: clip; transition: block-size .45s var(--ease), content-visibility .45s allow-discrete; }
+.faq details[open]::details-content { block-size: auto; }
 details p { padding: 0 2.5rem 1.4rem 0; color: var(--slate); max-width: 40em; animation: fade-up .5s var(--ease) both; }
 @media (max-width: 899px) { .faq__layout { grid-template-columns: 1fr; gap: 2rem; } }
 
@@ -725,7 +781,7 @@ details p { padding: 0 2.5rem 1.4rem 0; color: var(--slate); max-width: 40em; an
 }
 .contact__inner { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
 .contact__title {
-  font-weight: 800; font-stretch: 100%; font-size: clamp(2.5rem, .8rem + 8.4vw, 7.4rem); line-height: .92; letter-spacing: -.045em; max-width: 12ch;
+  font-weight: 700; font-size: clamp(2.3rem, .8rem + 7vw, 6.2rem); line-height: 1; letter-spacing: -.035em; max-width: 12ch;
 }
 .contact__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; margin-top: .5rem; }
 .contact .btn { background: var(--emerald); color: var(--ink); box-shadow: 0 14px 30px -14px rgba(0, 0, 0, .6); }
@@ -844,7 +900,7 @@ html.demo-open { overflow: hidden; }
   .lead { font-size: 1.0625rem; line-height: 1.5; }
   h2, .samples__intro h2 { font-size: clamp(1.65rem, 7.4vw, 2.15rem); line-height: 1.06; letter-spacing: -.03em; }
   h3 { font-size: 1.125rem; }
-  .contact__title { font-size: clamp(2rem, 9.6vw, 3.1rem); }
+  .contact__title { font-size: clamp(1.95rem, 9vw, 2.9rem); }
   .eyebrow { letter-spacing: .1em; }
   .btn--lg { min-height: 54px; padding: 0 1.6rem; font-size: 1rem; }
   .brand { font-size: 1.1rem; }
@@ -863,6 +919,5 @@ html.demo-open { overflow: hidden; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; transition-delay: 0s !important; }
   .js .reveal { opacity: 1; transform: none; }
   .ladder[data-tier="premium"] .m-seal__ring { animation: none; }
-  .stars .sg { animation: none; }
   .rock { animation: none !important; }
 }

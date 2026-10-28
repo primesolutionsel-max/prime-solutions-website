@@ -4,16 +4,18 @@ Every picture, font and piece of code that is not written for this project is li
 Nothing is loaded from outside the repository (no Google Fonts, no CDN, no outside scripts or pictures).
 
 Rules for this list: no AI-generated material, no watermarked material, and no picture that suggests a real client unless it is true.
-The three Standard background pictures below were made with an AI image tool (the Canva connector), so they break the first rule. They are in the draft so the Standard look can be judged, and they are marked below for the owner to decide: keep them, or replace them with licensed or own pictures.
+The three forest background pictures below (used on the Standard, Pro and Premium pages) were made with an AI image tool (the Canva connector), so they break the first rule. They are in the draft so the looks can be judged, and they are marked below for the owner to decide: keep them, or replace them with licensed or own pictures.
 Anything not yet known is a marked field. The build lists every open marker in `OPEN-MARKERS.md`, and refuses to build a site marked `live` while one is open here.
 
 ## Fonts (kept in `src/fonts/`, served from the site itself)
 
 | Font | Author | Licence | Used for |
 |---|---|---|---|
-| Archivo (variable, Latin subset) | The Archivo Project Authors, https://github.com/Omnibus-Type/Archivo | SIL Open Font License 1.1, text in `src/fonts/OFL-archivo.txt` | Headings (Pro and Premium) |
-| Schibsted Grotesk (variable, Latin subset) | The Schibsted Grotesk Project Authors, https://github.com/schibsted/schibsted-grotesk | SIL Open Font License 1.1, text in `src/fonts/OFL-schibsted.txt` | Body text (Pro and Premium) |
+| Archivo (variable, Latin subset) | The Archivo Project Authors, https://github.com/Omnibus-Type/Archivo | SIL Open Font License 1.1, text in `src/fonts/OFL-archivo.txt` | Headings (Pro page, and the Pro sample inside the Premium page) |
+| Schibsted Grotesk (variable, Latin subset) | The Schibsted Grotesk Project Authors, https://github.com/schibsted/schibsted-grotesk | SIL Open Font License 1.1, text in `src/fonts/OFL-schibsted.txt` | Body text (Pro page, and the Pro sample inside the Premium page) |
 | Prime Serif (variable, Latin subset): Lora 3.008 cut down and renamed | The Lora Project Authors, https://github.com/cyrealtype/Lora-Cyrillic | SIL Open Font License 1.1, text and the rename note in `src/fonts/OFL-lora.txt` | The only typeface on the Standard page (headings and text). Renamed because a changed copy may not keep the Reserved Font Name "Lora". |
+| Prime Display: Poppins Medium and Bold (Latin subset) cut down and renamed, made by `prep_fonts.py` | The Poppins Project Authors, https://github.com/itfoundry/poppins | SIL Open Font License 1.1, text in `src/fonts/OFL-poppins.txt` | Headings on the Premium page (and its legal pages). Renamed because a changed copy may not keep the font's Reserved Font Name. |
+| Prime Text: Inter Regular and SemiBold (Latin subset) cut down and renamed, made by `prep_fonts.py` | The Inter Project Authors, https://github.com/rsms/inter | SIL Open Font License 1.1, text in `src/fonts/OFL-inter.txt` | Body text on the Premium page (and its legal pages). Renamed for the same reason. |
 
 ## Libraries and code
 
@@ -32,6 +34,8 @@ The `*-sm.webp` pictures are small copies of the pictures above, made for phones
 | `beyond-1680` and `rock-1` to `rock-7` | The same valley picture as above | The same licence | Made here by `tools/cut_rocks.py`: the floating stones are cut out of the valley picture and the gap is filled in. They are a change to that picture, so they follow its licence. |
 
 | `ps-castle`, `ps-gateway`, `ps-path` (made from `assets_in/bg-castle.webp`, `bg-gateway.webp`, `bg-path.webp`) | AI-generated with Canva's image generator (Canva media ids MAHZSdUTrJs castle, MAHZSaQIOqU gateway, MAHZSbUe3Ho path) and supplied by the project owner. [TO BE SUPPLIED: the owner's decision to keep them, with the Canva terms that apply to AI-generated images, or the replacement pictures and their sources] | [TO BE SUPPLIED: the licence they are used under] | The three forest backgrounds on the Standard page (the castle-and-tower valley behind the opening, strong, fading out into "The three levels"; the stone gateway behind "What is included" and the mossy path behind "Questions", both light). `prep_images.py` mixes each into the off-white (`standard_theme.veil` for the two bands, `veil_hero` for the castle, in `site.json`) and saves it small. The originals are kept in `assets_in/`. |
+
+| `pm-gateway`, `pm-castle`, `pm-path` (made from the same three `assets_in/bg-*.webp` files by `premium()` in `prep_images.py`) | The same AI-generated Canva pictures as the row above, supplied by the project owner. [TO BE SUPPLIED: the owner's decision to keep them, with the Canva terms that apply to AI-generated images, or the replacement pictures and their sources] | [TO BE SUPPLIED: the licence they are used under] | The three forest backgrounds on the Premium page: the stone gateway behind the samples and the mossy path behind contact (both kept dark, with a little ink mixed in and a shade written in `styles.css`), and the castle valley mixed into white behind "How it works". They load only when their part comes near the screen. The pictures on the Pro page are the `ps-` copies above. |
 
 Before the site goes live, check each row:
 
