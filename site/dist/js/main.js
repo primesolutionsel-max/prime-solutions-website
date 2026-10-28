@@ -404,6 +404,12 @@
       setTimeout(() => { setText(btn, 'copy'); }, 2200);
     };
 
+    /* the Standard demo's phone menu: close it after a tap on one of its links */
+    doc.addEventListener('click', (e) => {
+      const m = e.target.closest && e.target.closest('.ps-menu__panel a');
+      if (m) { const d = m.closest('.ps-menu'); if (d) d.removeAttribute('open'); }
+    });
+
     doc.addEventListener('click', (e) => {
       const t = e.target;
       if (!t.closest || !openEl) return;

@@ -3,9 +3,13 @@
 
   assets_in/trades-sheet.png   3 x 2 sheet of trade photos  ->  src/img/trade-<key>.webp (six crops)
   assets_in/levels-bg.png      soft landscape               ->  src/img/levels-bg.webp
+  assets_in/bg-gateway.webp    the three forest backgrounds ->  src/img/ps-gateway.webp, ps-castle.webp, ps-path.webp
+  assets_in/bg-castle.webp     (Standard only: each is mixed into the page's off-white, so it shows softly behind the text;
+  assets_in/bg-path.webp        the strength is "veil" in site.json, standard_theme)
 
 The site still builds when these are missing: every picture slot has a painted fallback.
 """
+import json
 from pathlib import Path
 from PIL import Image, ImageChops
 
@@ -33,6 +37,7 @@ def save(im, path, **kw):
 
 def main():
     derive()
+    veiled()
     sheet = IN / "trades-sheet.png"
     if sheet.exists():
         im = Image.open(sheet).convert("RGB")
@@ -50,6 +55,19 @@ def main():
         if im.width > 1400:
             im = im.resize((1400, round(im.height * 1400 / im.width)), Image.LANCZOS)
         save(im, OUT / "levels-bg.webp", quality=58, method=6)
+
+
+def veiled():
+    """the Standard backgrounds: the picture mixed into the page's off-white. veil is the share of off-white (0.74 = three parts paper, one part picture)"""
+    t = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))["standard_theme"]
+    paper = tuple(int(t["paper"].lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    for src, dst in (("bg-gateway", "ps-gateway"), ("bg-castle", "ps-castle"), ("bg-path", "ps-path")):
+        f = IN / f"{src}.webp"
+        if not f.exists():
+            continue
+        im = Image.open(f).convert("RGB").resize((1440, 809), Image.LANCZOS)
+        im = Image.blend(im, Image.new("RGB", im.size, paper), float(t["veil"]))
+        save(im, OUT / f"{dst}.webp", quality=62, method=6)
 
 
 def derive():

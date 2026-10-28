@@ -539,8 +539,8 @@ def photo_css():
         if has_img(f"trade-{key}.webp"):
             out.append(f"html .ph.ph-{key} {{ background-image: url(../img/trade-{key}.webp); background-size: cover; background-position: center; }}")
     if has_img("levels-bg.webp"):
-        out.append("html .levels__bg, html .ps-photo.ph-hills { background-image: url(../img/levels-bg.webp); background-size: cover; background-position: center bottom; }")
-        out.append("html .ps-photo.ph-hills { background-position: 66% 64%; }")
+        out.append("html .levels__bg { background-image: url(../img/levels-bg.webp); background-size: cover; background-position: center bottom; }")
+        out.append("html .ps-sky { background-image: url(../img/levels-bg.webp); }")   # the soft sunrise sky, Standard
     if has_img("pro-hero.webp"):
         # the Pro opening: the portal picture, and a small round copy of the swirl in its doorway that turns
         d, cx, cy, ar = DOOR["d"], DOOR["cx"], DOOR["cy"], 944 / 1680
@@ -550,7 +550,13 @@ def photo_css():
         out.append(f"html .pp-door {{ left: {cx * 100:.2f}%; top: {cy * 100:.2f}%; width: {d * 100:.2f}%; aspect-ratio: 1; "
                    f"background-size: {100 / d:.2f}% auto; background-position: {px:.2f}% {py:.2f}%; }}")
     if has_img("pro-valley.webp"):
-        out.append("html .pp-contact__bg { background-image: url(../img/pro-valley.webp); background-size: cover; background-position: center; }")
+        out.append("html .pp-contact__bg, html .ps-contact__bg { background-image: url(../img/pro-valley.webp); background-size: cover; background-position: center; }")
+    if has_img("pro-hero.webp"):
+        out.append("html .ps-photo.ph-portal { background-image: url(../img/pro-hero.webp); background-size: cover; background-position: 50% 62%; }")   # the portal picture, still, in a frame
+    # the three forest backgrounds of the Standard page (already mixed into the off-white, see prep_images.py)
+    for cls, img, pos in (("ps-top", "ps-castle", "62% 8%"), ("ps-band--gate", "ps-gateway", "72% 30%"), ("ps-band--path", "ps-path", "68% 50%")):
+        if has_img(f"{img}.webp"):
+            out.append(f"html .{cls} {{ background-image: url(../img/{img}.webp); background-size: cover; background-position: {pos}; }}")
     return "\n".join(out) + "\n"
 
 
@@ -669,7 +675,9 @@ write("index.html", render("index.html", tokens_for("", link_root, "")))
 for key, name in demos.TIERS[:2]:
     body, vars_ = demos.page(site, on, key)
     tk = tokens_for("../", link_sub, f"{key}/")
-    tk.update(tier_body=body, tier_vars=vars_, tier_title=esc(f"{site['name']} | {name}"), tier_class=f"tier--{key}")
+    fonts = ("prime-serif.woff",) if key == "standard" else ("archivo-display.woff", "schibsted-body.woff")   # Standard has its own typeface
+    tier_fonts = "\n".join(f'<link rel="preload" href="../fonts/{f}" as="font" type="font/woff" crossorigin>' for f in fonts)
+    tk.update(tier_body=body, tier_vars=vars_, tier_title=esc(f"{site['name']} | {name}"), tier_class=f"tier--{key}", tier_fonts=tier_fonts)
     write(f"{key}/index.html", render("tier.html", tk))
 
 for p in LEGAL_PAGES:

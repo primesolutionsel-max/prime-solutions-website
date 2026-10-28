@@ -182,6 +182,20 @@ def samples_std(c):
     return "\n".join(out)
 
 
+def rgb(hexcol):
+    h = hexcol.lstrip("#")
+    return ",".join(str(int(h[i:i + 2], 16)) for i in (0, 2, 4))
+
+
+def std_vars(site):
+    """the Standard page's own colours (site.json, standard_theme) and typeface, set on its frame. They override the shared Forest variables for this page only."""
+    t = site["standard_theme"]
+    return (f"--d-bg:{t['paper']};--d-ink:{t['ink']};--d-brand:{t['forest']};--d-deep:{t['forest_deep']};--d-acc:{t['sage_mid']};--d-on:{t['card']};"
+            f"--d-mute:{t['mute']};--d-line:rgba(11,15,12,.16);--d-mint:{t['sage']};--d-mint2:{t['sage_soft']};--d-card:{t['card']};--d-paper2:{t['paper_deep']};"
+            f"--ps-rgb:{rgb(t['paper'])};"
+            "--f-body:'Prime Serif','Lora',Georgia,'Times New Roman',serif;--f-display:'Prime Serif','Lora',Georgia,'Times New Roman',serif")
+
+
 def standard(c):
     C = c.C
     levels = "\n".join(level_card(c, k, "ps-level d-rv", "ps-tag").replace('class="ps-level d-rv', f'style="--d:{i * .1:.1f}s" class="ps-level d-rv', 1)
@@ -193,12 +207,14 @@ def standard(c):
     faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in C["faq"]["items"])
     I, K = C["included"], C["contact"]
     return f"""
-    <div class="d d--standard" id="std-top">
+    <div class="d d--standard" id="std-top" style="{std_vars(c.site)}">
       <div class="ps-top">
       <header class="ps-head"><div class="ps-wrap">
         <a class="ps-logo" {c.jump("top")} aria-label="{esc(fmt(C["top_aria"], name=c.name))}">{esc(C["brand"][0])} <span>{esc(C["brand"][1])}</span></a>
         <nav aria-label="{esc(C["viewer"]["page_aria"])}">{nav_html(c)}</nav>
         {email_btn(c)}
+        <details class="ps-menu"><summary aria-label="{esc(C["ui"]["menu_open"])}"><span class="ps-burger" aria-hidden="true"><i></i><i></i><i></i></span></summary>
+          <div class="ps-menu__panel">{nav_html(c)}</div></details>
       </div></header>
       <section class="ps-hero ps-wrap" aria-labelledby="std-hero-t">
         <div class="ps-hero__copy">
@@ -207,10 +223,10 @@ def standard(c):
           <p class="ps-lead">{esc(C["hero"]["lead"])}</p>
           <div class="ps-cta">{email_btn(c, "d-btn--lg")}<a class="d-link" {c.jump("levels")}>{esc(C["hero"]["see_levels"])}</a></div>
         </div>
-        <div class="ps-frame"><div class="ps-photo ph-hills" role="img" aria-label="{esc(C["alt"]["hills"])}"></div></div>
+        <div class="ps-frame"><div class="ps-photo ph-portal" role="img" aria-label="{esc(C["alt"]["portal"])}"></div></div>
       </section>
       </div>
-      <section class="ps-band ps-band--soft" id="std-levels" aria-labelledby="std-levels-t"><div class="ps-wrap ps-block">
+      <section class="ps-band ps-band--soft" id="std-levels" aria-labelledby="std-levels-t"><div class="ps-sky" aria-hidden="true"></div><div class="ps-wrap ps-block">
         <div class="ps-block__head d-rv"><p class="ps-eyebrow">{esc(C["levels"]["eyebrow"])}</p><h3 id="std-levels-t">{esc(C["levels"]["title"])}</h3><p>{esc(C["levels"]["lead"])}</p></div>
         <div class="ps-levels">
 {levels}
@@ -223,7 +239,7 @@ def standard(c):
 {samples}
         </div>
       </div></section>
-      <section class="ps-band" id="std-included" aria-labelledby="std-included-t"><div class="ps-wrap ps-block">
+      <section class="ps-band ps-band--gate" id="std-included" aria-labelledby="std-included-t"><div class="ps-wrap ps-block">
         <div class="ps-block__head d-rv"><p class="ps-eyebrow">{esc(I["eyebrow"])}</p><h3 id="std-included-t">{esc(I["title"])}</h3></div>
         <div class="ps-incl">
           <div><p class="ps-sub d-rv">{esc(I["every"])}</p><ul class="ps-feat">{feat}</ul></div>
@@ -241,11 +257,12 @@ def standard(c):
         <ol class="ps-steps">{steps}</ol>
         {process_notes(c, "ps-note d-rv")}
       </div></section>
-      <section class="ps-band" id="std-questions" aria-labelledby="std-questions-t"><div class="ps-wrap ps-block">
+      <section class="ps-band ps-band--path" id="std-questions" aria-labelledby="std-questions-t"><div class="ps-wrap ps-block">
         <div class="ps-block__head d-rv"><p class="ps-eyebrow">{esc(C["faq"]["eyebrow"])}</p><h3 id="std-questions-t">{esc(C["faq"]["title"])}</h3></div>
         <div class="ps-faq d-rv">{faq}</div>
       </div></section>
       <section class="ps-contact" id="std-contact" aria-labelledby="std-contact-t">
+        <div class="ps-contact__bg" aria-hidden="true"></div>
         <div class="ps-wrap ps-contact__in">
           <div class="ps-contact__txt d-rv">
             <p class="ps-eyebrow" style="color:inherit">{esc(K["eyebrow"])}</p>

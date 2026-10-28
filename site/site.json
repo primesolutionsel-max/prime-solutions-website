@@ -15,6 +15,19 @@
     "brand": "#0B5D3B",
     "accent": "#1FAE6C"
   },
+  "standard_theme": {
+    "paper": "#F4F1E8",
+    "paper_deep": "#ECE8DA",
+    "card": "#FBFAF5",
+    "sage": "#CFE3CE",
+    "sage_soft": "#E3EFDF",
+    "sage_mid": "#9CC4A5",
+    "forest": "#0B5D3B",
+    "forest_deep": "#084A2F",
+    "ink": "#0B0F0C",
+    "mute": "#3F4A43",
+    "veil": 0.74
+  },
   "seo": {
     "area_served": "South Africa",
     "service_type": "One-page website design and build",

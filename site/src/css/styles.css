@@ -18,6 +18,13 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Prime Serif";
+  src: url(../fonts/prime-serif.woff) format("woff");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light;
   --white: #FFFFFF;

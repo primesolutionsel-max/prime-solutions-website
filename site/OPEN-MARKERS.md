@@ -3,7 +3,7 @@
 Written by `build.py` every time it runs. Do not edit by hand. Each line is something that has not been supplied yet.
 Fill it in where it says (a legal page, or a field in `site.json`), run `python3 build.py`, and it drops off this list.
 
-Site status: **draft** · Mode: **advertise-only** · Markers open: **11**
+Site status: **draft** · Mode: **advertise-only** · Markers open: **13**
 
 | Where | Marker |
 |---|---|
@@ -14,6 +14,8 @@ Site status: **draft** · Mode: **advertise-only** · Markers open: **11**
 | `CREDITS.md` | [TO BE SUPPLIED: where the misty-hills picture came from (author or website, and the link)] |
 | `CREDITS.md` | [TO BE SUPPLIED: the licence it is used under] |
 | `CREDITS.md` | [TO BE SUPPLIED: where the stone arch and valley pictures came from (author or website, and the link)] |
+| `CREDITS.md` | [TO BE SUPPLIED: the licence they are used under] |
+| `CREDITS.md` | [TO BE SUPPLIED: the owner's decision to keep them, with the Canva terms that apply to AI-generated images, or the replacement pictures and their sources] |
 | `CREDITS.md` | [TO BE SUPPLIED: the licence they are used under] |
 | `legal/privacy.md` | [TO BE SUPPLIED: Cherry's Advertise Only privacy policy (06-privacy-policy-ADVERTISE-ONLY-DRAFT.md). Paste it below the front matter (the lines between the two --- lines at the top), replacing this text. Keep every marker in it exactly as written. If her file has its own Draft banner, change "banner: site" above to "banner: own".] |
 | `legal/terms.md` | [TO BE SUPPLIED: Cherry's terms of use / client terms (02-compliance-aligned-website-terms.md). Paste the terms part below the front matter, replacing this text. Keep every marker in it exactly as written.] |

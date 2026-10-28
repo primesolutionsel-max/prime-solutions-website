@@ -17,6 +17,12 @@
     rv.forEach((n) => io.observe(n));
   }
 
+  /* the phone menu is a plain <details>: close it after a tap on a link, or on Escape */
+  $$('.ps-menu').forEach((m) => {
+    m.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('.ps-menu__panel a')) m.removeAttribute('open'); });
+    doc.addEventListener('keydown', (e) => { if (e.key === 'Escape' && m.open) { m.removeAttribute('open'); m.querySelector('summary').focus(); } });
+  });
+
   $$('[data-copy-demo]').forEach((btn) => btn.addEventListener('click', async () => {
     let ok = false;
     try { await navigator.clipboard.writeText(btn.dataset.copyDemo); ok = true; } catch (err) {
