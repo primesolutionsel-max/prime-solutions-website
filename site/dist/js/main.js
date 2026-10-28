@@ -434,8 +434,29 @@
       proIO = proHeader(el, scroller);
     };
 
+    const closeNow = () => {
+      depth = 0;
+      const back = opener;
+      teardown();
+      root.classList.remove('demo-open');
+      if (back && back.focus) { try { back.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
+      opener = null;
+    };
+
+    /* The links are followed here, and the address (the hash) is only kept in step with them. Some viewers hold links and the address
+       still, and if the page waited for the address to change, tapping a demo button would do nothing at all. */
+    const hashTo = (h, replace) => {
+      try { if (replace) location.replace(h); else location.hash = h.slice(1); } catch (err) { /* ignore */ }
+    };
+    const goTo = (el, replace) => {
+      hashTo('#' + el.id, replace);
+      if (!openEl) depth = !replace && location.hash === '#' + el.id ? 1 : 0;
+      if (openEl !== el) open(el);
+    };
+
     const close = () => {
-      if (depth > 0) history.back(); else location.replace('#levels');
+      if (depth > 0) history.back(); else hashTo('#levels', true);
+      setTimeout(() => { if (openEl) closeNow(); }, 250);       // the address did not move: close anyway
     };
 
     const sync = (fromEvent) => {
@@ -445,16 +466,19 @@
       if (el) {
         depth = fromEvent && !openEl ? 1 : (openEl ? depth : 0);
         open(el);
-      } else {
-        depth = 0;
-        const back = opener;
-        teardown();
-        root.classList.remove('demo-open');
-        if (back && back.focus) { try { back.focus({ preventScroll: true }); } catch (err) { /* ignore */ } }
-        opener = null;
-      }
+      } else closeNow();
     };
     addEventListener('hashchange', () => sync(true));
+
+    /* the "See the Standard demo" and "See the Pro demo" buttons (and the open-demo button beside the sample page) */
+    doc.addEventListener('click', (e) => {
+      if (openEl || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      const a = e.target.closest && e.target.closest('a[href^="#demo-"]');
+      const el = a ? doc.getElementById(a.getAttribute('href').slice(1)) : null;
+      if (!el || !el.classList.contains('demo')) return;
+      e.preventDefault();
+      goTo(el, false);
+    });
 
     const copyAddress = async (btn) => {
       let ok = false;
@@ -488,9 +512,10 @@
         return;
       }
       const prem = t.closest('[data-premium]');
-      if (prem && !plain) { e.preventDefault(); location.replace('#top'); return; }
+      if (prem && !plain) { e.preventDefault(); closeNow(); hashTo('#top', true); scrollTo(0, 0); return; }
       const a = t.closest('.demo a[href^="#demo-"]');
-      if (a && !plain) { e.preventDefault(); location.replace(a.getAttribute('href')); }
+      const to = a ? doc.getElementById(a.getAttribute('href').slice(1)) : null;
+      if (to && !plain) { e.preventDefault(); goTo(to, true); }
     });
 
     doc.addEventListener('keydown', (e) => {

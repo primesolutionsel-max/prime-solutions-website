@@ -263,7 +263,8 @@
   }
   document.addEventListener('click', (e) => {
     const a = e.target.closest && e.target.closest('a[href^="#"]');
-    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    // (a link inside a demo is the demo's own business; a viewer that has already stopped the browser's default action does not stop this)
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button || a.closest('.demo')) return;
     const id = a.getAttribute('href').slice(1);
     if (!known.includes(id) && id !== '') return;            // anything else (like the privacy section or a sample page) is left to the browser
     if (location.hash === '#privacy') return;
