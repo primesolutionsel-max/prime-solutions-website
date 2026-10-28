@@ -172,7 +172,7 @@ def read_legal(slug):
                 k, v = ln.split(":", 1)
                 meta[k.strip()] = v.strip()
         body = raw[m.end():]
-    for k in ("title", "version", "last_updated", "status"):
+    for k in ("title", "last_updated", "status"):         # a page with no version line (Cherry's privacy policy has none) shows none
         if not meta.get(k):
             fail(f"legal/{slug}.md: the front matter needs a '{k}' line")
     body = strip_internal(fill_tokens(body, f"legal/{slug}.md"), f"legal/{slug}.md")
@@ -273,9 +273,9 @@ def legal_block(page, level):
     banner = ""
     if page["status"] == "draft" and page.get("banner", "site") != "own":
         banner = f'<p class="notice"><strong>{esc(U["draft"])}</strong></p>\n'
-    meta = (f'<p class="legal__meta">{esc(fmt(U["version"], version=page["version"]))} · '
-            f'{esc(fmt(U["updated"], date=page["date_text"]))}</p>\n')
-    body = md_to_html(page["body"], page["slug"], level)
+    ver = f'{esc(fmt(U["version"], version=page["version"]))} · ' if page.get("version") else ""
+    meta = f'<p class="legal__meta">{ver}{esc(fmt(U["updated"], date=page["date_text"]))}</p>\n'
+    body = md_to_html(page["body"], page["slug"], 2)   # sections are always h2 (the page title is the only h1)
     return (f'<div class="wrap legal__wrap">\n<p class="eyebrow">{esc(U["eyebrow"])}</p>\n'
             f'<h{level} class="legal__title" id="{page["slug"]}-title">{esc(page["title"])}</h{level}>\n{meta}{banner}'
             f'<div class="legal__body">\n{body}\n</div>\n</div>')
