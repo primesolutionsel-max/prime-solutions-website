@@ -74,8 +74,15 @@
     pills.forEach((p) => p.setAttribute('aria-pressed', String(p.dataset.tier === tier)));
     steps.forEach((s) => s.classList.toggle('is-active', s.dataset.step === tier));
   };
+  /* A level button pins its level while the page scrolls to it. Without this the scroll loop picks whichever level the page is
+     passing over on the way, and the sample page flips back and forth before it settles. Any hand on the page lets go of it. */
+  let pinned = '', pinTimer = 0;
+  const unpin = () => { pinned = ''; clearTimeout(pinTimer); };
+  const pin = (tier, ms) => { pinned = tier; clearTimeout(pinTimer); pinTimer = setTimeout(unpin, ms); };
+  ['wheel', 'touchstart', 'keydown'].forEach((ev) => addEventListener(ev, unpin, { passive: true }));
   const updateLadder = () => {
     if (!ladder) return;
+    if (pinned) { setTier(pinned); pin(pinned, 180); return; }      // still travelling to the level that was picked
     const wide = innerWidth >= 900;
     const sb = stage.getBoundingClientRect().bottom;
     const line = wide ? innerHeight * 0.5 : sb + (innerHeight - sb) * 0.4;
@@ -91,6 +98,7 @@
     const step = steps.find((s) => s.dataset.step === p.dataset.tier);
     setTier(p.dataset.tier);
     if (!step) return;
+    pin(p.dataset.tier, 700);
     const wide = innerWidth >= 900;
     const r = step.getBoundingClientRect();
     const sb = stage.getBoundingClientRect().bottom;
@@ -383,7 +391,7 @@
   (() => {
     const list = $$('.demo');
     if (!list.length) return;
-    let openEl = null, opener = null, depth = 0, scroller = null, io = null, proIO = [];
+    let openEl = null, opener = null, depth = 0, scroller = null, io = null, proIO = [], closeTimer = 0, setAt = 0;
 
     /* Pro, inside this page: the header is clear over its dark opening and a soft veil below it; the link of the part in view is underlined */
     const proHeader = (el, root) => {
@@ -407,12 +415,14 @@
       if (io) io.disconnect();
       proIO.forEach((o) => o.disconnect());
       io = null; proIO = []; scroller = null;
+      $$('.ps-menu[open]', openEl).forEach((d) => d.removeAttribute('open'));      // the phone menu is shut when you come back
       openEl.classList.remove('is-open');
       openEl = null;
     };
 
     const open = (el) => {
       const fresh = !openEl;
+      clearTimeout(closeTimer);       // a close that is still waiting must not shut the page opened after it
       if (fresh) opener = doc.activeElement && doc.activeElement !== doc.body ? doc.activeElement : null;
       teardown();
       openEl = el;
@@ -435,6 +445,7 @@
     };
 
     const closeNow = () => {
+      clearTimeout(closeTimer);
       depth = 0;
       const back = opener;
       teardown();
@@ -446,6 +457,7 @@
     /* The links are followed here, and the address (the hash) is only kept in step with them. Some viewers hold links and the address
        still, and if the page waited for the address to change, tapping a demo button would do nothing at all. */
     const hashTo = (h, replace) => {
+      setAt = Date.now();
       try { if (replace) location.replace(h); else location.hash = h.slice(1); } catch (err) { /* ignore */ }
     };
     const goTo = (el, replace) => {
@@ -456,7 +468,8 @@
 
     const close = () => {
       if (depth > 0) history.back(); else hashTo('#levels', true);
-      setTimeout(() => { if (openEl) closeNow(); }, 250);       // the address did not move: close anyway
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(() => { if (openEl) closeNow(); }, 250);       // the address did not move: close anyway
     };
 
     const sync = (fromEvent) => {
@@ -468,7 +481,12 @@
         open(el);
       } else closeNow();
     };
-    addEventListener('hashchange', () => sync(true));
+    addEventListener('hashchange', () => {
+      /* an older address coming back just after a quick switch (some viewers repeat the address a moment late): keep what is open */
+      const id = idNow();
+      if (openEl && id && id !== openEl.id && Date.now() - setAt < 900) { hashTo('#' + openEl.id, true); return; }
+      sync(true);
+    });
 
     /* the "See the Standard demo" and "See the Pro demo" buttons (and the open-demo button beside the sample page) */
     doc.addEventListener('click', (e) => {
