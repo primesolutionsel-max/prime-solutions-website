@@ -362,3 +362,10 @@
   .pp-sample .pp-pic, .pp-level, .pp-feat li, .pp-steps li { transition: none; }
   .pp-sample:hover .pp-pic, .pp-level:hover, .pp-feat li:hover, .pp-steps li:hover { transform: none; }
 }
+
+/* ---------- plans label, enquiry notice (text from site.json) ---------- */
+.d .d-label { margin-top: .5rem; font-size: .8125rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--d-brand); }
+.d .d-enq { max-width: 40rem; margin-top: .9rem; font-size: .8125rem; line-height: 1.5; color: inherit; opacity: .82; }
+.d .ps-foot__enq, .d .pp-foot__enq { max-width: 46rem; line-height: 1.5; }
+.d .ps-foot__enq a, .d .pp-foot__enq a, .d .d-enq a, .d .pp-note .d-fine a, .d .ps-note .d-fine a { color: inherit; text-underline-offset: 3px; }
+.d .pp-levels__head .d-label { color: var(--d-mint); }

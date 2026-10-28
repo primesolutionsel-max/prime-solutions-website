@@ -27,6 +27,9 @@ import demos, prep_images
 SRC, DIST, LEGAL = ROOT / "src", ROOT / "dist", ROOT / "legal"
 site = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
 C, L = site["copy"], site["legal"]
+site["domain"] = "https://" + L["domain"].strip().strip("/")     # one source: legal.domain
+L["email"] = site["email"]                                         # one source: the top-level email, so {{legal.email}} always matches it
+ALL_SLUGS = L["pages"] + L.get("more_pages", [])                   # every legal page that is built; L["pages"] are the ones in the footer
 prep_images.main()          # pictures in assets_in/ become the small web images in src/img/
 
 errors, warnings = [], []
@@ -80,15 +83,10 @@ def has_img(name):
 
 # ---------- the mode, the domain ----------
 ADVERTISE = site.get("mode") == "advertise-only"
-DOMAIN_OPEN = site["domain"].lstrip().startswith("[")
 
 
 def head_social(path):
-    """canonical link and absolute og:image. Until the domain is supplied the image link stays relative and nothing is canonical."""
-    up = "../" * path.count("/")
-    if DOMAIN_OPEN:
-        return (f'<meta property="og:image" content="{up}og.png">\n'
-                '<!-- the canonical link and the absolute og:image need the "domain" field in site.json -->')
+    """canonical link and absolute og:image, from the domain in site.json (legal.domain)"""
     dom = site["domain"].rstrip("/")
     url = f"{dom}/{path}"
     return (f'<link rel="canonical" href="{url}">\n<meta property="og:url" content="{url}">\n'
@@ -158,13 +156,21 @@ def strip_internal(md, where):
     return md
 
 
+def legal_src(slug):
+    return "CREDITS.md" if slug == "credits" else f"legal/{slug}.md"
+
+
+CREDITS_META = {"title": "Credits and licences — " + L["name"], "status": "draft", "banner": "site"}
+
+
 def read_legal(slug):
-    p = LEGAL / f"{slug}.md"
+    """legal/<slug>.md; the credits page is written from CREDITS.md at the top of the project"""
+    p = ROOT / "CREDITS.md" if slug == "credits" else LEGAL / f"{slug}.md"
     if not p.exists():
-        fail(f"legal/{slug}.md is missing (listed in site.json legal.pages)")
+        fail(f"{p.relative_to(ROOT)} is missing (listed in site.json legal.pages / legal.more_pages)")
         return None
     raw = p.read_text(encoding="utf-8")
-    meta, body = {}, raw
+    meta, body = ({"slug": slug, **CREDITS_META} if slug == "credits" else {}), raw
     m = FRONT.match(raw)
     if m:
         for ln in m.group(1).splitlines():
@@ -172,10 +178,13 @@ def read_legal(slug):
                 k, v = ln.split(":", 1)
                 meta[k.strip()] = v.strip()
         body = raw[m.end():]
+    meta.setdefault("last_updated", L.get("last_updated", ""))   # the date is in site.json (legal.last_updated) unless the page says its own
     for k in ("title", "last_updated", "status"):         # a page with no version line (Cherry's privacy policy has none) shows none
         if not meta.get(k):
-            fail(f"legal/{slug}.md: the front matter needs a '{k}' line")
-    body = strip_internal(fill_tokens(body, f"legal/{slug}.md"), f"legal/{slug}.md")
+            fail(f"{legal_src(slug)}: the front matter needs a '{k}' line")
+    body = fill_tokens(body, legal_src(slug))
+    meta["markers_all"] = marker_texts(body)          # every marker in the file, the internal notes too: they go on OPEN-MARKERS.md and block `live`
+    body = strip_internal(body, legal_src(slug))
     try:
         d = date.fromisoformat(meta.get("last_updated", ""))
         meta["date_text"] = f"{d.day} {d.strftime('%B %Y')}"
@@ -185,7 +194,7 @@ def read_legal(slug):
     return meta
 
 
-LEGAL_PAGES = [x for x in (read_legal(s) for s in L["pages"]) if x]
+LEGAL_PAGES = [x for x in (read_legal(s) for s in ALL_SLUGS) if x]
 
 
 def inline(t):
@@ -268,7 +277,7 @@ def md_to_html(md, slug, level=2):
     return "\n".join(out)
 
 
-def legal_block(page, level):
+def legal_block(page, level, link):
     U = C["legal_ui"]
     banner = ""
     if page["status"] == "draft" and page.get("banner", "site") != "own":
@@ -276,6 +285,8 @@ def legal_block(page, level):
     ver = f'{esc(fmt(U["version"], version=page["version"]))} · ' if page.get("version") else ""
     meta = f'<p class="legal__meta">{ver}{esc(fmt(U["updated"], date=page["date_text"]))}</p>\n'
     body = md_to_html(page["body"], page["slug"], 2)   # sections are always h2 (the page title is the only h1)
+    # a link inside a page to another page ("[credits](credits)") goes to that page wherever the page is shown
+    body = re.sub(r'href="(%s)"' % "|".join(map(re.escape, ALL_SLUGS)), lambda m: f'href="{link(m.group(1))}"', body)
     return (f'<div class="wrap legal__wrap">\n<p class="eyebrow">{esc(U["eyebrow"])}</p>\n'
             f'<h{level} class="legal__title" id="{page["slug"]}-title">{esc(page["title"])}</h{level}>\n{meta}{banner}'
             f'<div class="legal__body">\n{body}\n</div>\n</div>')
@@ -305,19 +316,13 @@ def check_markers():
     bad = []
     if live_site:
         bad += [f"{w}: {m}" for w, m in rows]
-    credits = ROOT / "CREDITS.md"
-    if credits.exists():
-        for m in marker_texts(credits.read_text(encoding="utf-8")):
-            rows.append(("CREDITS.md", m))
-            if live_site:
-                bad.append(f"CREDITS.md: {m}")
     for p in LEGAL_PAGES:
-        mk = marker_texts(p["body"])
-        rows += [(f"legal/{p['slug']}.md", m) for m in mk]
-        if p["status"] == "live" and mk:
-            bad += [f"legal/{p['slug']}.md is marked live but still has: {m}" for m in mk]
+        mk = p["markers_all"]
+        rows += [(legal_src(p["slug"]), m) for m in mk]
+        if (p["status"] == "live" or live_site) and mk:
+            bad += [f"{legal_src(p['slug'])} has an open marker on a live site or page: {m}" for m in mk]
         if live_site and p["status"] != "live":
-            warnings.append(f"the site is live but legal/{p['slug']}.md is still marked {p['status']}")
+            warnings.append(f"the site is live but {legal_src(p['slug'])} is still marked {p['status']}")
     lines = ["# Open markers", "",
              "Written by `build.py` every time it runs. Do not edit by hand. Each line is something that has not been supplied yet.",
              "Fill it in where it says (a legal page, or a field in `site.json`), run `python3 build.py`, and it drops off this list.",
@@ -376,9 +381,9 @@ def open_demo_standard():
     return esc(fmt(C["levels"]["open_demo"], tier=C["levels"]["cards"][0]["name"]))
 
 
-def pricing_note():
+def pricing_note(link):
     P = C["pricing"]
-    return f'<div class="pricenote reveal"><p>{esc(P["note"])}</p><p class="fine">{esc(P["small"])}</p></div>'
+    return f'<div class="pricenote reveal"><p>{esc(P["note"])}</p><p class="enq">{contact_privacy(link)}</p></div>'
 
 
 def features():
@@ -411,7 +416,7 @@ def timeline():
 
 
 def process_notes():
-    notes = ([site["advertise"]["quote"]] if ADVERTISE else []) + [C["process"]["note"]]
+    notes = [C["process"]["note"]]
     return '<div class="process__notes reveal">' + "".join(f"<p>{esc(n)}</p>" for n in notes) + "</div>"
 
 
@@ -420,8 +425,9 @@ def faq_list():
 
 
 def contact_privacy(link):
+    """the enquiry notice (Cherry's A4, legal.enquiryNotice) with its link to the privacy page; shown wherever the page asks the visitor to email"""
     K = C["contact"]
-    return f'{esc(K["privacy_text"])} <a href="{link("privacy")}">{esc(K["privacy_link"])}</a>.'
+    return f'{esc(K["privacy_text"])} <a href="{link("privacy-policy")}">{esc(K["privacy_link"])}</a>.'
 
 
 def footer(link, top_href, top_label):
@@ -433,7 +439,8 @@ def footer(link, top_href, top_label):
   <div class="wrap footer__bar">
     <p class="footer__name"><strong>{esc(site["name"])}</strong></p>
     <p class="footer__cta">{esc(C["cta"])} <a href="mailto:{site["email"]}">{esc(C["mail"])}</a></p>
-    <p class="footer__meta">© {site["year"]} {esc(site["name"])} · {links} · <a href="{top_href}">{esc(top_label)}</a></p>{note}
+    <p class="footer__enq">{contact_privacy(link)}</p>
+    <p class="footer__meta">© {site["year"]} {esc(L["name"])} · {links} · <a href="{top_href}">{esc(top_label)}</a></p>{note}
   </div>
 </footer>'''
 
@@ -618,8 +625,7 @@ def jsonld(path=""):
          "name": site["name"], "description": site["description"], "email": site["email"],
          "areaServed": {"@type": "Country", "name": site["seo"]["area_served"]},
          "serviceType": site["seo"]["service_type"], "knowsLanguage": site["seo"]["language"]}
-    if not DOMAIN_OPEN:
-        d["url"] = site["domain"].rstrip("/") + "/"
+    d["url"] = site["domain"].rstrip("/") + "/"
     return json.dumps(d, ensure_ascii=False)
 
 
@@ -638,7 +644,7 @@ def tokens_for(base="", link=link_root, path=""):
         "favicon": favicon, "jsonld": jsonld(), "head_social": head_social(path),
         "brand_aria": esc(fmt(C["top_aria"], name=site["name"])),
         "nav_items": nav_items(), "rocks": rocks(), "hero_lines": hero_lines(), "pills": pills(),
-        "open_demo_standard": open_demo_standard(), "ladder_steps": ladder_steps(), "pricing_note": pricing_note(),
+        "open_demo_standard": open_demo_standard(), "ladder_steps": ladder_steps(), "pricing_note": pricing_note(link),
         "mocks": mocks(), "samples": "\n".join(sample(s) for s in site["samples"]),
         "features": features(), "extras": extras(), "extras_mail": esc(extras_mail()),
         "timeline": timeline(), "process_notes": process_notes(), "faq_list": faq_list(),
@@ -724,7 +730,7 @@ for key, name in demos.TIERS[:2]:
 
 for p in LEGAL_PAGES:
     tk = tokens_for("../", link_sub, f"{p['slug']}/")
-    tk.update(legal=legal_block(p, 1), legal_title=esc(p["title"]), legal_slug=p["slug"],
+    tk.update(legal=legal_block(p, 1, link_sub), legal_title=esc(p["title"]), legal_slug=p["slug"],
               legal_desc=esc(fmt(C["legal_ui"]["desc"], title=p["title"], name=site["name"])),
               footer=footer(link_sub, "../", C["legal_ui"]["back"]),
               back_aria=esc(fmt(C["legal_ui"]["back_aria"], name=site["name"])), back_label=esc(C["legal_ui"]["back"]))
@@ -757,13 +763,13 @@ body = re.search(r"<body[^>]*>(.*)</body>", full, re.S).group(1)
 body = re.sub(r'<script src="js/(?:intro|main).js" defer></script>\s*', "", body)
 body = inline_images(body)
 # one file: the legal pages open as sections of the page, and a level's own page is its own preview
-for slug in L["pages"]:
+for slug in ALL_SLUGS:
     body = body.replace(f'href="{slug}/"', f'href="#{slug}"')
 body = re.sub(r'<a class="demo__own" href="(standard|pro)/">.*?</a>',
               lambda m: (f'<a class="demo__own" href="{LINKS[m.group(1)]}" target="_blank" rel="noopener">{esc(C["viewer"]["own_page"])}</a>'
                          if LINKS.get(m.group(1)) else ""), body)
 inline_secs = "".join(
-    f'<section class="legal legal--inline" id="{p["slug"]}" data-tone="light" aria-labelledby="{p["slug"]}-title">\n{legal_block(p, 2)}\n'
+    f'<section class="legal legal--inline" id="{p["slug"]}" data-tone="light" aria-labelledby="{p["slug"]}-title">\n{legal_block(p, 2, lambda s: "#" + s)}\n'
     f'<div class="wrap legal__wrap"><a class="link" href="#top">{esc(C["legal_ui"]["back"])}</a></div>\n</section>\n' for p in LEGAL_PAGES)
 assert '<footer class="site-footer"' in body
 body = body.replace('<footer class="site-footer"', inline_secs + '<footer class="site-footer"', 1)
@@ -795,7 +801,7 @@ for key, name in demos.TIERS[:2]:
     tb = tb.replace('href="../"', _out(prem))
     for other in ("standard", "pro"):
         tb = tb.replace(f'href="../{other}/"', _out(LINKS.get(other, "")))
-    for slug in L["pages"]:   # the legal pages open as sections of this file, so the footer links work on their own
+    for slug in ALL_SLUGS:   # the legal pages open as sections of this file, so the footer links work on their own
         tb = tb.replace(f'href="../{slug}/"', f'href="#{slug}"')
     tb = tb.replace("</footer>", "</footer>\n" + inline_secs.replace('href="#top"', 'href="#main"'), 1) if "</footer>" in tb else tb + inline_secs
     left = re.findall(r'href="\.\./[^"]*"', tb)
@@ -805,6 +811,80 @@ for key, name in demos.TIERS[:2]:
             f'<script>document.documentElement.classList.add("js")</script>\n<style>\n{css}\n</style>\n{ld}\n'
             f'<div class="tier-page tier--{key}" data-mode="{site["mode"]}">\n{tb}\n</div>\n<script>\n{tjs}\n</script>\n')
     write(f"artifact-{key}.html", tart)
+
+# ---------- checks on the finished pages (Cherry's package: build rules that keep the legal pages true) ----------
+BANNED = ["buy", "buy now", "order", "order now", "checkout", "cart", "pay", "pay now", "payment", "book now", "subscribe",
+          "sign up", "guaranteed", "guarantee", "fixed price", "final price", "price lock", "locked-in price", "pty ltd",
+          "registered company", "registration number", "trusted by", "#1", "best in south africa"]
+# a banned word may stay in a sentence that says nothing can be ordered or paid for (the Advertise Only lines, the terms)
+SAYS_NOT = re.compile(r"\b(nothing|no|not|cannot|can't|never|none)\b", re.I)
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+
+
+def banned_hits(text):
+    hits = []
+    for sent in re.split(r"(?<=[.!?])\s+|\n+", text):
+        for w in BANNED:
+            stem = re.escape(w)
+            if w in ("buy", "order", "pay", "payment", "guarantee", "subscribe"):
+                stem += r"(?:s|ed|ing)?"                         # buys, ordered, paying, payments ...
+            pat = (r"(?<![\w-])" if w != "#1" else r"(?<![\w])") + (r"(?<!in )" if w == "order" else "") + stem + (r"(?![\w])" if w != "#1" else r"(?!\d)")
+            if re.search(pat, sent, re.I) and not SAYS_NOT.search(sent):
+                hits.append((w, sent.strip()[:110]))
+    return hits
+
+
+def page_text(h):
+    """what a visitor (or a search engine) reads: the words, alt text, titles, labels and meta tags; not scripts or styles"""
+    h = re.sub(r"<(script|style)\b.*?</\1>", " ", h, flags=re.S | re.I)
+    h = re.sub(r"<!--.*?-->", " ", h, flags=re.S)
+    attrs = " \n".join(re.findall(r'\b(?:alt|title|aria-label|content|placeholder)="([^"]*)"', h))
+    text = _html.unescape(re.sub(r"<[^>]+>", " ", h))
+    return re.sub(r"[ \t]+", " ", text) + "\n" + _html.unescape(attrs)
+
+
+def check_pages():
+    allowed_mail = {site["email"].lower()} | {e.lower() for e in L.get("other_emails", [])}
+    page_files = [DIST / "index.html", DIST / "standard" / "index.html", DIST / "pro" / "index.html"] + \
+                 [DIST / p["slug"] / "index.html" for p in LEGAL_PAGES]
+    for f in page_files:
+        rel = f.relative_to(DIST)
+        h = f.read_text(encoding="utf-8")
+        # 1. no placeholder marker in any page (Cherry: "the build fails if any page still contains one")
+        for m in marker_texts(_html.unescape(re.sub(r"<[^>]+>", "", h))):
+            fail(f"{rel}: an open placeholder marker is in the page: {m[:90]}")
+        # 2. banned words
+        for w, sent in banned_hits(page_text(h)):
+            fail(f'{rel}: banned word "{w}" in: {sent}')
+        # 3. the contact email is one address, the same everywhere
+        for e in set(EMAIL_RE.findall(_html.unescape(h))):
+            if e.lower() not in allowed_mail:
+                fail(f"{rel}: the email address {e} is not the one in site.json")
+        # 4. email is the only way to get in touch: no forms, phone or WhatsApp links, embeds
+        for pat, what in ((r"<(form|input|textarea|select|button[^>]*type=.submit)\b", "a form field"), (r"<(iframe|embed|object|video|audio)\b", "an embed"),
+                          (r'href="(tel:|sms:|whatsapp:|https?://(?:wa\.me|api\.whatsapp|web\.whatsapp))', "a phone or WhatsApp link")):
+            if re.search(pat, h, re.I):
+                fail(f"{rel}: {what} is on the page (the site is email only, no forms)")
+    # 5. nothing that stores or sends data, no outside requests (what the privacy page says is true)
+    code = {"css": [x for x in (DIST / "css").glob("*.css")], "js": [x for x in (DIST / "js").glob("*.js")]}
+    bad_js = re.compile(r"\b(localStorage|sessionStorage|indexedDB|document\.cookie|sendBeacon|XMLHttpRequest|WebSocket|serviceWorker|EventSource)\b|\bfetch\s*\(|\bnew Image\s*\(")
+    for f in code["js"] + page_files + [DIST / "artifact.html"]:
+        for m in bad_js.finditer(re.sub(r"//[^\n]*|/\*.*?\*/", "", f.read_text(encoding="utf-8"), flags=re.S)):
+            fail(f"{f.relative_to(DIST)}: '{m.group(0)}' stores or sends data, which the privacy page says the site never does")
+    # a request to another website: a script, picture, font, stylesheet, frame or form from outside. A link the visitor clicks
+    # (the Information Regulator in the privacy text) and the canonical / social tags are not requests the page makes.
+    for f in code["css"] + code["js"] + page_files:
+        t = f.read_text(encoding="utf-8")
+        found = [m.group(0) for m in re.finditer(r"""\b(?:src|poster|action|data)=["']https?://[^"']*|url\(\s*["']?https?://[^)"']*|@import\s+["']?https?://[^;"']*""", t, re.I)]
+        for m in re.finditer(r"<link\b[^>]*>", t, re.I):
+            tag = m.group(0)
+            if re.search(r'href=["\']https?://', tag, re.I) and not re.search(r'rel=["\'](?:canonical|alternate)', tag, re.I):
+                found.append(tag[:100])
+        for x in found:
+            fail(f"{f.relative_to(DIST)}: a request to another website: {x[:90]}")
+
+
+check_pages()
 
 # ---------- report ----------
 total = sum(p.stat().st_size for p in DIST.rglob("*") if p.is_file() and p.suffix in (".html", ".css", ".js", ".woff", ".webp") and not p.name.startswith(("artifact", "prime-solutions")))

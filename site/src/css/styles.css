@@ -931,3 +931,15 @@ html.demo-open { overflow: hidden; }
   .ladder[data-tier="premium"] .m-seal__ring { animation: none; }
   .rock { animation: none !important; }
 }
+
+/* ---------- plans label, enquiry notice (Cherry's A4 / A6 wording; text comes from site.json) ---------- */
+.plans-label { margin-top: .35rem; font-size: .8125rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--forest); }
+.enq { font-size: .875rem; line-height: 1.5; color: var(--slate); max-width: 46rem; }
+.enq a { color: inherit; text-underline-offset: 3px; }
+.pricenote .enq { margin-top: .15rem; }
+.enq--hero { max-width: 34rem; margin-top: -.15rem; color: #DCE9E1; font-size: .8125rem; }
+.enq--extra { margin-top: 1rem; font-size: .8125rem; color: inherit; opacity: .82; }
+.footer__enq { grid-column: 1 / -1; font-size: .875rem; color: var(--slate); max-width: 46rem; }
+.footer__enq a { color: inherit; text-underline-offset: 3px; }
+.demo__enq { margin-top: .9rem; max-width: 46rem; font-size: .8125rem; line-height: 1.5; color: #CFE3D7; }
+.demo__enq a { color: inherit; text-underline-offset: 3px; }

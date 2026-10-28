@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy — Prime Solutions EL
-slug: privacy
+slug: privacy-policy
 last_updated: 2026-10-29
 status: draft
 banner: site

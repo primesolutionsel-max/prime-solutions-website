@@ -126,18 +126,18 @@ def steps_html(c, numfmt, extra=lambda n: ""):
 
 
 def process_notes(c, cls):
-    notes = ([c.site["advertise"]["quote"]] if c.adv else []) + [c.C["process"]["note"]]
+    notes = [c.C["process"]["note"]]
     return f'<div class="{cls}">' + "".join(f"<p>{esc(n)}</p>" for n in notes) + "</div>"
 
 
 def pricing_note(c, cls):
     P = c.C["pricing"]
-    return f'<div class="{cls}"><p>{esc(P["note"])}</p><p class="d-fine">{esc(P["small"])}</p></div>'
+    return f'<div class="{cls}"><p>{esc(P["note"])}</p><p class="d-fine">{contact_privacy(c)}</p></div>'
 
 
 def contact_privacy(c):
     K = c.C["contact"]
-    return f'{esc(K["privacy_text"])} <a {c.legal("privacy")}>{esc(K["privacy_link"])}</a>.'
+    return f'{esc(K["privacy_text"])} <a {c.legal("privacy-policy")}>{esc(K["privacy_link"])}</a>.'
 
 
 def foot(c, pre):
@@ -147,7 +147,8 @@ def foot(c, pre):
     note = f'<p class="{pre}-foot__note">{esc(c.site["advertise"]["footer"])}</p>' if c.adv else ""
     return (f'<footer class="{pre}-foot {pre}-wrap">\n'
             f'        <p class="{pre}-foot__cta">{esc(c.C["cta"])} <a {c.mail()}>{esc(c.C["mail"])}</a></p>\n'
-            f'        <div class="{pre}-foot__row"><span>© {c.year} {esc(c.name)} · {links}</span><a {c.jump("top")}>{esc(c.C["top"])}</a></div>\n'
+            f'        <p class="d-fine {pre}-foot__enq">{contact_privacy(c)}</p>\n'
+            f'        <div class="{pre}-foot__row"><span>© {c.year} {esc(c.site["legal"]["name"])} · {links}</span><a {c.jump("top")}>{esc(c.C["top"])}</a></div>\n'
             f'        {note}\n      </footer>')
 
 
@@ -226,11 +227,12 @@ def standard(c):
           <h2 id="std-hero-t">{hero_h(c)}</h2>
           <p class="ps-lead">{esc(C["hero"]["lead"])}</p>
           <div class="ps-cta">{email_btn(c, "d-btn--lg")}<a class="d-link" {c.jump("levels")}>{esc(C["hero"]["see_levels"])}</a></div>
+          <p class="d-fine d-enq">{contact_privacy(c)}</p>
         </div>
       </section>
       </div>
       <section class="ps-band ps-band--soft" id="std-levels" aria-labelledby="std-levels-t"><div class="ps-sky" aria-hidden="true"></div><div class="ps-wrap ps-block">
-        <div class="ps-block__head d-rv"><p class="ps-eyebrow">{esc(C["levels"]["eyebrow"])}</p><h3 id="std-levels-t">{esc(C["levels"]["title"])}</h3><p>{esc(C["levels"]["lead"])}</p></div>
+        <div class="ps-block__head d-rv"><p class="ps-eyebrow">{esc(C["levels"]["eyebrow"])}</p><h3 id="std-levels-t">{esc(C["levels"]["title"])}</h3><p>{esc(C["levels"]["lead"])}</p><p class="d-label">{esc(C["pricing"]["label"])}</p></div>
         <div class="ps-levels">
 {levels}
         </div>
@@ -252,6 +254,7 @@ def standard(c):
             <p>{esc(I["extras_sub"])}</p>
             <ul>{extras}</ul>
             {email_btn(c, "", I["extras_button"], I["extras_subject"])}
+            <p class="d-fine d-enq">{contact_privacy(c)}</p>
           </aside>
         </div>
       </div></section>
@@ -308,11 +311,12 @@ def pro(c):
             <h2 id="pro-hero-t">{hero_h(c)}</h2>
             <p class="pp-sub">{esc(C["hero"]["lead"])}</p>
             <div class="pp-cta">{email_btn(c, "d-btn--light d-btn--lg")}<a class="d-link" {c.jump("levels")}>{esc(C["hero"]["see_levels"])}</a></div>
+            <p class="d-fine d-enq">{contact_privacy(c)}</p>
           </div>
         </div>
       </section>
       <div class="pp-band pp-band--castle"><section class="pp-levels pp-wrap" id="pro-levels" aria-labelledby="pro-levels-t">
-        <div class="pp-levels__head d-rv"><p class="pp-kicker">{esc(C["levels"]["lead"].rstrip("."))}</p><h3 id="pro-levels-t">{esc(C["levels"]["title"])}</h3></div>
+        <div class="pp-levels__head d-rv"><p class="pp-kicker">{esc(C["levels"]["lead"].rstrip("."))}</p><h3 id="pro-levels-t">{esc(C["levels"]["title"])}</h3><p class="d-label">{esc(C["pricing"]["label"])}</p></div>
         <div class="pp-levels__row">
 {levels}
         </div>
@@ -334,6 +338,7 @@ def pro(c):
             <p>{esc(I["extras_sub"])}</p>
             <ul>{extras}</ul>
             {email_btn(c, "", I["extras_button"], I["extras_subject"])}
+            <p class="d-fine d-enq">{contact_privacy(c)}</p>
           </aside>
         </div>
       </section></div>
@@ -405,6 +410,7 @@ def shell(site, key, name, vars_, inner, others):
           {nxt}
           <a class="demo__own" href="{key}/">{esc(V["own_page"])}</a>
         </div>
+        <p class="demo__enq">{esc(site["copy"]["contact"]["privacy_text"])} <a href="privacy-policy/">{esc(site["copy"]["contact"]["privacy_link"])}</a>.</p>
       </div>
     </div>
   </div>

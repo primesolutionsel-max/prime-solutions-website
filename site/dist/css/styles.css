@@ -932,6 +932,18 @@ html.demo-open { overflow: hidden; }
   .rock { animation: none !important; }
 }
 
+/* ---------- plans label, enquiry notice (Cherry's A4 / A6 wording; text comes from site.json) ---------- */
+.plans-label { margin-top: .35rem; font-size: .8125rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--forest); }
+.enq { font-size: .875rem; line-height: 1.5; color: var(--slate); max-width: 46rem; }
+.enq a { color: inherit; text-underline-offset: 3px; }
+.pricenote .enq { margin-top: .15rem; }
+.enq--hero { max-width: 34rem; margin-top: -.15rem; color: #DCE9E1; font-size: .8125rem; }
+.enq--extra { margin-top: 1rem; font-size: .8125rem; color: inherit; opacity: .82; }
+.footer__enq { grid-column: 1 / -1; font-size: .875rem; color: var(--slate); max-width: 46rem; }
+.footer__enq a { color: inherit; text-underline-offset: 3px; }
+.demo__enq { margin-top: .9rem; max-width: 46rem; font-size: .8125rem; line-height: 1.5; color: #CFE3D7; }
+.demo__enq a { color: inherit; text-underline-offset: 3px; }
+
 /* =====================================================================================================
    The Standard and Pro versions of the Prime Solutions site. Premium is the page itself.
    Same sections, same words, same prices; only the treatment changes.
@@ -1296,6 +1308,13 @@ html.demo-open { overflow: hidden; }
   .pp-sample .pp-pic, .pp-level, .pp-feat li, .pp-steps li { transition: none; }
   .pp-sample:hover .pp-pic, .pp-level:hover, .pp-feat li:hover, .pp-steps li:hover { transform: none; }
 }
+
+/* ---------- plans label, enquiry notice (text from site.json) ---------- */
+.d .d-label { margin-top: .5rem; font-size: .8125rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--d-brand); }
+.d .d-enq { max-width: 40rem; margin-top: .9rem; font-size: .8125rem; line-height: 1.5; color: inherit; opacity: .82; }
+.d .ps-foot__enq, .d .pp-foot__enq { max-width: 46rem; line-height: 1.5; }
+.d .ps-foot__enq a, .d .pp-foot__enq a, .d .d-enq a, .d .pp-note .d-fine a, .d .ps-note .d-fine a { color: inherit; text-underline-offset: 3px; }
+.d .pp-levels__head .d-label { color: var(--d-mint); }
 
 /* ---------- pictures (written by build.py from whatever is in src/img) ---------- */
 html .ph.ph-plumbing { background-image: url(../img/trade-plumbing.webp); background-size: cover; background-position: center; }

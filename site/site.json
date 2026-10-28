@@ -3,7 +3,6 @@
   "mode": "advertise-only",
   "status": "draft",
   "email": "primesolutionsel@gmail.com",
-  "domain": "[TO BE SUPPLIED: the live web address, for example https://example.com, no slash at the end]",
   "seo_title": "Prime Solutions | One-page websites for small South African businesses",
   "artifact_title": "Prime Solutions",
   "description": "Prime Solutions builds one-page websites for small businesses in South Africa. One once-off fee in rand. The code, the domain and the hosting are yours.",
@@ -36,36 +35,43 @@
     "schema_type": "ProfessionalService"
   },
   "legal": {
-    "name": "Prime Solutions",
-    "email": "primesolutionsel@gmail.com",
+    "name": "Prime Solutions EL",
     "host": "HostAfrica",
     "host_check": "[VERIFY: HostAfrica really hosts this website. It is named on the privacy page; only the domain registration is confirmed (Cherry's package, 28 Oct 2026). Not shown on any page.]",
+    "domain": "primesolutionsgroup.co.za",
+    "last_updated": "2026-10-29",
+    "version": "1.0",
     "pages": [
-      "privacy",
-      "terms",
-      "refunds"
+      "privacy-policy",
+      "terms-of-use",
+      "how-it-works"
+    ],
+    "more_pages": [
+      "credits"
     ],
     "markers": [
       "TO BE SUPPLIED",
       "JASON TO SUPPLY",
       "ATTORNEY",
       "VERIFY"
+    ],
+    "other_emails": [
+      "POPIAComplaints@inforegulator.org.za"
     ]
   },
   "prices": {
-    "standard": "R1,000 – R1,500",
+    "standard": "from R1,000 to R1,500",
     "pro": "from R3,000",
-    "premium": "R10,000 – R14,000"
+    "premium": "R10,000 to R14,000"
   },
   "price_tag": {
-    "standard": "estimated, once-off",
-    "pro": "once-off",
-    "premium": "estimated, once-off"
+    "standard": "example guide price, one-off",
+    "pro": "example guide price, one-off",
+    "premium": "example guide price, one-off"
   },
   "advertise": {
     "label": "Advertise only",
-    "footer": "Advertise only. Nothing on this website is an offer; all work is agreed in writing.",
-    "quote": "Prices are guide prices. Nothing is bought on this website. After you contact us we send a written quote and agreement. Work starts only after you accept it in writing and the deposit is paid."
+    "footer": "Advertise Only: nothing is sold on this website. Nothing on this website is an offer; all work is agreed in writing. Prime Solutions EL is a trading name."
   },
   "copy": {
     "brand": [
@@ -204,8 +210,8 @@
       }
     },
     "pricing": {
-      "note": "Prices are estimates. The price we quote depends on what you need. If you'd like extra features, we'll talk it through with you and quote the extra cost before we start.",
-      "small": "The one fee excludes extras. Prices include no VAT, because Prime Solutions is not VAT registered. Hosting and your domain are your own cost. There is no monthly fee."
+      "label": "Example plans and guide prices.",
+      "note": "Guide prices only. A written quote comes first. Your price depends on what you need; if you'd like extra features, we'll talk it through and quote the extra cost before we start. No VAT charged (Prime Solutions EL is not VAT registered). One-off fee, no monthly charges from us. Hosting, domain and any other ongoing costs are your own."
     },
     "samples": {
       "eyebrow": "Samples",
@@ -296,11 +302,12 @@
       "lead": "Email first, we talk, then we build.",
       "steps": [
         "Email us.",
-        "We send a quote and agreement.",
-        "You accept in writing and pay the deposit.",
+        "We send a written quote and agreement.",
+        "You accept in writing, and any deposit is set out in your written quote and agreement.",
         "We build and hand over."
       ],
-      "note": "Turnaround is agreed in your quote."
+      "note": "Turnaround is agreed in your quote.",
+      "one_line": "1. Email us. 2. We send a written quote and agreement. 3. You accept in writing, and any deposit is set out in your written quote and agreement. 4. We build and hand over."
     },
     "faq": {
       "eyebrow": "Common questions",
@@ -349,9 +356,9 @@
     },
     "footer": {
       "legal": {
-        "privacy": "Privacy policy",
-        "terms": "Terms of use",
-        "refunds": "Refunds and cancellation"
+        "privacy-policy": "Privacy",
+        "terms-of-use": "Terms of use",
+        "how-it-works": "How it works"
       }
     },
     "viewer": {
@@ -360,7 +367,7 @@
       "tabs_aria": "Choose a level",
       "close": "Close",
       "end_title": "This was the {tier} level.",
-      "end_price": "{price}, {tag}.",
+      "end_price": "{price} ({tag}).",
       "end_mail": "Email us",
       "end_subject": "{tier} level",
       "page_aria": "This page",

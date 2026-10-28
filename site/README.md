@@ -16,16 +16,16 @@ Plain HTML, CSS and a small amount of JavaScript. No framework, no build tooling
 
 Premium shows Standard and Pro in its "Three levels" section, and every level links to the others. Same sections, same words, same prices at every level. Only the treatment changes (Premium is richer than Pro, and Pro is richer than Standard).
 
-The legal pages are at `/privacy/`, `/terms/` and `/refunds/`, and every page links to all three from its footer.
+The legal pages are at `/privacy-policy/`, `/terms-of-use/` and `/how-it-works/` (Cherry's file names), and every page links to all three from its footer. `/credits/` is the credits page, built from `CREDITS.md` and linked from the terms.
 
 ## Where things live
 
 ```
-site.json            ALL the wording (copy), prices, contact email, mode, status, the domain, the Forest theme, the six sample layouts
-legal/privacy.md     the privacy policy      one source file per legal page, each with its own last-updated line
-legal/terms.md       the terms
-legal/refunds.md     the refund and cancellation page
-CREDITS.md           the source and licence of every picture and font
+site.json            ALL the wording (copy), prices, contact email, mode, status, the legal block (name, host, domain, date), the Forest theme, the six sample layouts
+legal/privacy-policy.md   the privacy policy      one source file per legal page, each with its own last-updated line
+legal/terms-of-use.md     the website terms of use (version 1.0)
+legal/how-it-works.md     how it works, refunds and cancellation (version 1.0)
+CREDITS.md           the source and licence of every picture and font; also published as /credits/
 OPEN-MARKERS.md      the one list of everything still to be supplied (written by the build; do not edit)
 build.py             fills the templates from site.json and legal/, writes dist/, checks the markers
 demos.py             the markup of the Standard and Pro pages (no wording in it: it reads site.json)
@@ -57,31 +57,46 @@ Open http://localhost:8000 (Premium), http://localhost:8000/pro/ and http://loca
 
 ## Changing things
 
-- **Any wording, price or the contact email:** `site.json` (`copy` for the words, `prices`, `email`). Do not type wording into the templates or `demos.py`; the build reads it from `site.json`.
-- **Estimates only:** prices are shown as estimates ("estimated", "from"), never fixed or final. There is no VAT because Prime Solutions is not VAT registered. The one fee excludes extras; hosting and the domain are the client's own cost; there is no monthly fee. Buying is by email only ("Email first, we talk, then we build"). The turnaround is agreed in the quote.
-- **The address of the live site:** the `domain` field in `site.json` (for example `https://example.com`, no slash at the end). Until it is filled in, the canonical link is left out and the share picture (`og:image`) uses a relative address. Once it is set, every page gets an absolute `og:image` and a canonical link.
+- **Any wording, price or the contact email:** `site.json` (`copy` for the words, `prices`, `email`). Do not type wording into the templates or `demos.py`; the build reads it from `site.json`. The contact email has one source, `email`: the legal pages take it from there with `{{legal.email}}`, and the build fails if any page shows a different address.
+- **Guide prices only:** the three plans are shown as examples with guide prices ("Example plans and guide prices", `pricing.label`), never fixed or final; "A written quote comes first". No VAT is charged because Prime Solutions EL is not VAT registered. It is a one-off fee, with no monthly charge from us; hosting, the domain and other ongoing costs are the client's own. Nothing is sold on the site: the first step is an email, then a written quote and agreement. The turnaround is agreed in the quote. All of this wording is Cherry's (`site.json`: `prices`, `price_tag`, `pricing`, `advertise`, `process`). The four steps are `copy.process.steps`; `copy.process.one_line` is Cherry's one-line version of them, kept for use as a summary (it is not shown today).
+- **The address of the live site:** `legal.domain` in `site.json` (primesolutionsgroup.co.za, as Cherry spelled it). The build makes the `https://` address from it, and every page gets an absolute `og:image` and a canonical link (these are not requests the page makes).
+- **The enquiry notice** ("When you email us we use your details only to reply, quote and, if you go ahead, build your site...", `copy.contact.privacy_text`) sits next to the email calls to action: the opening, the plans, the extras, the contact part, the footer of every page and the end of each full-screen demo. The sticky header button has no room for it and opens the same email as the opening button.
 - **Colours:** the Forest theme (forest green `#0B5D3B`, white, mint `#D6F1E2`, emerald `#1FAE6C`) is the `theme` block in `site.json` and the variables at the top of `src/css/styles.css`.
 - **Pictures:** put new originals in `assets_in/`, run `python3 build.py`, and update `CREDITS.md`.
 - **After any change,** run `python3 build.py` again and upload `dist/`.
 
 ## The legal pages
 
-Each page has its own source file in `legal/`: `privacy.md`, `terms.md`, `refunds.md`. A file starts with a few lines between two `---` lines (`title`, `last_updated`, `status`, `banner`, and `version` if the page has one) and then the text. The page shows its "last updated" line (and its version, when there is one) from those, so a change is a one-file edit.
+Each page has its own source file in `legal/` (`privacy-policy.md`, `terms-of-use.md`, `how-it-works.md`), and `/credits/` is built from `CREDITS.md`. A file starts with a few lines between two `---` lines (`title`, `slug`, `status`, `banner`, `last_updated` and `version` where the page has them) and then the text. The page shows its "last updated" line (and its version, when there is one) from those, so a change is a one-file edit. The date defaults to `legal.last_updated` in `site.json`.
 
+- **Where the text came from.** All three pages are Cherry's final text (her 29 October 2026 package, files 01 to 03), word for word, from the title line down. Her STATUS line is not published. The email address inside them is `{{legal.email}}`, the host is `{{legal.host}}`, so each has one source in `site.json`. A link such as `[credits](credits)` or `[Privacy Policy](privacy-policy)` goes to that page wherever the page is shown.
 - **To publish a different version of a page,** replace the text below the `---` lines with the new text, update `last_updated` (and `version`, if the page has one), and run `python3 build.py`. Do not edit anything in `dist/`.
-- **The words common to all three pages** (the name, the email, where the site is hosted) are one block in `site.json` (`legal`). A source file can use them as `{{legal.email}}`, `{{legal.name}}` and `{{legal.host}}`. No legal wording is written into the templates or the scripts.
-- **The Draft notice.** Until a page is final it carries a "Draft. This page is not final." notice. `banner: site` shows the site's notice; `banner: own` is for a file that already has its own Draft banner. The site never says a page is final or legally approved.
-- **Text kept internal.** If a source file has an internal "do not publish" box, fence it with `<!-- INTERNAL-START -->` and `<!-- INTERNAL-END -->` (or leave it as a heading or quote that says "do not publish" or "internal") and the build leaves it out of the published page. The build refuses to finish if "do not publish" text is still in a published page.
-- **Right now** `privacy.md` holds Cherry's final privacy-policy text (from her 29 October 2026 package), still marked Draft with the site's notice. Its date line is the one in her text. `terms.md` and `refunds.md` still hold one marked placeholder each, naming the file they are waiting for; nothing has been written in their place.
-- **Privacy page and the site must stay in step.** The policy says the site has no forms, cookies, local storage, analytics, payments or outside requests, and that the copy buttons only copy to the clipboard. If any of that changes, the policy changes first. The host named in it (`legal.host` in `site.json`, now HostAfrica) is not confirmed: the marker `legal.host_check` stays in `OPEN-MARKERS.md` until Jason confirms where the site is hosted.
+- **The words common to all pages** (the trading name, where the site is hosted, the domain, the date) are one block in `site.json` (`legal`). A source file can use them as `{{legal.email}}`, `{{legal.name}}` (Prime Solutions EL) and `{{legal.host}}`. No legal wording is written into the templates or the scripts. No person's name and no postal address are shown anywhere (the owner's decision).
+- **The Draft notice.** Until a page is final it carries a "Draft. This page is not final." notice. `banner: site` shows the site's notice; `banner: own` is for a file that already has its own Draft banner. The site never says a page is final or legally approved. Cherry's package is draft, not legal advice, and it says to re-paper everything with a lawyer when a company is registered or before the first paying client.
+- **Text kept internal.** If a source file has an internal "do not publish" box, fence it with `<!-- INTERNAL-START -->` and `<!-- INTERNAL-END -->` (or leave it as a heading or quote that says "do not publish" or "internal") and the build leaves it out of the published page. The build refuses to finish if "do not publish" text is still in a published page. `CREDITS.md` keeps its open items this way.
+- **The privacy page and the site must stay in step.** The policy says the site has no forms, cookies, local storage, analytics, payments or outside requests, and that the copy buttons only copy to the clipboard. The build checks this on every build (see "What the build checks"); if any of it must change, change the policy first. The host named in it (`legal.host`, HostAfrica) is not confirmed: the marker `legal.host_check` stays in `OPEN-MARKERS.md` until it is.
+- **The entrance plays once per visit** and is remembered only in a variable inside the open page (`entered` in `src/js/intro.js`), so it starts again when the visitor leaves and comes back. It is never kept in a cookie, browser storage or the address.
 - `archive/legal/` holds older policy drafts that do not fit Advertise Only. They are not used and must not be published.
+
+## What the build checks
+
+`python3 build.py` stops (exit 1) when a finished page:
+
+- contains a placeholder marker (`[TO BE SUPPLIED ...]` and the like);
+- uses a banned word from Cherry's list (buy, order, pay, payment, book now, subscribe, sign up, guaranteed, fixed price, "trusted by", "#1", "best in South Africa", Pty Ltd, ...) outside a sentence that says nothing can be ordered or paid for;
+- shows an email address other than the one in `site.json` (the Information Regulator's address, in the privacy text, is the one listed exception: `legal.other_emails`);
+- has a form field, an embed (iframe, video, audio), a phone, SMS or WhatsApp link;
+- uses `localStorage`, `sessionStorage`, IndexedDB, cookies, `fetch`, XMLHttpRequest, WebSocket, a beacon or a service worker in its scripts;
+- loads anything from another website (a script, picture, font, stylesheet or frame).
+
+It also refuses a site or page marked `live` while any marker is open anywhere, including the internal notes in `CREDITS.md`.
 
 ## Markers: what is still to be supplied
 
 A marker is any text in square brackets that starts with `[TO BE SUPPLIED`, `[JASON TO SUPPLY`, `[ATTORNEY` or `[VERIFY` (the list is `legal.markers` in `site.json`). It is shown on the page, highlighted, until it is replaced.
 
 - Every run of `python3 build.py` writes **`OPEN-MARKERS.md`**: the one list of every open marker, with the file and field it is in.
-- Set `"status": "live"` in `site.json` only when the list is empty. A site marked `live` will not build while any marker is open in `site.json`, `CREDITS.md` or a legal page. A legal page can also be marked `status: live` by itself, and will not build with a marker in it. Draft pages and the draft site only warn.
+- Set `"status": "live"` in `site.json` only when the list is empty. A site marked `live` will not build while any marker is open in `site.json`, `CREDITS.md` (its internal notes too) or a legal page. A legal page can also be marked `status: live` by itself, and will not build with a marker in it. Draft pages and the draft site only warn. No finished page may contain a marker at all (see "What the build checks"): open items that are not for visitors, such as the host check and the picture licences, are kept in `site.json` (`legal.host_check`, which is not shown on any page) or inside the internal block of `CREDITS.md`.
 
 ## The Standard look
 
