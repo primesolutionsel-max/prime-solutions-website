@@ -3,10 +3,9 @@
   "mode": "advertise-only",
   "status": "draft",
   "email": "primesolutionsel@gmail.com",
-  "domain": "[TO BE SUPPLIED: the live web address, for example https://example.com, no slash at the end]",
   "seo_title": "Prime Solutions | One-page websites for small South African businesses",
   "artifact_title": "Prime Solutions",
-  "description": "Prime Solutions builds one-page websites for small businesses in South Africa. One once-off fee in rand. The code, the domain and the hosting are yours.",
+  "description": "Prime Solutions builds one-page websites for small businesses in South Africa. Three levels to choose from, quoted in writing first. The code, the domain and the hosting are yours.",
   "year": "2026",
   "theme": {
     "name": "Forest",
@@ -36,35 +35,41 @@
     "schema_type": "ProfessionalService"
   },
   "legal": {
-    "name": "Prime Solutions",
-    "email": "primesolutionsel@gmail.com",
-    "host": "[TO BE SUPPLIED: where the website is hosted]",
+    "name": "Prime Solutions EL",
+    "owner": "HAMZA KHAN",
+    "location": "East London, South Africa",
+    "whatsapp": {
+      "number": "+27 71 863 4356",
+      "label": "WhatsApp: +27 71 863 4356",
+      "url": "https://wa.me/27718634356"
+    },
+    "footerNotice": "Advertise only: nothing is sold on this website, and nothing on it is an offer. All work is agreed in writing. Prime Solutions EL is owned and run by HAMZA KHAN, a sole proprietor, based in East London, South Africa. Email primesolutionsel@gmail.com or message us on WhatsApp: +27 71 863 4356. Privacy · Terms of use · How it works",
+    "enquiryNotice": "When you email us or message us on WhatsApp, we use your details only to reply, quote and, if you go ahead, build your site, and we share them with our small team for that purpose. See Privacy.",
+    "domain": "primesolutionsgroup.co.za",
+    "last_updated": "2026-10-29",
+    "version": "1.0",
     "pages": [
-      "privacy",
-      "terms",
-      "refunds"
+      "privacy-policy",
+      "terms-of-use",
+      "how-it-works"
+    ],
+    "more_pages": [
+      "credits"
     ],
     "markers": [
       "TO BE SUPPLIED",
       "JASON TO SUPPLY",
       "ATTORNEY",
-      "VERIFY"
+      "VERIFY",
+      "CLAUDE INSTRUCTION",
+      "TO DECIDE"
+    ],
+    "other_emails": [
+      "POPIAComplaints@inforegulator.org.za"
     ]
   },
-  "prices": {
-    "standard": "R1,000 – R1,500",
-    "pro": "from R3,000",
-    "premium": "R10,000 – R14,000"
-  },
-  "price_tag": {
-    "standard": "estimated, once-off",
-    "pro": "once-off",
-    "premium": "estimated, once-off"
-  },
   "advertise": {
-    "label": "Advertise only",
-    "footer": "Advertise only. Nothing on this website is an offer; all work is agreed in writing.",
-    "quote": "Prices are guide prices. Nothing is bought on this website. After you contact us we send a written quote and agreement. Work starts only after you accept it in writing and the deposit is paid."
+    "label": "Advertise only"
   },
   "copy": {
     "brand": [
@@ -203,8 +208,8 @@
       }
     },
     "pricing": {
-      "note": "Prices are estimates. The price we quote depends on what you need. If you'd like extra features, we'll talk it through with you and quote the extra cost before we start.",
-      "small": "The one fee excludes extras. Prices include no VAT, because Prime Solutions is not VAT registered. Hosting and your domain are your own cost. There is no monthly fee."
+      "label": "Plans and what they include.",
+      "note": "Your price is set out in a written quote before any work starts, based on what you need. Extra features are quoted before we start. Prime Solutions EL is not VAT registered, so no VAT is added. Hosting and your domain name are your own cost unless your quote says otherwise."
     },
     "samples": {
       "eyebrow": "Samples",
@@ -255,7 +260,7 @@
       ],
       "extras_tag": "Add to any level",
       "extras_title": "Extras, quoted per business",
-      "extras_sub": "Priced per business.",
+      "extras_sub": "Quoted before we start.",
       "extras": [
         {
           "icon": "form",
@@ -295,20 +300,17 @@
       "lead": "Email first, we talk, then we build.",
       "steps": [
         "Email us.",
-        "We send a quote and agreement.",
-        "You accept in writing and pay the deposit.",
+        "We send a written quote and agreement.",
+        "You accept in writing, and any deposit is set out in your written quote and agreement.",
         "We build and hand over."
       ],
-      "note": "Turnaround is agreed in your quote."
+      "note": "Turnaround is agreed in your quote.",
+      "one_line": "1. Email us. 2. We send a written quote and agreement. 3. You accept in writing, and any deposit is set out in your written quote and agreement. 4. We build and hand over."
     },
     "faq": {
       "eyebrow": "Common questions",
       "title": "Questions we hear first.",
       "items": [
-        [
-          "Is there a monthly fee?",
-          "No. One fee. Domain and hosting costs go to your providers."
-        ],
         [
           "Who owns the website?",
           "You do. After hand-over we keep no connection to it."
@@ -343,14 +345,13 @@
       "eyebrow": "Start here",
       "title": "Tell us about your business.",
       "copy": "Copy address",
-      "privacy_text": "When you email us we use your details only to reply, quote and, if you go ahead, build your site, and we share them with our small team for that purpose. See",
-      "privacy_link": "Privacy"
+      "block": "Email us at primesolutionsel@gmail.com or message us on WhatsApp: +27 71 863 4356. Prime Solutions EL is owned and run by HAMZA KHAN, a sole proprietor, based in East London, South Africa. Questions or complaints: email us or message us on WhatsApp; if it is a complaint, please put COMPLAINT at the start of your message or in the email subject line."
     },
     "footer": {
       "legal": {
-        "privacy": "Privacy policy",
-        "terms": "Terms of use",
-        "refunds": "Refunds and cancellation"
+        "privacy-policy": "Privacy",
+        "terms-of-use": "Terms of use",
+        "how-it-works": "How it works"
       }
     },
     "viewer": {
@@ -359,7 +360,6 @@
       "tabs_aria": "Choose a level",
       "close": "Close",
       "end_title": "This was the {tier} level.",
-      "end_price": "{price}, {tag}.",
       "end_mail": "Email us",
       "end_subject": "{tier} level",
       "page_aria": "This page",
@@ -388,7 +388,7 @@
       "eyebrow": "Legal",
       "draft": "Draft. This page is not final.",
       "version": "Version {version}",
-      "updated": "Last updated {date}",
+      "updated": "Last updated: {date}",
       "back": "Back to the site",
       "back_aria": "{name}, back to the home page",
       "nav_aria": "Back",
