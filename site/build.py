@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Build the Prime Solutions site. Run:  python3 build.py   (see README.md)
 
-Reads   site.json            all wording, prices, contact details, the legal block and the mode
+Reads   site.json            all wording, contact details, the legal block and the mode (the site shows no prices)
         src/                 templates, styles, scripts, pictures
-        legal/*.md           one source file per legal page (privacy, terms, refunds)
+        legal/*.md           one source file per legal page (privacy, terms, how it works)
         demos.py             the Standard and Pro markup
 Writes  dist/                the finished site, one domain:
             index.html            Premium
             standard/index.html   Standard
             pro/index.html        Pro
-            privacy/ terms/ refunds/index.html
+            privacy-policy/ terms-of-use/ how-it-works/ credits/index.html
             css/ js/ fonts/ img/ og.png
         dist/artifact*.html, dist/prime-solutions-demo.html   single-file previews (not committed)
         OPEN-MARKERS.md      every [TO BE SUPPLIED] style marker that is still open, and where it is
@@ -23,7 +23,7 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-import demos, prep_images
+import demos, prep_images, texts
 SRC, DIST, LEGAL = ROOT / "src", ROOT / "dist", ROOT / "legal"
 site = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
 C, L = site["copy"], site["legal"]
@@ -178,8 +178,9 @@ def read_legal(slug):
                 k, v = ln.split(":", 1)
                 meta[k.strip()] = v.strip()
         body = raw[m.end():]
-    meta.setdefault("last_updated", L.get("last_updated", ""))   # the date is in site.json (legal.last_updated) unless the page says its own
-    for k in ("title", "last_updated", "status"):         # a page with no version line (Cherry's privacy policy has none) shows none
+    meta.setdefault("last_updated", L.get("last_updated", ""))   # the date and version are in site.json (legal.last_updated, legal.version) unless a page says its own
+    meta.setdefault("version", L.get("version", ""))
+    for k in ("title", "last_updated", "version", "status"):
         if not meta.get(k):
             fail(f"{legal_src(slug)}: the front matter needs a '{k}' line")
     body = fill_tokens(body, legal_src(slug))
@@ -206,7 +207,8 @@ def inline(t):
         t = t[:a] + f"\x00{len(stash) - 1}\x00" + t[b:]
     t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
     t = re.sub(r"(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])", r"<em>\1</em>", t)
-    t = re.sub(r"\[([^\]]+)\]\(((?:https?://|mailto:|#|/)[^)\s]*|[\w./-]+/?)\)", r'<a href="\2">\1</a>', t)
+    t = re.sub(r"\[([^\]]+)\]\(((?:https?://|mailto:|#|/)[^)\s]*|[\w./-]+/?)\)",
+               lambda m: f'<a href="{m.group(2)}"' + (' target="_blank" rel="noopener"' if m.group(2) == L["whatsapp"]["url"] else "") + f'>{m.group(1)}</a>', t)
     t = re.sub(r"(?<![\"'=>(\w/])(https?://[^\s<)]+)", r'<a href="\1">\1</a>', t)
     t = re.sub(r"(?<![\w/>\"=:.\-])([\w.+-]+@[\w-]+(?:\.[\w-]+)+)", r'<a href="mailto:\1">\1</a>', t)
     t = re.sub(r"\x00(\d+)\x00", lambda m: '<mark class="ph">' + stash[len(stash) - 1 - int(m.group(1))] + "</mark>", t)
@@ -282,8 +284,8 @@ def legal_block(page, level, link):
     banner = ""
     if page["status"] == "draft" and page.get("banner", "site") != "own":
         banner = f'<p class="notice"><strong>{esc(U["draft"])}</strong></p>\n'
-    ver = f'{esc(fmt(U["version"], version=page["version"]))} · ' if page.get("version") else ""
-    meta = f'<p class="legal__meta">{ver}{esc(fmt(U["updated"], date=page["date_text"]))}</p>\n'
+    ver = f' · {esc(fmt(U["version"], version=page["version"]))}' if page.get("version") else ""
+    meta = f'<p class="legal__meta">{esc(fmt(U["updated"], date=page["date_text"]))}{ver}</p>\n'
     body = md_to_html(page["body"], page["slug"], 2)   # sections are always h2 (the page title is the only h1)
     # a link inside a page to another page ("[credits](credits)") goes to that page wherever the page is shown
     body = re.sub(r'href="(%s)"' % "|".join(map(re.escape, ALL_SLUGS)), lambda m: f'href="{link(m.group(1))}"', body)
@@ -370,7 +372,6 @@ def ladder_steps():
             <ul class="ticks">
 {ticks}
             </ul>
-            <p class="step__price"><strong>{esc(site["prices"][key])}</strong><span>{esc(site["price_tag"][key])}</span></p>
             {tail}
             <p class="step__cta">{esc(C["cta"])} <a href="mailto:{site["email"]}?subject={subject}">{esc(fmt(C["plan_mail"], plan=name))}</a></p>
           </li>''')
@@ -383,7 +384,7 @@ def open_demo_standard():
 
 def pricing_note(link):
     P = C["pricing"]
-    return f'<div class="pricenote reveal"><p>{esc(P["note"])}</p><p class="enq">{contact_privacy(link)}</p></div>'
+    return f'<div class="plannote reveal"><p>{esc(P["note"])}</p><p class="enq">{contact_privacy(link)}</p></div>'
 
 
 def features():
@@ -425,22 +426,25 @@ def faq_list():
 
 
 def contact_privacy(link):
-    """the enquiry notice (Cherry's A4, legal.enquiryNotice) with its link to the privacy page; shown wherever the page asks the visitor to email"""
-    K = C["contact"]
-    return f'{esc(K["privacy_text"])} <a href="{link("privacy-policy")}">{esc(K["privacy_link"])}</a>.'
+    """the enquiry notice (legal.enquiryNotice) with its link to the privacy page; shown wherever the page asks the visitor to email"""
+    return texts.enquiry_notice(site, f'href="{link("privacy-policy")}"')
+
+
+def contact_block():
+    """the contact block (copy.contact.block): email, the one WhatsApp link, who runs the business, where, how to complain"""
+    return texts.contact_block(site)
 
 
 def footer(link, top_href, top_label):
     """the bottom of the Premium page and of the legal pages: the call to action, a link to every legal page, the mode note"""
-    F = C["footer"]["legal"]
-    links = " · ".join(f'<a href="{link(s)}">{esc(F[s])}</a>' for s in L["pages"])
-    note = f'\n    <p class="footer__note">{esc(site["advertise"]["footer"])}</p>' if ADVERTISE else ""
+    notice = texts.footer_notice(site, lambda s: 'href="%s"' % link(s))   # legal.footerNotice, word for word; its last three names are the links to the legal pages
+    note = f'\n    <p class="footer__note">{notice}</p>'
     return f'''<footer class="site-footer" data-tone="light">
   <div class="wrap footer__bar">
     <p class="footer__name"><strong>{esc(site["name"])}</strong></p>
     <p class="footer__cta">{esc(C["cta"])} <a href="mailto:{site["email"]}">{esc(C["mail"])}</a></p>
-    <p class="footer__enq">{contact_privacy(link)}</p>
-    <p class="footer__meta">© {site["year"]} {esc(L["name"])} · {links} · <a href="{top_href}">{esc(top_label)}</a></p>{note}
+    <p class="footer__enq">{contact_privacy(link)}</p>{note}
+    <p class="footer__meta">© {site["year"]} {esc(L["name"])} · <a href="{top_href}">{esc(top_label)}</a></p>
   </div>
 </footer>'''
 
@@ -648,7 +652,7 @@ def tokens_for(base="", link=link_root, path=""):
         "mocks": mocks(), "samples": "\n".join(sample(s) for s in site["samples"]),
         "features": features(), "extras": extras(), "extras_mail": esc(extras_mail()),
         "timeline": timeline(), "process_notes": process_notes(), "faq_list": faq_list(),
-        "contact_privacy": contact_privacy(link), "demos": demos.build(site, on),
+        "contact_privacy": contact_privacy(link), "contact_block": contact_block(), "demos": demos.build(site, on),
         "footer": footer(link, "#top", C["top"]), "ui_json": ui_json(),
     }
 
@@ -843,8 +847,27 @@ def page_text(h):
     return re.sub(r"[ \t]+", " ", text) + "\n" + _html.unescape(attrs)
 
 
+# ---- what the site must never show (Cherry's file of 29 Oct 2026): no prices, one phone-type contact, no street address ----
+WA = L["whatsapp"]
+WA_DIGITS = re.sub(r"\D", "", WA["number"])                       # the digits of legal.whatsapp.number
+WA_P_CLASSES = ("contact__block", "d-block", "footer__note", "ps-foot__note", "pp-foot__note")   # where the one WhatsApp link may sit (and the privacy page body)
+PRICE_RE = re.compile(r"(?<![\w])R\s?\d|\bZAR\b|\bUSD\b|\$\s?\d|\bfrom R\b|\b(?:once-off|one-off|per month|a month|monthly fee|monthly charge)", re.I)
+STREET_RE = re.compile(r"\b[A-Z][a-z]+[ \t]+(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Lane|Ln|Close|Crescent)\b|\bP\.?\s?O\.?\s?Box\b|\bPrivate Bag\b|\bPostNet\b")
+PHONE_RE = re.compile(r"\+?\d[\d ()\-.]{7,}\d")
+PLAIN_MARKERS = re.compile(r"CLAUDE INSTRUCTION|JASON TO SUPPLY|ATTORNEY|VERIFY|TO BE SUPPLIED|TO DECIDE|\bTBC\b|\bPENDING\b")
+REGULATOR = ("Maxwell Drive", "010 023 5200")                        # the Information Regulator's own street line and phone number: the only ones allowed, and only on the privacy page
+
+
+def plain(h):
+    """a page's words with the inline tags taken out (so 'See <a>Privacy</a>.' reads 'See Privacy.'), for matching a text word for word"""
+    h = re.sub(r"<(script|style)\b.*?</\1>", " ", h, flags=re.S | re.I)
+    h = re.sub(r"</?(?:a|strong|em|span)\b[^>]*>", "", h)
+    return re.sub(r"\s+", " ", _html.unescape(re.sub(r"<[^>]+>", " ", h))).strip()
+
+
 def check_pages():
     allowed_mail = {site["email"].lower()} | {e.lower() for e in L.get("other_emails", [])}
+    exact = {"the footer": L["footerNotice"], "the enquiry notice": L["enquiryNotice"]}
     page_files = [DIST / "index.html", DIST / "standard" / "index.html", DIST / "pro" / "index.html"] + \
                  [DIST / p["slug"] / "index.html" for p in LEGAL_PAGES]
     for f in page_files:
@@ -860,12 +883,55 @@ def check_pages():
         for e in set(EMAIL_RE.findall(_html.unescape(h))):
             if e.lower() not in allowed_mail:
                 fail(f"{rel}: the email address {e} is not the one in site.json")
-        # 4. email is the only way to get in touch: no forms, phone or WhatsApp links, embeds
+        # 4. no forms or embeds, no phone link of any kind; the one WhatsApp link is exactly the one in site.json, in an allowed place
         for pat, what in ((r"<(form|input|textarea|select|button[^>]*type=.submit)\b", "a form field"), (r"<(iframe|embed|object|video|audio)\b", "an embed"),
-                          (r'href="(tel:|sms:|whatsapp:|https?://(?:wa\.me|api\.whatsapp|web\.whatsapp))', "a phone or WhatsApp link")):
+                          (r'href="(?:tel:|sms:|whatsapp:)', "a tel:, sms: or whatsapp: link")):
             if re.search(pat, h, re.I):
-                fail(f"{rel}: {what} is on the page (the site is email only, no forms)")
-    # 5. nothing that stores or sends data, no outside requests (what the privacy page says is true)
+                fail(f"{rel}: {what} is on the page (no forms, no phone links)")
+        slug = rel.parent.name
+        for m in re.finditer(r'<a\b[^>]*href="https?://(?:[\w.-]*\.)?(?:wa\.me|whatsapp\.com)[^"]*"[^>]*>(.*?)</a>', h, re.I | re.S):
+            tag = m.group(0)[: m.group(0).index(">") + 1]
+            if tag != f'<a href="{WA["url"]}" target="_blank" rel="noopener">':
+                fail(f"{rel}: the WhatsApp link must be exactly {WA['url']} (new tab, rel=noopener, nothing added): {tag[:110]}")
+            if re.sub(r"<[^>]+>", "", m.group(1)).strip() not in (WA["label"], WA["number"]):
+                fail(f"{rel}: the WhatsApp link text must be the number in site.json: {m.group(1)[:60]}")
+            p_open = h.rfind("<p", 0, m.start())
+            p_tag = h[p_open: h.index(">", p_open) + 1] if p_open >= 0 else ""
+            if not (any(c in p_tag for c in WA_P_CLASSES) or (slug == "privacy-policy" and "legal__body" in h[:m.start()])):
+                fail(f"{rel}: the WhatsApp link is somewhere it may not be (only the contact block, the footer and the privacy page): {p_tag[:80]}")
+        # 5. words: no prices, no street address, no other phone number, no open marker words
+        txt = page_text(h)
+        for m in PRICE_RE.finditer(txt):
+            fail(f"{rel}: a price or fee wording is on the page: {txt[max(0, m.start() - 30): m.end() + 30].strip()!r}")
+        for m in STREET_RE.finditer(txt):
+            if not (slug == "privacy-policy" and m.group(0) == "Maxwell Drive"):
+                fail(f"{rel}: a street or postal address is on the page: {m.group(0)!r}")
+        for m in PHONE_RE.finditer(txt):
+            digits = re.sub(r"\D", "", m.group(0))
+            ok = digits in (WA_DIGITS,) or (slug == "privacy-policy" and re.sub(r"\D", "", REGULATOR[1]) == digits)
+            if not ok:
+                fail(f"{rel}: a phone-looking number is on the page that is not the WhatsApp number: {m.group(0)!r}")
+        for m in PLAIN_MARKERS.finditer(txt):
+            fail(f"{rel}: marker wording is on the page: {m.group(0)!r}")
+        ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', h, re.S)
+        if ld and re.search(r'"(?:price\w*|offers?|telephone|address|streetAddress|postalCode|geo)"', ld.group(1)):
+            fail(f"{rel}: the structured data names a price, phone number or address")
+        # 6. the exact texts, word for word: footer and enquiry notice on every page, the contact block on the three tier pages
+        flat = plain(h)
+        need = dict(exact)
+        if rel.parts[0] in ("index.html", "standard", "pro"):
+            need["the contact block"] = C["contact"]["block"]
+        for what, s in need.items():
+            if s not in flat:
+                fail(f"{rel}: {what} is not on the page word for word")
+        # 7. links inside the site go somewhere that exists
+        for href in set(re.findall(r'\bhref="([^"#:]+?)"', h)):
+            if href.startswith(("http", "mailto", "//", "data")):
+                continue
+            tgt = (f.parent / href)
+            if not (tgt / "index.html").exists() and not tgt.is_file():
+                fail(f"{rel}: a link goes nowhere: {href}")
+    # 8. nothing that stores or sends data, no outside requests (what the privacy page says is true)
     code = {"css": [x for x in (DIST / "css").glob("*.css")], "js": [x for x in (DIST / "js").glob("*.js")]}
     bad_js = re.compile(r"\b(localStorage|sessionStorage|indexedDB|document\.cookie|sendBeacon|XMLHttpRequest|WebSocket|serviceWorker|EventSource)\b|\bfetch\s*\(|\bnew Image\s*\(")
     for f in code["js"] + page_files + [DIST / "artifact.html"]:

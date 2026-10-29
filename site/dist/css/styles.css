@@ -463,8 +463,8 @@ h3 { font-weight: 700; font-size: clamp(1.25rem, 1.1rem + .7vw, 1.65rem); line-h
   min-height: min(78vh, 640px); display: flex; flex-direction: column; justify-content: center; gap: 1rem;
   padding-block: 1.5rem;
 }
-.step h3, .step__price strong, .step .ticks li { transition: color .5s var(--ease); }
-.step:not(.is-active) h3, .step:not(.is-active) .step__price strong, .step:not(.is-active) .ticks li { color: var(--slate); }
+.step h3, .step .ticks li { transition: color .5s var(--ease); }
+.step:not(.is-active) h3, .step:not(.is-active) .ticks li { color: var(--slate); }
 .step__tag {
   align-self: flex-start; display: flex; align-items: center; gap: .6rem;
   font: 700 .8125rem/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--forest);
@@ -473,22 +473,19 @@ h3 { font-weight: 700; font-size: clamp(1.25rem, 1.1rem + .7vw, 1.65rem); line-h
 .step.is-active .step__tag::before { width: 44px; }
 .step__tag--premium::before { display: none; }
 .step__tag--premium { background: var(--mint); color: var(--ink); padding: .5rem .7rem; border-radius: 999px; }
-.step > p:not(.step__tag):not(.step__price):not(.step__here) { color: var(--slate); max-width: 30em; }
+.step > p:not(.step__tag):not(.step__here) { color: var(--slate); max-width: 30em; }
 .ticks { display: flex; flex-direction: column; gap: .5rem; }
 .ticks li { position: relative; padding-left: 1.7rem; }
 .ticks li::before {
   content: ""; position: absolute; left: 0; top: .5em; width: .9rem; height: .5rem;
   border-left: 2px solid var(--forest); border-bottom: 2px solid var(--forest); transform: rotate(-45deg) translateY(-30%);
 }
-.step__price { display: flex; align-items: baseline; gap: .6rem; margin-top: .5rem; }
-.step__price strong { font: 800 clamp(1.5rem, 1.2rem + 1vw, 2.1rem)/1 var(--f-display); font-stretch: 100%; letter-spacing: -.02em; }
-.step__price span { color: var(--slate); font-size: .9375rem; }
 .step__here { font-size: .9375rem; color: var(--forest); font-weight: 600; }
 .ladder + .fine { margin-top: 1rem; }
 .step__cta { font-size: .9375rem; }
 .step__cta a { color: var(--forest); font-weight: 700; text-underline-offset: 4px; }
-.pricenote { display: grid; gap: .5rem; max-width: 46rem; margin-top: 1.25rem; }
-.pricenote p:first-child { color: var(--ink); font-size: 1.0625rem; }
+.plannote { display: grid; gap: .5rem; max-width: 46rem; margin-top: 1.25rem; }
+.plannote p:first-child { color: var(--ink); font-size: 1.0625rem; }
 
 @media (max-width: 899px) {
   .ladder { grid-template-columns: 1fr; gap: 1rem; }
@@ -784,6 +781,9 @@ details p { padding: 0 2.5rem 1.4rem 0; color: var(--slate); max-width: 40em; an
 .contact .eyebrow { color: var(--emerald); }
 .contact .lead { color: #DCE6DF; }
 .contact .fine { color: #DCE6DF; }
+a[href^="https://wa.me/"] { white-space: nowrap; }   /* the number stays on one line */
+.contact__block { max-width: 40rem; font-size: 1rem; line-height: 1.6; color: #E6EEE9; }
+.contact__block a { color: inherit; font-weight: 600; text-underline-offset: 3px; overflow-wrap: anywhere; }
 .contact__glow {
   position: absolute; left: 50%; top: -34%; width: min(110vw, 1100px); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; pointer-events: none;
   background: radial-gradient(closest-side, rgba(31, 174, 108, .38), rgba(31, 174, 108, 0));
@@ -811,7 +811,9 @@ details p { padding: 0 2.5rem 1.4rem 0; color: var(--slate); max-width: 40em; an
 .footer__cta a { color: var(--forest); font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 5px; }
 .footer__meta, .footer__note { grid-column: 1 / -1; }
 .footer__meta { margin-top: .5rem; padding-top: .75rem; border-top: 1px solid var(--line); }
-.footer__note { font-size: .875rem; }
+.footer__note { font-size: .875rem; line-height: 1.55; max-width: 60rem; }
+.footer__bar .footer__note a, .footer__bar .footer__enq a { display: inline; min-height: 0; color: inherit; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.footer__note a { font-weight: 600; }
 @media (max-width: 700px) { .footer__bar { grid-template-columns: 1fr; } .footer__cta { justify-self: start; text-align: left; } }
 .footer__name strong { color: var(--ink); font-family: var(--f-display); font-weight: 800; margin-right: .5rem; }
 .footer__bar a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -914,7 +916,6 @@ html.demo-open { overflow: hidden; }
   .eyebrow { letter-spacing: .1em; }
   .btn--lg { min-height: 54px; padding: 0 1.6rem; font-size: 1rem; }
   .brand { font-size: 1.1rem; }
-  .step__price strong { font-size: 1.35rem; }
   .step { min-height: 56vh; }
   summary { font-size: 1rem; min-height: 56px; }
   .ticks--big { gap: .75rem; }
@@ -936,7 +937,7 @@ html.demo-open { overflow: hidden; }
 .plans-label { margin-top: .35rem; font-size: .8125rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--forest); }
 .enq { font-size: .875rem; line-height: 1.5; color: var(--slate); max-width: 46rem; }
 .enq a { color: inherit; text-underline-offset: 3px; }
-.pricenote .enq { margin-top: .15rem; }
+.plannote .enq { margin-top: .15rem; }
 .enq--hero { max-width: 34rem; margin-top: -.15rem; color: #DCE9E1; font-size: .8125rem; }
 .enq--extra { margin-top: 1rem; font-size: .8125rem; color: inherit; opacity: .82; }
 .footer__enq { grid-column: 1 / -1; font-size: .875rem; color: var(--slate); max-width: 46rem; }
@@ -946,7 +947,7 @@ html.demo-open { overflow: hidden; }
 
 /* =====================================================================================================
    The Standard and Pro versions of the Prime Solutions site. Premium is the page itself.
-   Same sections, same words, same prices; only the treatment changes.
+   Same sections, same words; only the treatment changes.
      Standard  one typeface, flat and calm, one picture, a gentle fade on opening
      Pro       two typefaces, the portal scene with only the swirl turning, layered blocks, reveals, a header that follows you down
    Colours come from the page's own variables (--d-*), set on the frame in demos.py.
@@ -1043,9 +1044,8 @@ html.demo-open { overflow: hidden; }
 .ps-ticks { display: grid; gap: .5rem; }
 .ps-ticks li { position: relative; padding-left: 1.6rem; }
 .ps-ticks li::before { content: ""; position: absolute; left: .15rem; top: .42em; width: .62rem; height: .34rem; border-left: 2px solid var(--d-brand); border-bottom: 2px solid var(--d-brand); transform: rotate(-45deg); }
-.ps-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: .1rem .45rem; margin-top: auto; padding-top: .8rem; width: 100%; border-top: 1px dashed rgba(11, 93, 59, .28); }
-.ps-price strong { font-size: 1.4rem; font-weight: 700; letter-spacing: -.01em; }
-.ps-price span { color: var(--d-mute); font-size: .9375rem; }
+/* the level card's last part (its demo link, or 'This page', then the email link) sits at the bottom of the card */
+.d .ps-level .ps-ticks, .d .pp-level .ps-ticks { margin-bottom: auto; }
 .ps-here { display: inline-flex; align-items: center; min-height: 36px; padding: 0 .9rem; border-radius: 999px; background: var(--d-brand); color: var(--d-on); font-size: .875rem; font-weight: 700; }
 
 /* sample cards: a picture, the trade, its headline, and the theme colours it is shown in */
@@ -1178,12 +1178,9 @@ html.demo-open { overflow: hidden; }
 .pp-level .pp-kicker { color: var(--d-brand); }
 .pp-level h4 { font: 800 1.5rem/1.1 var(--f-display); letter-spacing: -.02em; }
 .pp-level .ps-ticks li::before { border-color: var(--d-brand); }
-.pp-level .ps-price span { color: var(--d-mute); }
 .pp-level.is-here { background: linear-gradient(165deg, var(--d-brand) 0%, var(--d-deep) 100%); color: var(--d-on); }
 .pp-level.is-here .pp-kicker { color: var(--d-mint); }
 .pp-level.is-here .ps-ticks li::before { border-color: var(--d-card); }
-.pp-level.is-here .ps-price { border-top-color: rgba(251, 250, 245, .35); }
-.pp-level.is-here .ps-price span { color: var(--d-mint2); }
 .pp-level .ps-here { background: var(--d-card); color: var(--d-ink); }
 .pp-level.is-here .plan-cta, .pp-level.is-here .plan-cta a { color: var(--d-on); }
 
@@ -1311,6 +1308,9 @@ html.demo-open { overflow: hidden; }
 
 /* ---------- plans label, enquiry notice (text from site.json) ---------- */
 .d .d-label { margin-top: .5rem; font-size: .8125rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--d-brand); }
+.d .d-block { max-width: 40rem; font-size: 1rem; line-height: 1.6; }
+.d .d-block a { color: inherit; font-weight: 600; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.d .ps-foot__note a, .d .pp-foot__note a { text-underline-offset: 3px; }
 .d .d-enq { max-width: 40rem; margin-top: .9rem; font-size: .8125rem; line-height: 1.5; color: inherit; opacity: .82; }
 .d .ps-foot__enq, .d .pp-foot__enq { max-width: 46rem; line-height: 1.5; }
 .d .ps-foot__enq a, .d .pp-foot__enq a, .d .d-enq a, .d .pp-note .d-fine a, .d .ps-note .d-fine a { color: inherit; text-underline-offset: 3px; }

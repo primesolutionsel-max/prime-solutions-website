@@ -1,6 +1,6 @@
 /* =====================================================================================================
    The Standard and Pro versions of the Prime Solutions site. Premium is the page itself.
-   Same sections, same words, same prices; only the treatment changes.
+   Same sections, same words; only the treatment changes.
      Standard  one typeface, flat and calm, one picture, a gentle fade on opening
      Pro       two typefaces, the portal scene with only the swirl turning, layered blocks, reveals, a header that follows you down
    Colours come from the page's own variables (--d-*), set on the frame in demos.py.
@@ -97,9 +97,8 @@
 .ps-ticks { display: grid; gap: .5rem; }
 .ps-ticks li { position: relative; padding-left: 1.6rem; }
 .ps-ticks li::before { content: ""; position: absolute; left: .15rem; top: .42em; width: .62rem; height: .34rem; border-left: 2px solid var(--d-brand); border-bottom: 2px solid var(--d-brand); transform: rotate(-45deg); }
-.ps-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: .1rem .45rem; margin-top: auto; padding-top: .8rem; width: 100%; border-top: 1px dashed rgba(11, 93, 59, .28); }
-.ps-price strong { font-size: 1.4rem; font-weight: 700; letter-spacing: -.01em; }
-.ps-price span { color: var(--d-mute); font-size: .9375rem; }
+/* the level card's last part (its demo link, or 'This page', then the email link) sits at the bottom of the card */
+.d .ps-level .ps-ticks, .d .pp-level .ps-ticks { margin-bottom: auto; }
 .ps-here { display: inline-flex; align-items: center; min-height: 36px; padding: 0 .9rem; border-radius: 999px; background: var(--d-brand); color: var(--d-on); font-size: .875rem; font-weight: 700; }
 
 /* sample cards: a picture, the trade, its headline, and the theme colours it is shown in */
@@ -232,12 +231,9 @@
 .pp-level .pp-kicker { color: var(--d-brand); }
 .pp-level h4 { font: 800 1.5rem/1.1 var(--f-display); letter-spacing: -.02em; }
 .pp-level .ps-ticks li::before { border-color: var(--d-brand); }
-.pp-level .ps-price span { color: var(--d-mute); }
 .pp-level.is-here { background: linear-gradient(165deg, var(--d-brand) 0%, var(--d-deep) 100%); color: var(--d-on); }
 .pp-level.is-here .pp-kicker { color: var(--d-mint); }
 .pp-level.is-here .ps-ticks li::before { border-color: var(--d-card); }
-.pp-level.is-here .ps-price { border-top-color: rgba(251, 250, 245, .35); }
-.pp-level.is-here .ps-price span { color: var(--d-mint2); }
 .pp-level .ps-here { background: var(--d-card); color: var(--d-ink); }
 .pp-level.is-here .plan-cta, .pp-level.is-here .plan-cta a { color: var(--d-on); }
 
@@ -365,6 +361,9 @@
 
 /* ---------- plans label, enquiry notice (text from site.json) ---------- */
 .d .d-label { margin-top: .5rem; font-size: .8125rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--d-brand); }
+.d .d-block { max-width: 40rem; font-size: 1rem; line-height: 1.6; }
+.d .d-block a { color: inherit; font-weight: 600; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.d .ps-foot__note a, .d .pp-foot__note a { text-underline-offset: 3px; }
 .d .d-enq { max-width: 40rem; margin-top: .9rem; font-size: .8125rem; line-height: 1.5; color: inherit; opacity: .82; }
 .d .ps-foot__enq, .d .pp-foot__enq { max-width: 46rem; line-height: 1.5; }
 .d .ps-foot__enq a, .d .pp-foot__enq a, .d .d-enq a, .d .pp-note .d-fine a, .d .ps-note .d-fine a { color: inherit; text-underline-offset: 3px; }

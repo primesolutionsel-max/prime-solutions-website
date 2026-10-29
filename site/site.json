@@ -5,7 +5,7 @@
   "email": "primesolutionsel@gmail.com",
   "seo_title": "Prime Solutions | One-page websites for small South African businesses",
   "artifact_title": "Prime Solutions",
-  "description": "Prime Solutions builds one-page websites for small businesses in South Africa. One once-off fee in rand. The code, the domain and the hosting are yours.",
+  "description": "Prime Solutions builds one-page websites for small businesses in South Africa. Three levels to choose from, quoted in writing first. The code, the domain and the hosting are yours.",
   "year": "2026",
   "theme": {
     "name": "Forest",
@@ -36,8 +36,15 @@
   },
   "legal": {
     "name": "Prime Solutions EL",
-    "host": "HostAfrica",
-    "host_check": "[VERIFY: HostAfrica really hosts this website. It is named on the privacy page; only the domain registration is confirmed (Cherry's package, 28 Oct 2026). Not shown on any page.]",
+    "owner": "HAMZA KHAN",
+    "location": "East London, South Africa",
+    "whatsapp": {
+      "number": "+27 71 863 4356",
+      "label": "WhatsApp: +27 71 863 4356",
+      "url": "https://wa.me/27718634356"
+    },
+    "footerNotice": "Advertise only: nothing is sold on this website, and nothing on it is an offer. All work is agreed in writing. Prime Solutions EL is owned and run by HAMZA KHAN, a sole proprietor, based in East London, South Africa. Email primesolutionsel@gmail.com or message us on WhatsApp: +27 71 863 4356. Privacy · Terms of use · How it works",
+    "enquiryNotice": "When you email us or message us on WhatsApp, we use your details only to reply, quote and, if you go ahead, build your site, and we share them with our small team for that purpose. See Privacy.",
     "domain": "primesolutionsgroup.co.za",
     "last_updated": "2026-10-29",
     "version": "1.0",
@@ -53,25 +60,16 @@
       "TO BE SUPPLIED",
       "JASON TO SUPPLY",
       "ATTORNEY",
-      "VERIFY"
+      "VERIFY",
+      "CLAUDE INSTRUCTION",
+      "TO DECIDE"
     ],
     "other_emails": [
       "POPIAComplaints@inforegulator.org.za"
     ]
   },
-  "prices": {
-    "standard": "from R1,000 to R1,500",
-    "pro": "from R3,000",
-    "premium": "R10,000 to R14,000"
-  },
-  "price_tag": {
-    "standard": "example guide price, one-off",
-    "pro": "example guide price, one-off",
-    "premium": "example guide price, one-off"
-  },
   "advertise": {
-    "label": "Advertise only",
-    "footer": "Advertise Only: nothing is sold on this website. Nothing on this website is an offer; all work is agreed in writing. Prime Solutions EL is a trading name."
+    "label": "Advertise only"
   },
   "copy": {
     "brand": [
@@ -210,8 +208,8 @@
       }
     },
     "pricing": {
-      "label": "Example plans and guide prices.",
-      "note": "Guide prices only. A written quote comes first. Your price depends on what you need; if you'd like extra features, we'll talk it through and quote the extra cost before we start. No VAT charged (Prime Solutions EL is not VAT registered). One-off fee, no monthly charges from us. Hosting, domain and any other ongoing costs are your own."
+      "label": "Plans and what they include.",
+      "note": "Your price is set out in a written quote before any work starts, based on what you need. Extra features are quoted before we start. Prime Solutions EL is not VAT registered, so no VAT is added. Hosting and your domain name are your own cost unless your quote says otherwise."
     },
     "samples": {
       "eyebrow": "Samples",
@@ -262,7 +260,7 @@
       ],
       "extras_tag": "Add to any level",
       "extras_title": "Extras, quoted per business",
-      "extras_sub": "Priced per business.",
+      "extras_sub": "Quoted before we start.",
       "extras": [
         {
           "icon": "form",
@@ -314,10 +312,6 @@
       "title": "Questions we hear first.",
       "items": [
         [
-          "Is there a monthly fee?",
-          "No. One fee. Domain and hosting costs go to your providers."
-        ],
-        [
           "Who owns the website?",
           "You do. After hand-over we keep no connection to it."
         ],
@@ -351,8 +345,7 @@
       "eyebrow": "Start here",
       "title": "Tell us about your business.",
       "copy": "Copy address",
-      "privacy_text": "When you email us we use your details only to reply, quote and, if you go ahead, build your site, and we share them with our small team for that purpose. See",
-      "privacy_link": "Privacy"
+      "block": "Email us at primesolutionsel@gmail.com or message us on WhatsApp: +27 71 863 4356. Prime Solutions EL is owned and run by HAMZA KHAN, a sole proprietor, based in East London, South Africa. Questions or complaints: email us or message us on WhatsApp; if it is a complaint, please put COMPLAINT at the start of your message or in the email subject line."
     },
     "footer": {
       "legal": {
@@ -367,7 +360,6 @@
       "tabs_aria": "Choose a level",
       "close": "Close",
       "end_title": "This was the {tier} level.",
-      "end_price": "{price} ({tag}).",
       "end_mail": "Email us",
       "end_subject": "{tier} level",
       "page_aria": "This page",
@@ -396,7 +388,7 @@
       "eyebrow": "Legal",
       "draft": "Draft. This page is not final.",
       "version": "Version {version}",
-      "updated": "Last updated {date}",
+      "updated": "Last updated: {date}",
       "back": "Back to the site",
       "back_aria": "{name}, back to the home page",
       "nav_aria": "Back",

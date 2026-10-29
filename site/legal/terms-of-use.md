@@ -1,18 +1,15 @@
 ---
 title: Website Terms of Use — Prime Solutions EL
 slug: terms-of-use
-version: 1.0
-last_updated: 2026-10-29
 status: draft
 banner: site
 ---
 # Website Terms of Use — Prime Solutions EL
 
-
 **Advertise Only:** nothing is sold on this website. No orders or payments are taken here, and any work is agreed in writing before it starts.
 
 ## In short
-- This website only tells you what Prime Solutions EL does and shows example plans with guide prices.
+- This website only tells you what Prime Solutions EL does and shows example plans.
 - Nothing on this website is an offer. Nothing can be ordered or paid for here.
 - If you are interested, email us. Any work is agreed in a separate written agreement first.
 - Your rights under South African law are not reduced by these terms.
@@ -23,13 +20,8 @@ These terms apply when you visit this website. They are written in plain languag
 ## 2. Information only, not an offer
 This website is for information and advertising only. The plans shown (Standard, Pro and Premium) are examples of the kind of websites we make. Nothing on this website is an offer to supply anything, and you cannot accept anything by using it. A binding arrangement exists only once you and we sign or accept a written agreement.
 
-## 3. Guide prices
-Prices on this website are guide prices only, and a written quote comes first:
-- Standard: from R1,000 to R1,500
-- Pro: from R3,000
-- Premium: R10,000 to R14,000
-
-Your actual price depends on what you need and is set out in a written quote before any work starts. Extra features are quoted separately before we start. No VAT is charged, because Prime Solutions EL is not registered for VAT. The fee is a one-off fee with no monthly charge from us. Hosting, your domain name and any other ongoing costs are your own.
+## 3. Prices
+{{copy.pricing.note}}
 
 ## 4. Written agreement before any work
 We only start work after you have received a written quote and agreement and accepted it in writing. That agreement sets out the scope, price, any deposit, timing, cancellation, refunds and ownership. If anything in the written agreement differs from this website, the written agreement applies.
@@ -49,15 +41,18 @@ This website may link to other websites. We do not control them and are not resp
 ## 9. Liability
 We try to keep this website accurate and available, but it is provided for information only and may contain mistakes or be unavailable at times. As far as the law allows, we are not liable for loss caused by relying on this website alone, without a written agreement. Nothing in these terms excludes or limits any liability, or any right you have, that cannot lawfully be excluded or limited.
 
-## 10. Privacy
-How we handle information you send us by email is explained in our [Privacy Policy](privacy-policy).
+## 10. Complaints
+Email us at {{legal.email}} or message us on WhatsApp at {{legal.whatsapp.number}}. If you are unhappy with something, put COMPLAINT in the subject line or at the start of your message and tell us what went wrong and what you would like us to do. We will confirm in writing that we have received it and answer you in writing as soon as we reasonably can. This does not limit any right you have under the law, including your right to complain to the Information Regulator about your personal information.
 
-## 11. Changes
+## 11. Privacy
+How we handle information you send us by email or WhatsApp is explained in our [Privacy Policy](privacy-policy).
+
+## 12. Changes
 We may update these terms. The "last updated" date above shows when they last changed. Any written agreement you have already signed is not changed by later updates to this page.
 
-## 12. Governing law
+## 13. Governing law
 These terms are governed by the law of the Republic of South Africa.
 
-## 13. Contact
-Prime Solutions EL
+## 14. Contact
+{{legal.name}} is owned and run by {{legal.owner}}, a sole proprietor, based in {{legal.location}}.
 Email: {{legal.email}}
