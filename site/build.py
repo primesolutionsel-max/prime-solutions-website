@@ -672,6 +672,8 @@ if DIST.exists():
     shutil.rmtree(DIST)
 for sub in ("css", "js", "fonts", "img"):
     shutil.copytree(SRC / sub, DIST / sub)
+for f in ("_headers", "404.html"):   # Cloudflare Pages: security headers and the not-found page
+    shutil.copy(SRC / f, DIST / f)
 CSS_ALL = (SRC / "css" / "styles.css").read_text(encoding="utf-8") + "\n" + (SRC / "css" / "tiers.css").read_text(encoding="utf-8") + photo_css()
 (DIST / "css" / "styles.css").write_text(CSS_ALL, encoding="utf-8")
 (DIST / "css" / "tiers.css").unlink()   # one stylesheet is shipped
@@ -955,6 +957,15 @@ check_pages()
 # ---------- report ----------
 total = sum(p.stat().st_size for p in DIST.rglob("*") if p.is_file() and p.suffix in (".html", ".css", ".js", ".woff", ".webp") and not p.name.startswith(("artifact", "prime-solutions")))
 open_n = len(MARKER_ROWS)
+# every inline script must be allowed by its hash in _headers, or the browser blocks it on the live site
+import hashlib
+_csp = (DIST / "_headers").read_text(encoding="utf-8")
+for _f in DIST.rglob("*.html"):
+    if _f.name.startswith(("artifact", "prime-solutions-demo")): continue   # local previews, never deployed
+    for _s in re.findall(r"<script>([\s\S]*?)</script>", _f.read_text(encoding="utf-8")):
+        _h = "sha256-" + base64.b64encode(hashlib.sha256(_s.encode()).digest()).decode()
+        if _h not in _csp: sys.exit(f"{_f.relative_to(DIST)}: inline script not allowed by src/_headers; add '{_h}' to script-src")
+
 print(f"built dist/  ({total / 1024:.0f} KB of pages, styles, scripts, fonts and pictures) | mode: {site['mode']} | status: {site['status']}")
 print(f"{open_n} marker{'s' if open_n != 1 else ''} still open (see OPEN-MARKERS.md)")
 for w in warnings:

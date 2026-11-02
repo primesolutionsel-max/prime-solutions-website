@@ -38,6 +38,8 @@ src/index.html       the Premium page template ({{tokens}} filled from site.json
 src/tier.html        the template for the Standard and Pro pages
 src/legal.html       the template for the legal pages
 src/css, src/js      styles and scripts (styles.css, tiers.css, intro.js, main.js, tier.js)
+src/_headers         security headers for Cloudflare Pages (the build checks every inline script's hash is listed)
+src/404.html         the not-found page
 src/img, src/fonts   web pictures and the local fonts (Poppins and Inter for Premium, Archivo and Schibsted Grotesk for Pro, Lora for Standard; all SIL Open Font License)
 archive/             old files kept only so nothing is lost; do not use or publish them
 dist/                the finished site. Upload this folder to any static host
