@@ -21,7 +21,7 @@ The responsible party for your personal information is {{legal.owner}}, a sole p
 ## 2. What we collect
 - **When you email or WhatsApp us:** your name, your email address or phone number, and anything you choose to tell us about your business or project. Please do not send sensitive information (such as health, religion, biometrics or criminal history) or information about children.
 - **If you become a client:** the details you give us to build your website, such as your business name, contact details, text, logo and photos, and what we need to send you a quote, agreement and invoice.
-- **Server logs:** the company that hosts this website may automatically record technical details such as your IP address, the date and time, the page asked for and your browser type.
+- **Server logs:** our web host, Cloudflare, may automatically record technical details such as your IP address, the date and time, the page asked for and your browser type.
 - **Nothing else:** this website has no forms, sign-up, login, cookies, local storage, analytics, payments, or content loaded from other companies. The WhatsApp link only opens WhatsApp when you click it; nothing is loaded from WhatsApp until then.
 
 ## 3. Why we use it, and on what basis
@@ -33,7 +33,7 @@ The responsible party for your personal information is {{legal.owner}}, a sole p
 ## 4. Who else sees it (third parties and tools)
 - **Google (Gmail):** provides our email and stores our messages for us as our operator. Google's servers may be outside South Africa.
 - **WhatsApp (run by Meta):** if you message us on WhatsApp, your messages, your phone number and your profile name are held by WhatsApp under its own terms and privacy policy, and by us. Its servers may be outside South Africa. We use WhatsApp only to reply to you. We do not add you to groups or broadcast lists, and we do not send marketing.
-- **Our web host:** sees server logs only.
+- **Our web host (Cloudflare):** sees server logs only, to deliver and protect this website. Its servers may be outside South Africa.
 - **If you become a client:** the form tool we use to collect your website details (Tally, which stores data in the European Union), and the private online storage where we keep your website files while we build them (GitHub, whose servers may be outside South Africa). They act for us and handle your information under their own terms. We tell you which tools we use before you send anything.
 - We do not sell your information and we do not share it with anyone else unless the law requires it.
 - Where information is stored outside South Africa, we rely on POPIA section 72 for the transfer.
@@ -43,12 +43,12 @@ The responsible party for your personal information is {{legal.owner}}, a sole p
 - Working details you send us to build your website (such as your photos and logo): deleted 30 days after we hand over your finished website, except where the law or your agreement says we must keep a record.
 - Your agreement, sign-off, consent record and invoices: kept for 5 years, because business and tax records must be kept.
 - The code and text of a finished website: kept for 3 years in case we need to fix or explain our work, without your photos and logos.
-- Server logs: as kept by the host under its own terms.
+- Server logs: kept by Cloudflare only as long as it needs them for security, under its own terms.
 
 After these periods, we delete the information or make it anonymous.
 
 ## 6. How we protect it
-We keep your emails and messages in password-protected accounts that only the owner and people helping with your project can access, and this website uses HTTPS. No system is completely secure. If we believe your information was accessed without permission, we will tell you and the Information Regulator as POPIA section 22 requires. Records about our own business and clients are kept in {{legal.location}}.
+We keep your emails and messages in password-protected accounts that only the owner and people helping with your project can access, and this website uses HTTPS. No system is completely secure. If we believe your information was accessed without permission, we will tell you and the Information Regulator as POPIA section 22 requires. We run our business from {{legal.location}}; some of our tools store information outside South Africa, as set out in section 4.
 
 ## 7. Your rights
 Under POPIA you can ask us to tell you what personal information we hold about you, give you a copy, correct it, delete it, or stop using it (POPIA sections 5, 11(3), 23 and 24). You can also ask us to stop contacting you for marketing, although we do not send any. To make a request, email {{legal.email}} with the word PRIVACY in the subject line, or message us on WhatsApp starting with the word PRIVACY. We may need to check it is really you. We aim to reply within 30 days.
