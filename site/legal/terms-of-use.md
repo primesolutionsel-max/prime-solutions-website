@@ -1,7 +1,7 @@
 ---
 title: Website Terms of Use — Prime Solutions EL
 slug: terms-of-use
-status: draft
+status: live
 banner: site
 ---
 # Website Terms of Use — Prime Solutions EL

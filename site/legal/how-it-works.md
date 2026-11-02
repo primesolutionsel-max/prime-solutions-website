@@ -1,7 +1,7 @@
 ---
 title: How It Works, Refunds and Cancellation — Prime Solutions EL
 slug: how-it-works
-status: draft
+status: live
 banner: site
 ---
 # How It Works, Refunds and Cancellation — Prime Solutions EL

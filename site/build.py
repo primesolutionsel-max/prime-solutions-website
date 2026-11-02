@@ -160,7 +160,7 @@ def legal_src(slug):
     return "CREDITS.md" if slug == "credits" else f"legal/{slug}.md"
 
 
-CREDITS_META = {"title": "Credits and licences — " + L["name"], "status": "draft", "banner": "site"}
+CREDITS_META = {"title": "Credits and licences — " + L["name"], "status": "live", "banner": "site"}
 
 
 def read_legal(slug):

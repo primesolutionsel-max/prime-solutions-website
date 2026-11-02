@@ -1,7 +1,7 @@
 ---
 title: Privacy Policy: Prime Solutions EL
 slug: privacy-policy
-status: draft
+status: live
 banner: site
 ---
 # Privacy Policy: Prime Solutions EL
