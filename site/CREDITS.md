@@ -18,24 +18,19 @@ The website is plain HTML, CSS and a little JavaScript written for it. It uses n
 
 ## Pictures
 
-The sample pictures on this website are examples of the kind of pages we make. They are not client work and do not show real clients, people or businesses.
+All pictures on this website were generated with AI (Canva) and are not photographs of real places, people or businesses. The sample pictures are examples of the kind of pages we make. They are not client work and do not show real clients, people or businesses.
 
-- **Six trade pictures** (plumbing, salon, café, garage, cleaning, firm), used in the six sample layouts. Source: not yet recorded. Licence: not yet recorded.
-- **Misty hills picture**, a soft wash behind "The three levels" on the Standard page. Source: not yet recorded. Licence: not yet recorded.
-- **Stone arch and valley pictures, and the floating stones cut from the valley picture**, used in the Premium opening, on the Pro page, and faintly behind the contact part of the Standard page. Source: not yet recorded. Licence: not yet recorded.
-- **Three forest background pictures** (castle, gateway, path), used behind parts of the Standard, Pro and Premium pages. Made with Canva's AI image generator for Prime Solutions. Licence: not yet recorded (Canva's terms for AI-generated images apply).
+- **Six trade pictures** (plumbing, salon, café, garage, cleaning, firm), used in the six sample layouts. Made with Canva's AI image generator for Prime Solutions (Canva media id MAHZMzPIOmk). Used under Canva's AI Product Terms (https://www.canva.com/policies/ai-product-terms/).
+- **Misty hills picture**, a soft wash behind "The three levels" on the Standard page. Made with Canva's AI image generator for Prime Solutions (Canva media id MAHZM9iFw5A). Used under Canva's AI Product Terms (https://www.canva.com/policies/ai-product-terms/).
+- **Stone arch and valley pictures, and the floating stones cut from the valley picture**, used in the Premium opening, on the Pro page, and faintly behind the contact part of the Standard page. Made with Canva's AI image generator for Prime Solutions (Canva media ids MAHZMjuWsas arch, MAHZMtrkDek valley). Used under Canva's AI Product Terms (https://www.canva.com/policies/ai-product-terms/).
+- **Three forest background pictures** (castle, gateway, path), used behind parts of the Standard, Pro and Premium pages. Made with Canva's AI image generator for Prime Solutions (Canva media ids MAHZSdUTrJs castle, MAHZSaQIOqU gateway, MAHZSbUe3Ho path). Used under Canva's AI Product Terms (https://www.canva.com/policies/ai-product-terms/).
 
 The small copies of these pictures made for phones follow the same source and licence as the picture they were made from. The picture shown when a link to this website is shared is drawn by the site's own build from its words, colours and fonts above.
 
 <!-- INTERNAL-START -->
 ## Open items before go-live (internal, not published)
 
-Cherry's checklist (file 05) says: no AI-generated images; no picture with an unknown licence; none that implies a real client. Today every picture on the site falls under the first two. They are kept in this draft so the three looks can be judged, and each is a marked item below. The build lists them in `OPEN-MARKERS.md` and refuses to build a site marked `live` while one is open.
-
-- [TO BE SUPPLIED: where the six trade pictures came from (author or website, and the link) and the licence they are used under (`assets_in/trades-sheet.png`; crops `trade-*.webp`)]
-- [TO BE SUPPLIED: where the misty-hills picture came from (author or website, and the link) and the licence it is used under (`assets_in/levels-bg.png`; `levels-bg.webp`)]
-- [TO BE SUPPLIED: where the stone arch and valley pictures came from (author or website, and the link) and the licence they are used under (`portal-arch`, `portal-far`, `pro-hero`, `pro-valley`, `valley-1680`, `beyond-1680`, `rock-1` to `rock-7`, cut by `tools/cut_rocks.py`)]
-- [TO BE SUPPLIED: the owner's decision on the three Canva AI forest backgrounds (`ps-*`, `pm-*`, made from `assets_in/bg-*.webp`; Canva media ids MAHZSdUTrJs castle, MAHZSaQIOqU gateway, MAHZSbUe3Ho path): replace them with pictures that have a known licence, or keep them with the Canva terms that apply to AI-generated images]
+Cherry's checklist (file 05) says no AI-generated images. On 2 November 2026 the owner decided to keep the Canva AI pictures (all generated in the Prime Solutions Canva account) under Canva's AI Product Terms, disclosed as AI-generated above. Canva's terms do not allow presenting AI pictures as human-made, so keep that disclosure.
 
 Fonts are kept in `src/fonts/` with each licence text (`OFL-*.txt`) and served from the site itself. Three of them are cut-down, renamed copies made by `prep_fonts.py` (Lora to Prime Serif, Poppins to Prime Display, Inter to Prime Text), renamed because a changed copy may not keep the Reserved Font Name. The icons are plain SVG shapes written in this project (`ICONS` in `demos.py` and the page template); `build.py` uses Python 3 and Pillow at build time only, and nothing from them is shipped.
 
